@@ -207,6 +207,129 @@
             margin-bottom: 0.7rem;
         }
 
+        /* ── Hint panel ── */
+        .bar-label-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 0.6rem;
+        }
+
+        .hint-btn {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 0.78rem;
+            font-weight: 900;
+            background: linear-gradient(135deg, #7c3aed, #a855f7);
+            color: white;
+            border: none;
+            cursor: pointer;
+            border-radius: 9999px;
+            padding: 0.3rem 0.9rem;
+            box-shadow: 0 3px 0 #4c1d95;
+            transition: transform 0.1s;
+        }
+
+        .hint-btn:hover {
+            transform: translateY(-1px);
+        }
+
+        .hint-panel {
+            display: none;
+            background: #faf5ff;
+            border: 2.5px solid #c4b5fd;
+            border-radius: 1.5rem;
+            padding: 1rem 1.2rem;
+            margin: 0.6rem 0;
+            text-align: center;
+        }
+
+        .hint-panel.visible {
+            display: block;
+            animation: bounceIn 0.3s;
+        }
+
+        .hint-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            font-size: 0.9rem;
+            font-weight: 800;
+            color: #6d28d9;
+            margin-bottom: 0.7rem;
+        }
+
+        .hint-close {
+            background: none;
+            border: none;
+            font-size: 1.2rem;
+            cursor: pointer;
+            color: #9ca3af;
+        }
+
+        .hint-groups {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.4rem;
+            justify-content: center;
+            min-height: 2rem;
+            margin-bottom: 0.6rem;
+        }
+
+        .hint-group {
+            background: white;
+            border: 2px solid #c4b5fd;
+            border-radius: 0.7rem;
+            padding: 0.3rem 0.4rem;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 2px;
+            max-width: 6.5rem;
+            justify-content: center;
+            animation: bounceIn 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        .hint-dot {
+            width: 13px;
+            height: 13px;
+            border-radius: 50%;
+            display: inline-block;
+        }
+
+        .hint-running {
+            font-size: 0.9rem;
+            font-weight: 800;
+            color: #7c3aed;
+            min-height: 1.3em;
+            margin-bottom: 0.3rem;
+        }
+
+        .hint-sum {
+            font-size: 1.4rem;
+            font-weight: 900;
+            color: #4c1d95;
+            min-height: 1.7em;
+        }
+
+        .hint-step-btn {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 0.85rem;
+            font-weight: 900;
+            background: #7c3aed;
+            color: white;
+            border: none;
+            cursor: pointer;
+            border-radius: 9999px;
+            padding: 0.4rem 1.2rem;
+            box-shadow: 0 3px 0 #4c1d95;
+            margin-top: 0.5rem;
+        }
+
+        .hint-step-btn:disabled {
+            background: #a78bfa;
+            box-shadow: none;
+            cursor: default;
+        }
+
         .bars {
             display: flex;
             gap: 0.5rem;
@@ -602,9 +725,24 @@
             <div class="problem-number" id="q-number">Question 1</div>
             <p class="problem-text" id="problem-text">Loading...</p>
             <div class="bar-area" id="bar-area">
-                <div class="bar-label">📊 Draw it out — the bar diagram</div>
+                <div class="bar-label-row">
+                    <span class="bar-label">📊 Bar diagram</span>
+                    <button class="hint-btn" id="hint-btn" onclick="showHint()">💡 Build it up!</button>
+                </div>
                 <div class="bars" id="bars"></div>
                 <div class="bar-equation" id="bar-equation">... × ... = ?</div>
+            </div>
+
+            <!-- Hint panel: equal groups building up -->
+            <div class="hint-panel" id="hint-panel">
+                <div class="hint-header">
+                    <span>💡 Watch the groups build up!</span>
+                    <button class="hint-close" onclick="closeHint()">×</button>
+                </div>
+                <div class="hint-groups" id="hint-groups"></div>
+                <div class="hint-running" id="hint-running"></div>
+                <div class="hint-sum" id="hint-sum"></div>
+                <button class="hint-step-btn" id="hint-step-btn" onclick="hintNextGroup()">▶️ Add next group</button>
             </div>
             <div class="answer-area">
                 <span class="answer-label">My answer:</span>
@@ -674,44 +812,44 @@
         }
 
         /* ── Fireworks ── */
-        let fwAnim = null, fwParticles = [];
+        let fwAnim = null, fwParticles = [], fwInterval = null;
+        function fwBurst(canvas) {
+            const colors = ['#fbbf24', '#ec4899', '#3b82f6', '#10b981', '#f97316', '#8b5cf6', '#ef4444', '#fff', '#a3e635', '#f0abfc'];
+            for (let i = 0; i < 8; i++) {
+                const cx = Math.random() * canvas.width, cy = Math.random() * canvas.height * 0.7;
+                for (let j = 0; j < 55; j++) {
+                    const angle = (j / 55) * Math.PI * 2, spd = 2 + Math.random() * 7;
+                    fwParticles.push({ x: cx, y: cy, vx: Math.cos(angle) * spd, vy: Math.sin(angle) * spd, alpha: 1, color: colors[Math.floor(Math.random() * colors.length)], r: 2 + Math.random() * 4 });
+                }
+            }
+        }
         function launchFireworks() {
             const canvas = document.getElementById('fw-canvas');
             canvas.width = window.innerWidth; canvas.height = window.innerHeight;
             const ctx = canvas.getContext('2d');
-            const colors = ['#fbbf24', '#ec4899', '#3b82f6', '#10b981', '#f97316', '#8b5cf6', '#ef4444', '#fff'];
-            fwParticles = [];
-            for (let i = 0; i < 6; i++) {
-                const cx = Math.random() * canvas.width;
-                const cy = Math.random() * canvas.height * 0.6;
-                for (let j = 0; j < 40; j++) {
-                    const angle = (j / 40) * Math.PI * 2;
-                    const spd = 3 + Math.random() * 5;
-                    fwParticles.push({
-                        x: cx, y: cy, vx: Math.cos(angle) * spd, vy: Math.sin(angle) * spd,
-                        alpha: 1, color: colors[Math.floor(Math.random() * colors.length)], r: 3 + Math.random() * 3
-                    });
-                }
-            }
+            fwParticles = []; fwBurst(canvas);
             function tick() {
                 ctx.clearRect(0, 0, canvas.width, canvas.height);
                 fwParticles.forEach(p => {
-                    p.x += p.vx; p.y += p.vy; p.vy += 0.12; p.alpha -= 0.015;
-                    ctx.globalAlpha = Math.max(0, p.alpha);
-                    ctx.fillStyle = p.color;
+                    p.x += p.vx; p.y += p.vy; p.vy += 0.1; p.alpha -= 0.005;
+                    ctx.globalAlpha = Math.max(0, p.alpha); ctx.fillStyle = p.color;
                     ctx.beginPath(); ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2); ctx.fill();
                 });
+                ctx.globalAlpha = 1;
                 fwParticles = fwParticles.filter(p => p.alpha > 0);
-                if (fwParticles.length > 0) fwAnim = requestAnimationFrame(tick);
-                else ctx.clearRect(0, 0, canvas.width, canvas.height);
+                fwAnim = requestAnimationFrame(tick);
             }
             if (fwAnim) cancelAnimationFrame(fwAnim);
             fwAnim = requestAnimationFrame(tick);
+            if (fwInterval) clearInterval(fwInterval);
+            fwInterval = setInterval(() => fwBurst(canvas), 800);
         }
         function stopFireworks() {
+            if (fwInterval) { clearInterval(fwInterval); fwInterval = null; }
             if (fwAnim) { cancelAnimationFrame(fwAnim); fwAnim = null; }
             const canvas = document.getElementById('fw-canvas');
             canvas.getContext('2d').clearRect(0, 0, canvas.width, canvas.height);
+            fwParticles = [];
         }
 
         const PROBLEMS = [
@@ -789,6 +927,71 @@
             document.getElementById('bar-equation').innerHTML = `<span>${a}</span> × <span>${b}</span> = <span>?</span>`;
         }
 
+        // ── Hint system ───────────────────────────────────────────────────
+        let hintGroupsShown = 0;
+        let hintColor = '#8b5cf6';
+
+        function showHint() {
+            const panel = document.getElementById('hint-panel');
+            panel.className = 'hint-panel visible';
+            document.getElementById('hint-btn').style.display = 'none';
+            // Reset
+            hintGroupsShown = 0;
+            hintColor = BAR_COLOURS[level % BAR_COLOURS.length];
+            document.getElementById('hint-groups').innerHTML = '';
+            document.getElementById('hint-running').textContent = '';
+            document.getElementById('hint-sum').textContent = '';
+            document.getElementById('hint-step-btn').disabled = false;
+            document.getElementById('hint-step-btn').style.display = '';
+            // Show the instruction
+            const runEl = document.getElementById('hint-running');
+            runEl.textContent = `${currentA} groups of ${currentB} — let’s build it up!`;
+        }
+
+        function hintNextGroup() {
+            if (hintGroupsShown >= currentA) return;
+            hintGroupsShown++;
+
+            // Create the group of dots
+            const groupsEl = document.getElementById('hint-groups');
+            const group = document.createElement('div');
+            group.className = 'hint-group';
+            group.style.borderColor = hintColor;
+
+            // Use dots (max 20 per group for display)
+            const dotsToShow = Math.min(currentB, 20);
+            for (let i = 0; i < dotsToShow; i++) {
+                const dot = document.createElement('span');
+                dot.className = 'hint-dot';
+                dot.style.background = hintColor;
+                group.appendChild(dot);
+            }
+            // If b > 20, add a label showing the number instead
+            if (currentB > 20) {
+                group.innerHTML = `<span style="font-size:1.1rem;font-weight:900;color:${hintColor}">${currentB}</span>`;
+            }
+            groupsEl.appendChild(group);
+
+            // Running total
+            const runTotal = hintGroupsShown * currentB;
+            const parts = [];
+            for (let i = 1; i <= hintGroupsShown; i++) parts.push(i * currentB - currentB === 0 ? String(currentB) : null);
+            // Build addition string
+            const addStr = Array.from({ length: hintGroupsShown }, () => currentB).join(' + ');
+            document.getElementById('hint-running').textContent = addStr + ' = ' + runTotal;
+
+            if (hintGroupsShown === currentA) {
+                document.getElementById('hint-sum').textContent = `🎉 ${currentA} × ${currentB} = ${correctAnswer}!`;
+                document.getElementById('hint-step-btn').disabled = true;
+                document.getElementById('hint-step-btn').style.display = 'none';
+            }
+        }
+
+        function closeHint() {
+            document.getElementById('hint-panel').className = 'hint-panel';
+            document.getElementById('hint-btn').style.display = '';
+        }
+
         function newQuestion() {
             attempts = 0;
             pickNumbers();
@@ -799,6 +1002,10 @@
             document.getElementById('q-number').textContent = `Question ${questionIndex}`;
             document.getElementById('problem-text').innerHTML = prob.text;
             renderBars(currentA, currentB);
+
+            // Reset hint
+            document.getElementById('hint-panel').className = 'hint-panel';
+            document.getElementById('hint-btn').style.display = '';
 
             const input = document.getElementById('answer-input');
             input.value = '';

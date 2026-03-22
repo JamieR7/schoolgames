@@ -369,6 +369,27 @@
             text-transform: uppercase;
         }
 
+        /* Check answer button (paint mode) */
+        #check-btn {
+            display: none;
+            font-family: 'Montserrat', sans-serif;
+            font-size: 1rem;
+            font-weight: 900;
+            background: linear-gradient(180deg, #10b981, #059669);
+            color: white;
+            border: none;
+            cursor: pointer;
+            border-radius: 9999px;
+            padding: 0.7rem 2rem;
+            box-shadow: 0 4px 0 #065f46;
+            margin-bottom: 1rem;
+            transition: transform 0.1s;
+        }
+
+        #check-btn:hover {
+            transform: translateY(-2px);
+        }
+
         /* Celebration */
         .celebration {
             display: none;
@@ -618,6 +639,8 @@
 
             <div class="choices" id="choices"></div>
 
+            <button id="check-btn" onclick="checkPaint()">Check (0 coloured) ✓</button>
+
             <div class="feedback" id="feedback">
                 <span class="feedback-emoji" id="feedback-emoji">🎉</span>
                 <p class="feedback-msg" id="feedback-msg">Amazing!</p>
@@ -678,38 +701,54 @@
             document.getElementById('rare-banner').classList.remove('show');
             stopFireworks();
         }
-        let fwAnim = null, fwParticles = [];
+        let fwAnim = null, fwParticles = [], fwInterval = null;
+        function fwBurst(canvas) {
+            const colors = ['#fbbf24', '#ec4899', '#3b82f6', '#10b981', '#f97316', '#8b5cf6', '#ef4444', '#fff', '#a3e635', '#f0abfc'];
+            for (let i = 0; i < 8; i++) {
+                const cx = Math.random() * canvas.width;
+                const cy = Math.random() * canvas.height * 0.7;
+                for (let j = 0; j < 55; j++) {
+                    const angle = (j / 55) * Math.PI * 2;
+                    const spd = 2 + Math.random() * 7;
+                    fwParticles.push({
+                        x: cx, y: cy, vx: Math.cos(angle) * spd, vy: Math.sin(angle) * spd,
+                        alpha: 1, color: colors[Math.floor(Math.random() * colors.length)], r: 2 + Math.random() * 4
+                    });
+                }
+            }
+        }
         function launchFireworks() {
             const canvas = document.getElementById('fw-canvas');
             canvas.width = window.innerWidth; canvas.height = window.innerHeight;
             const ctx = canvas.getContext('2d');
-            const colors = ['#fbbf24', '#ec4899', '#3b82f6', '#10b981', '#f97316', '#8b5cf6', '#ef4444', '#fff'];
             fwParticles = [];
-            for (let i = 0; i < 6; i++) {
-                const cx = Math.random() * canvas.width, cy = Math.random() * canvas.height * 0.6;
-                for (let j = 0; j < 40; j++) {
-                    const angle = (j / 40) * Math.PI * 2, spd = 3 + Math.random() * 5;
-                    fwParticles.push({ x: cx, y: cy, vx: Math.cos(angle) * spd, vy: Math.sin(angle) * spd, alpha: 1, color: colors[Math.floor(Math.random() * colors.length)], r: 3 + Math.random() * 3 });
-                }
-            }
+            fwBurst(canvas);
+
             function tick() {
                 ctx.clearRect(0, 0, canvas.width, canvas.height);
                 fwParticles.forEach(p => {
-                    p.x += p.vx; p.y += p.vy; p.vy += 0.12; p.alpha -= 0.015;
-                    ctx.globalAlpha = Math.max(0, p.alpha); ctx.fillStyle = p.color;
+                    p.x += p.vx; p.y += p.vy; p.vy += 0.1; p.alpha -= 0.005;
+                    ctx.globalAlpha = Math.max(0, p.alpha);
+                    ctx.fillStyle = p.color;
                     ctx.beginPath(); ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2); ctx.fill();
                 });
+                ctx.globalAlpha = 1;
                 fwParticles = fwParticles.filter(p => p.alpha > 0);
-                if (fwParticles.length > 0) fwAnim = requestAnimationFrame(tick);
-                else ctx.clearRect(0, 0, canvas.width, canvas.height);
+                fwAnim = requestAnimationFrame(tick);
             }
             if (fwAnim) cancelAnimationFrame(fwAnim);
             fwAnim = requestAnimationFrame(tick);
+
+            // Keep firing new bursts every 800ms while banner is open
+            if (fwInterval) clearInterval(fwInterval);
+            fwInterval = setInterval(() => fwBurst(canvas), 800);
         }
         function stopFireworks() {
+            if (fwInterval) { clearInterval(fwInterval); fwInterval = null; }
             if (fwAnim) { cancelAnimationFrame(fwAnim); fwAnim = null; }
             const c = document.getElementById('fw-canvas');
             c.getContext('2d').clearRect(0, 0, c.width, c.height);
+            fwParticles = [];
         }
 
         // All possible fractions (numerator, denominator)
@@ -726,10 +765,17 @@
         const BG_COLOR = '#fce7f3';
         const SHAPE_TYPES = ['circle', 'rectangle', 'rectangle-tall'];
 
+        // ─── State ────────────────────────────────────────────────────
         let score = 0, streak = 0, progress = 0, level = 0, qNum = 0;
         let stickers = JSON.parse(sessionStorage.getItem('stickers_fractions') || '[]');
         let answered = false;
         let correctNumerator, correctDenominator;
+        let qMode = 'identify'; // 'identify' or 'paint'
+
+        // Paint-mode cell state
+        let paintCells = [];    // array of booleans — is cell i coloured?
+        let paintMeta = [];     // array of hit-test regions {type,data} per cell
+        let paintColor = '#ec4899';
 
         function saveStickers() {
             sessionStorage.setItem('stickers_fractions', JSON.stringify(stickers));
@@ -812,26 +858,122 @@
             ctx.strokeRect(margin, margin, totalW, totalH);
         }
 
-        function drawShape(numerator, denominator) {
+        function drawShape(numerator, denominator, forPaint) {
             const canvas = document.getElementById('shape-canvas');
-            const color = FILL_COLORS[qNum % FILL_COLORS.length];
+            const color = forPaint ? null : FILL_COLORS[qNum % FILL_COLORS.length];
 
-            // Rectangles are unambiguous only for small denominators (≤6);
-            // for 8 and 10 always use a circle — slices are unmistakably clear
             if (denominator > 6) {
-                drawCircle(canvas, numerator, denominator, color);
+                if (forPaint) drawCirclePaint(canvas, denominator);
+                else drawCircle(canvas, numerator, denominator, color);
                 return;
             }
 
-            const types = SHAPE_TYPES;
-            const shapeType = types[qNum % types.length];
-            if (shapeType === 'circle') {
+            const shapeType = SHAPE_TYPES[qNum % SHAPE_TYPES.length];
+            if (forPaint) {
+                drawRectanglePaint(canvas, denominator, shapeType === 'rectangle-tall');
+            } else if (shapeType === 'circle') {
                 drawCircle(canvas, numerator, denominator, color);
-            } else if (shapeType === 'rectangle') {
-                drawRectangle(canvas, numerator, denominator, color, false);
             } else {
-                drawRectangle(canvas, numerator, denominator, color, true);
+                drawRectangle(canvas, numerator, denominator, color, shapeType === 'rectangle-tall');
             }
+        }
+
+        // Paint-mode circle: draw empty slices, store arc metadata for hit-testing
+        function drawCirclePaint(canvas, denominator) {
+            const ctx = canvas.getContext('2d');
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            const cx = canvas.width / 2, cy = canvas.height / 2;
+            const r = Math.min(canvas.width, canvas.height) * 0.4;
+            const sliceAngle = (2 * Math.PI) / denominator;
+            const startOffset = -Math.PI / 2;
+            paintMeta = [];
+            // paintCells already set to all-false in newQuestion
+
+            for (let i = 0; i < denominator; i++) {
+                const startA = startOffset + i * sliceAngle;
+                const endA = startA + sliceAngle;
+                paintMeta.push({ type: 'slice', cx, cy, r, startA, endA });
+                ctx.beginPath();
+                ctx.moveTo(cx, cy);
+                ctx.arc(cx, cy, r, startA, endA);
+                ctx.closePath();
+                ctx.fillStyle = paintCells[i] ? paintColor : '#fff';
+                ctx.fill();
+                ctx.strokeStyle = '#374151'; ctx.lineWidth = 2; ctx.stroke();
+            }
+            ctx.beginPath(); ctx.arc(cx, cy, r, 0, Math.PI * 2);
+            ctx.strokeStyle = '#374151'; ctx.lineWidth = 3; ctx.stroke();
+        }
+
+        // Paint-mode rectangle: draw empty cells, store rect metadata
+        function drawRectanglePaint(canvas, denominator, tall) {
+            const ctx = canvas.getContext('2d');
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            const margin = 20;
+            const LAYOUTS = { 2: [1, 2], 3: [1, 3], 4: [1, 4], 5: [1, 5], 6: [2, 3], 8: [2, 4], 10: [2, 5] };
+            let [rows, cols] = LAYOUTS[denominator] || [1, denominator];
+            if (tall) [rows, cols] = [cols, rows];
+            const totalW = canvas.width - margin * 2;
+            const totalH = canvas.height - margin * 2;
+            const cellW = totalW / cols, cellH = totalH / rows;
+            paintMeta = [];
+            let count = 0;
+            outer: for (let r = 0; r < rows; r++) {
+                for (let c = 0; c < cols; c++) {
+                    if (count >= denominator) break outer;
+                    const x = margin + c * cellW, y = margin + r * cellH;
+                    paintMeta.push({ type: 'rect', x, y, w: cellW, h: cellH });
+                    ctx.fillStyle = paintCells[count] ? paintColor : '#fff';
+                    ctx.fillRect(x, y, cellW, cellH);
+                    ctx.strokeStyle = '#374151'; ctx.lineWidth = 2;
+                    ctx.strokeRect(x, y, cellW, cellH);
+                    count++;
+                }
+            }
+            ctx.strokeStyle = '#374151'; ctx.lineWidth = 3;
+            ctx.strokeRect(margin, margin, totalW, totalH);
+        }
+
+        // Hit-test a canvas click in paint mode and toggle the cell
+        function handlePaintClick(evt) {
+            if (answered) return;
+            const canvas = document.getElementById('shape-canvas');
+            const rect = canvas.getBoundingClientRect();
+            const scaleX = canvas.width / rect.width;
+            const scaleY = canvas.height / rect.height;
+            const mx = (evt.clientX - rect.left) * scaleX;
+            const my = (evt.clientY - rect.top) * scaleY;
+
+            for (let i = 0; i < paintMeta.length; i++) {
+                const m = paintMeta[i];
+                let hit = false;
+                if (m.type === 'slice') {
+                    const dx = mx - m.cx, dy = my - m.cy;
+                    const dist = Math.sqrt(dx * dx + dy * dy);
+                    if (dist <= m.r) {
+                        let angle = Math.atan2(dy, dx);
+                        // normalise to same [startA, endA] range
+                        while (angle < m.startA) angle += Math.PI * 2;
+                        hit = angle >= m.startA && angle < m.endA;
+                    }
+                } else {
+                    hit = mx >= m.x && mx < m.x + m.w && my >= m.y && my < m.y + m.h;
+                }
+                if (hit) {
+                    paintCells[i] = !paintCells[i];
+                    // Redraw
+                    if (m.type === 'slice') drawCirclePaint(canvas, correctDenominator);
+                    else drawRectanglePaint(canvas, correctDenominator, SHAPE_TYPES[qNum % SHAPE_TYPES.length] === 'rectangle-tall');
+                    updateCheckBtn();
+                    break;
+                }
+            }
+        }
+
+        function updateCheckBtn() {
+            const count = paintCells.filter(Boolean).length;
+            document.getElementById('check-btn').textContent =
+                `Check (${count}/${correctDenominator} coloured) ✓`;
         }
 
         // ─── Distractors ──────────────────────────────────────────────────────
@@ -905,10 +1047,118 @@
 
             document.getElementById('q-badge').textContent = `Question ${qNum}`;
             document.getElementById('feedback').className = 'feedback';
-            drawShape(correctNumerator, correctDenominator);
 
-            const choices = generateChoices(correctNumerator, correctDenominator);
-            renderChoices(choices, correctNumerator, correctDenominator);
+            // Randomly pick mode: 40% paint, 60% identify
+            qMode = Math.random() < 0.4 ? 'paint' : 'identify';
+
+            if (qMode === 'paint') {
+                // Reset paint state
+                paintCells = Array(correctDenominator).fill(false);
+                paintColor = FILL_COLORS[qNum % FILL_COLORS.length];
+
+                document.getElementById('question-text').textContent =
+                    `Colour ${correctNumerator}/${correctDenominator} of the shape! 🖨️`;
+                document.getElementById('question-sub').innerHTML =
+                    `Colorie <strong>${correctNumerator}/${correctDenominator}</strong> de la forme — tap the sections!`;
+
+                document.getElementById('choices').style.display = 'none';
+                document.getElementById('check-btn').style.display = 'inline-block';
+                updateCheckBtn();
+
+                const canvas = document.getElementById('shape-canvas');
+                canvas.style.cursor = 'pointer';
+                canvas.onclick = handlePaintClick;
+
+                drawShape(0, correctDenominator, true); // draw empty
+            } else {
+                document.getElementById('question-text').textContent =
+                    'What fraction of the shape is coloured? 🎨';
+                document.getElementById('question-sub').innerHTML =
+                    'Quelle fraction est coloriée ? — <span>numérateur / dénominateur</span>';
+
+                document.getElementById('choices').style.display = '';
+                document.getElementById('check-btn').style.display = 'none';
+
+                const canvas = document.getElementById('shape-canvas');
+                canvas.style.cursor = '';
+                canvas.onclick = null;
+
+                drawShape(correctNumerator, correctDenominator, false);
+
+                const choices = generateChoices(correctNumerator, correctDenominator);
+                renderChoices(choices, correctNumerator, correctDenominator);
+            }
+        }
+
+        // ─── Paint mode: check answer ─────────────────────────────────
+        function checkPaint() {
+            if (answered) return;
+            answered = true;
+            document.getElementById('shape-canvas').onclick = null;
+            document.getElementById('check-btn').style.display = 'none';
+
+            const coloured = paintCells.filter(Boolean).length;
+            const feedback = document.getElementById('feedback');
+            const fbEmoji = document.getElementById('feedback-emoji');
+            const fbMsg = document.getElementById('feedback-msg');
+            const fbExpl = document.getElementById('feedback-explain');
+
+            // Reveal correct colouring on canvas
+            const canvas = document.getElementById('shape-canvas');
+            paintCells = paintCells.map((_, i) => i < correctNumerator);
+            if (correctDenominator > 6) drawCirclePaint(canvas, correctDenominator);
+            else drawRectanglePaint(canvas, correctDenominator, SHAPE_TYPES[qNum % SHAPE_TYPES.length] === 'rectangle-tall');
+
+            if (coloured === correctNumerator) {
+                score += 100; streak++;
+                document.getElementById('score').textContent = score;
+                document.getElementById('streak').textContent = streak;
+                progress++; updateProgressUI();
+
+                const s = pickSticker();
+                stickers.push(s); saveStickers();
+                const sp = document.createElement('span'); sp.textContent = s;
+                sp.style.animation = 'bounceIn 0.4s cubic-bezier(0.175,0.885,0.32,1.275)';
+                document.getElementById('sticker-row').appendChild(sp);
+                document.getElementById('sticker-book').className = 'stickers visible';
+
+                if (progress >= 5) {
+                    progress = 0;
+                    const oldLevel = level; level++;
+                    const celTheme = THEMES[oldLevel % THEMES.length];
+                    document.getElementById('cel-emoji').textContent = celTheme.emoji;
+                    document.getElementById('cel-sub').textContent = `You collected all ${celTheme.name} stickers!`;
+                    document.getElementById('cel-sticker').textContent = celTheme.stickers[Math.floor(Math.random() * celTheme.stickers.length)];
+                    updateProgressUI();
+                    feedback.className = 'feedback correct-fb';
+                    fbEmoji.textContent = s;
+                    fbMsg.className = 'feedback-msg correct-text';
+                    fbMsg.textContent = CORRECT_MSGS[Math.floor(Math.random() * CORRECT_MSGS.length)];
+                    fbExpl.textContent = `${correctNumerator}/${correctDenominator} coloured perfectly!`;
+                    setTimeout(() => {
+                        document.getElementById('game-area').style.display = 'none';
+                        document.getElementById('celebration').className = 'celebration show';
+                    }, 800);
+                    return;
+                }
+
+                feedback.className = 'feedback correct-fb';
+                fbEmoji.textContent = s;
+                fbMsg.className = 'feedback-msg correct-text';
+                fbMsg.textContent = CORRECT_MSGS[Math.floor(Math.random() * CORRECT_MSGS.length)];
+                fbExpl.textContent = `You coloured exactly ${correctNumerator}/${correctDenominator} — parfait! 🎉`;
+            } else {
+                streak = 0;
+                document.getElementById('streak').textContent = streak;
+                feedback.className = 'feedback wrong-fb';
+                fbEmoji.textContent = '🤔';
+                fbMsg.className = 'feedback-msg wrong-text';
+                const needed = correctNumerator, got = coloured;
+                fbMsg.textContent = got < needed
+                    ? `You coloured ${got} — you needed ${needed} more section${needed - got > 1 ? 's' : ''}!`
+                    : `You coloured ${got} — that's ${got - needed} too many!`;
+                fbExpl.textContent = `${correctNumerator}/${correctDenominator} means colour ${correctNumerator} out of ${correctDenominator} equal parts. The shape now shows the correct answer.`;
+            }
         }
 
         function guess(n, d, btn) {

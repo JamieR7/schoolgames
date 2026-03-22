@@ -808,38 +808,44 @@
             document.getElementById('rare-banner').classList.remove('show');
             stopFireworks();
         }
-        let fwAnim = null, fwParticles = [];
+        let fwAnim = null, fwParticles = [], fwInterval = null;
+        function fwBurst(canvas) {
+            const colors = ['#fbbf24', '#ec4899', '#3b82f6', '#10b981', '#f97316', '#8b5cf6', '#ef4444', '#fff', '#a3e635', '#f0abfc'];
+            for (let i = 0; i < 8; i++) {
+                const cx = Math.random() * canvas.width, cy = Math.random() * canvas.height * 0.7;
+                for (let j = 0; j < 55; j++) {
+                    const angle = (j / 55) * Math.PI * 2, spd = 2 + Math.random() * 7;
+                    fwParticles.push({ x: cx, y: cy, vx: Math.cos(angle) * spd, vy: Math.sin(angle) * spd, alpha: 1, color: colors[Math.floor(Math.random() * colors.length)], r: 2 + Math.random() * 4 });
+                }
+            }
+        }
         function launchFireworks() {
             const canvas = document.getElementById('fw-canvas');
             canvas.width = window.innerWidth; canvas.height = window.innerHeight;
             const ctx = canvas.getContext('2d');
-            const colors = ['#fbbf24', '#ec4899', '#3b82f6', '#10b981', '#f97316', '#8b5cf6', '#ef4444', '#fff'];
-            fwParticles = [];
-            for (let i = 0; i < 6; i++) {
-                const cx = Math.random() * canvas.width, cy = Math.random() * canvas.height * 0.6;
-                for (let j = 0; j < 40; j++) {
-                    const angle = (j / 40) * Math.PI * 2, spd = 3 + Math.random() * 5;
-                    fwParticles.push({ x: cx, y: cy, vx: Math.cos(angle) * spd, vy: Math.sin(angle) * spd, alpha: 1, color: colors[Math.floor(Math.random() * colors.length)], r: 3 + Math.random() * 3 });
-                }
-            }
+            fwParticles = []; fwBurst(canvas);
             function tick() {
                 ctx.clearRect(0, 0, canvas.width, canvas.height);
                 fwParticles.forEach(p => {
-                    p.x += p.vx; p.y += p.vy; p.vy += 0.12; p.alpha -= 0.015;
+                    p.x += p.vx; p.y += p.vy; p.vy += 0.1; p.alpha -= 0.005;
                     ctx.globalAlpha = Math.max(0, p.alpha); ctx.fillStyle = p.color;
                     ctx.beginPath(); ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2); ctx.fill();
                 });
+                ctx.globalAlpha = 1;
                 fwParticles = fwParticles.filter(p => p.alpha > 0);
-                if (fwParticles.length > 0) fwAnim = requestAnimationFrame(tick);
-                else ctx.clearRect(0, 0, canvas.width, canvas.height);
+                fwAnim = requestAnimationFrame(tick);
             }
             if (fwAnim) cancelAnimationFrame(fwAnim);
             fwAnim = requestAnimationFrame(tick);
+            if (fwInterval) clearInterval(fwInterval);
+            fwInterval = setInterval(() => fwBurst(canvas), 800);
         }
         function stopFireworks() {
+            if (fwInterval) { clearInterval(fwInterval); fwInterval = null; }
             if (fwAnim) { cancelAnimationFrame(fwAnim); fwAnim = null; }
             const c = document.getElementById('fw-canvas');
             c.getContext('2d').clearRect(0, 0, c.width, c.height);
+            fwParticles = [];
         }
 
         // Generate even numbers (3-digit) that decompose nicely  

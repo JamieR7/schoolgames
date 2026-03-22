@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -10,8 +11,6 @@
         :root {
             --bg-color: #f0fdf4;
             --primary-color: #10b981;
-            --secondary-color: #3b82f6;
-            --accent-color: #f59e0b;
             --card-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
         }
 
@@ -31,14 +30,13 @@
 
         header {
             width: 100%;
-            max-width: 1000px;
-            padding: 2rem;
+            max-width: 1100px;
+            padding: 2rem 2rem 0;
             text-align: center;
-            margin-top: 2rem;
         }
 
         h1 {
-            font-size: 3.5rem;
+            font-size: clamp(2.2rem, 6vw, 3.5rem);
             font-weight: 900;
             color: var(--primary-color);
             text-transform: uppercase;
@@ -49,52 +47,134 @@
         }
 
         p.subtitle {
-            font-size: 1.5rem;
+            font-size: 1.3rem;
             color: #6b7280;
-            margin-bottom: 3rem;
+            margin-bottom: 2.5rem;
             animation: fadeIn 1s ease-out 0.3s backwards;
+        }
+
+        .section-label {
+            width: 100%;
+            max-width: 1100px;
+            padding: 0 2rem;
+            font-size: 0.85rem;
+            font-weight: 900;
+            color: #9ca3af;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            margin-bottom: 0.8rem;
         }
 
         .container {
             width: 100%;
-            max-width: 1000px;
+            max-width: 1100px;
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 2rem;
-            padding: 0 2rem 4rem 2rem;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 1.5rem;
+            padding: 0 2rem 4rem;
             box-sizing: border-box;
         }
 
         .game-card {
             background: white;
             border-radius: 2.5rem;
-            padding: 2.5rem;
+            padding: 2rem 1.5rem;
             text-decoration: none;
             color: inherit;
             box-shadow: var(--card-shadow);
-            border: 8px solid white;
+            border: 6px solid white;
             transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             display: flex;
             flex-direction: column;
             align-items: center;
             text-align: center;
-            position: relative;
-            overflow: hidden;
             animation: fadeInUp 0.6s ease-out backwards;
+        }
+
+        .game-card:nth-child(1) {
+            animation-delay: 0.05s;
+        }
+
+        .game-card:nth-child(2) {
+            animation-delay: 0.1s;
+        }
+
+        .game-card:nth-child(3) {
+            animation-delay: 0.15s;
+        }
+
+        .game-card:nth-child(4) {
+            animation-delay: 0.2s;
         }
 
         .game-card:hover {
             transform: translateY(-10px) scale(1.02);
-            box-shadow: 0 25px 50px -12px rgb(0 0 0 / 0.15);
+            box-shadow: 0 30px 60px -12px rgb(0 0 0 / 0.15);
         }
 
-        .game-card.math {
+        /* Per-game accent colours */
+        .card-green {
             border-color: #d1fae5;
         }
 
+        .card-orange {
+            border-color: #fed7aa;
+        }
+
+        .card-purple {
+            border-color: #ddd6fe;
+        }
+
+        .card-blue {
+            border-color: #bae6fd;
+        }
+
+        .card-green h2 {
+            color: #059669;
+        }
+
+        .card-orange h2 {
+            color: #ea580c;
+        }
+
+        .card-purple h2 {
+            color: #7c3aed;
+        }
+
+        .card-blue h2 {
+            color: #0369a1;
+        }
+
+        .badge {
+            color: white;
+            padding: 0.35rem 1rem;
+            border-radius: 9999px;
+            font-size: 0.8rem;
+            font-weight: 900;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-bottom: 1rem;
+        }
+
+        .badge-green {
+            background: #10b981;
+        }
+
+        .badge-orange {
+            background: #f97316;
+        }
+
+        .badge-purple {
+            background: #8b5cf6;
+        }
+
+        .badge-blue {
+            background: #0ea5e9;
+        }
+
         .game-card .emoji {
-            font-size: 6rem;
-            margin-bottom: 1.5rem;
+            font-size: 5rem;
+            margin-bottom: 1rem;
             transition: transform 0.3s ease;
         }
 
@@ -103,56 +183,23 @@
         }
 
         .game-card h2 {
-            font-size: 2rem;
+            font-size: 1.6rem;
             font-weight: 900;
-            margin: 0 0 1rem 0;
-            color: var(--primary-color);
+            margin: 0 0 0.7rem;
         }
 
         .game-card p {
-            font-size: 1.1rem;
+            font-size: 1rem;
             color: #4b5563;
             margin: 0;
             line-height: 1.5;
         }
 
-        .badge {
-            background: var(--primary-color);
-            color: white;
-            padding: 0.5rem 1rem;
-            border-radius: 9999px;
-            font-size: 0.875rem;
-            font-weight: 800;
-            text-transform: uppercase;
-            margin-bottom: 1rem;
-        }
-
-        @keyframes bounceIn {
-            0% { transform: scale(0.3); opacity: 0; }
-            50% { transform: scale(1.05); opacity: 1; }
-            70% { transform: scale(0.9); }
-            100% { transform: scale(1); }
-        }
-
-        @keyframes fadeInUp {
-            0% { transform: translateY(20px); opacity: 0; }
-            100% { transform: translateY(0); opacity: 1; }
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
-        }
-
         .coming-soon {
-            filter: grayscale(0.5);
-            opacity: 0.8;
+            filter: grayscale(0.6);
+            opacity: 0.7;
             cursor: not-allowed;
             pointer-events: none;
-        }
-
-        .coming-soon .badge {
-            background: #9ca3af;
         }
 
         footer {
@@ -162,34 +209,95 @@
             font-size: 0.875rem;
         }
 
+        @keyframes bounceIn {
+            0% {
+                transform: scale(0.3);
+                opacity: 0;
+            }
+
+            50% {
+                transform: scale(1.05);
+                opacity: 1;
+            }
+
+            70% {
+                transform: scale(0.9);
+            }
+
+            100% {
+                transform: scale(1);
+            }
+        }
+
+        @keyframes fadeInUp {
+            0% {
+                transform: translateY(30px);
+                opacity: 0;
+            }
+
+            100% {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0
+            }
+
+            to {
+                opacity: 1
+            }
+        }
     </style>
 </head>
+
 <body>
     <header>
         <h1>Archie's School Games 👑</h1>
-        <p class="subtitle">Fun games to help you learn and grow!</p>
+        <p class="subtitle">Choose your mission and start learning!</p>
     </header>
 
+    <div class="section-label">🧮 Maths Games</div>
+
     <div class="container">
-        <!-- Up to 100 Game -->
-        <a href="up-to-100/index.html" class="game-card math">
-            <span class="badge">MATH QUEST</span>
+
+        <!-- Up to 100 -->
+        <a href="up-to-100/index.html" class="game-card card-green">
+            <span class="badge badge-green">NUMBER BONDS</span>
             <div class="emoji">🔢✨</div>
             <h2>Up to 100</h2>
-            <p>Master your number bonds and reach 100! Collect stickers as you go!</p>
+            <p>Find the missing number to make 100! Collect stickers as you go!</p>
         </a>
 
-        <!-- Placeholder for future games -->
-        <div class="game-card coming-soon">
-            <span class="badge">COMING SOON</span>
-            <div class="emoji">🧪🥽</div>
-            <h2>Science Adventure</h2>
-            <p>Future games will appear here to help you with other subjects!</p>
-        </div>
+        <!-- Multiplication Mission -->
+        <a href="multiplication/index.html" class="game-card card-orange">
+            <span class="badge badge-orange">TIMES TABLES</span>
+            <div class="emoji">✖️🚀</div>
+            <h2>Multiplication Mission</h2>
+            <p>Solve word problems using multiplication — bar diagrams help you see it!</p>
+        </a>
+
+        <!-- Half It! -->
+        <a href="halving/index.html" class="game-card card-purple">
+            <span class="badge badge-purple">HALVING</span>
+            <div class="emoji">✂️💜</div>
+            <h2>Half It!</h2>
+            <p>Halve big even numbers by splitting them into hundreds, tens &amp; units!</p>
+        </a>
+
+        <!-- Angle Inspector -->
+        <a href="angles/index.html" class="game-card card-blue">
+            <span class="badge badge-blue">GEOMETRY</span>
+            <div class="emoji">📐🔍</div>
+            <h2>Angle Inspector</h2>
+            <p>Can you spot a right angle, an acute angle, or an obtuse angle?</p>
+        </a>
+
     </div>
 
-    <footer>
-        Designed for Archie with ❤️
-    </footer>
+    <footer>Designed for Archie with ❤️</footer>
 </body>
+
 </html>

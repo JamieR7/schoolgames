@@ -1,0 +1,920 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Half It! ✂️</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700;800;900&display=swap');
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Montserrat', sans-serif;
+            background-color: #fdf4ff;
+            background-image: radial-gradient(#e9d5ff 2px, transparent 2px);
+            background-size: 40px 40px;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 1.5rem 1rem 4rem;
+            color: #1f2937;
+        }
+
+        header {
+            width: 100%;
+            max-width: 800px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: white;
+            border-radius: 2rem;
+            padding: 1rem 1.5rem;
+            margin-bottom: 1.5rem;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
+            border: 4px solid #d8b4fe;
+        }
+
+        header h1 {
+            font-size: 1.8rem;
+            font-weight: 900;
+            color: #7c3aed;
+            text-transform: uppercase;
+        }
+
+        .stats {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .stat-pill {
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+            background: #fdf4ff;
+            border-radius: 9999px;
+            padding: 0.4rem 1rem;
+            font-size: 1.3rem;
+            font-weight: 800;
+            color: #6d28d9;
+        }
+
+        .back-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            text-decoration: none;
+            color: #5b21b6;
+            font-size: 0.9rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            width: 100%;
+            max-width: 800px;
+        }
+
+        .back-btn:hover {
+            color: #7c3aed;
+        }
+
+        .progress-wrap {
+            width: 100%;
+            max-width: 800px;
+            margin-bottom: 1.5rem;
+        }
+
+        .progress-label {
+            display: flex;
+            justify-content: space-between;
+            font-weight: 800;
+            font-size: 0.9rem;
+            color: #6d28d9;
+            margin-bottom: 0.5rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .progress-bar {
+            background: white;
+            border: 4px solid #d8b4fe;
+            border-radius: 9999px;
+            height: 1.5rem;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            background: linear-gradient(90deg, #8b5cf6, #a78bfa);
+            height: 100%;
+            border-radius: 9999px;
+            transition: width 0.6s ease;
+        }
+
+        .stickers {
+            width: 100%;
+            max-width: 800px;
+            background: white;
+            border-radius: 2rem;
+            padding: 1rem 1.5rem;
+            margin-bottom: 1.5rem;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.06);
+            border: 4px solid #ddd6fe;
+            display: none;
+        }
+
+        .stickers.visible {
+            display: block;
+        }
+
+        .stickers-label {
+            font-size: 0.75rem;
+            font-weight: 800;
+            color: #8b5cf6;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            margin-bottom: 0.5rem;
+        }
+
+        .sticker-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            font-size: 2rem;
+        }
+
+        .card {
+            width: 100%;
+            max-width: 800px;
+            background: white;
+            border-radius: 2.5rem;
+            padding: 2rem;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            border: 8px solid white;
+            outline: 4px solid #d8b4fe;
+        }
+
+        .badge {
+            display: inline-block;
+            background: #7c3aed;
+            color: white;
+            border-radius: 9999px;
+            padding: 0.2rem 0.9rem;
+            font-size: 0.8rem;
+            font-weight: 900;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            margin-bottom: 1rem;
+        }
+
+        /* The big number */
+        .big-number {
+            font-size: clamp(4rem, 12vw, 7rem);
+            font-weight: 900;
+            color: #7c3aed;
+            text-align: center;
+            line-height: 1;
+            margin: 1rem 0;
+        }
+
+        .instruction {
+            font-size: 1.2rem;
+            font-weight: 800;
+            text-align: center;
+            color: #374151;
+            margin-bottom: 1.5rem;
+        }
+
+        .instruction span {
+            color: #7c3aed;
+            background: #f5f3ff;
+            border-radius: 0.5rem;
+            padding: 0.1rem 0.4rem;
+        }
+
+        /* Decompose tree */
+        .tree-wrap {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0;
+            margin-bottom: 2rem;
+        }
+
+        /* Top number */
+        .tree-top {
+            font-size: 2.5rem;
+            font-weight: 900;
+            color: #7c3aed;
+            background: #f5f3ff;
+            border: 4px solid #c4b5fd;
+            border-radius: 1.5rem;
+            padding: 0.5rem 2rem;
+            margin-bottom: 0.5rem;
+        }
+
+        /* Branch SVG */
+        .branch-svg {
+            width: 280px;
+            height: 40px;
+            overflow: visible;
+        }
+
+        /* H T U boxes */
+        .htu-row {
+            display: flex;
+            gap: 1.5rem;
+            flex-wrap: wrap;
+            justify-content: center;
+            margin-bottom: 0.5rem;
+        }
+
+        .htu-block {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.3rem;
+        }
+
+        .htu-label {
+            font-size: 0.75rem;
+            font-weight: 900;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+        }
+
+        .htu-value {
+            font-size: 1.8rem;
+            font-weight: 900;
+            background: white;
+            border: 4px solid;
+            border-radius: 1rem;
+            padding: 0.3rem 1rem;
+            min-width: 4rem;
+            text-align: center;
+            color: #374151;
+        }
+
+        .htu-value.h {
+            border-color: #3b82f6;
+            color: #1d4ed8;
+        }
+
+        .htu-value.t {
+            border-color: #f97316;
+            color: #c2410c;
+        }
+
+        .htu-value.u {
+            border-color: #10b981;
+            color: #065f46;
+        }
+
+        .htu-label.h {
+            color: #1d4ed8;
+        }
+
+        .htu-label.t {
+            color: #c2410c;
+        }
+
+        .htu-label.u {
+            color: #065f46;
+        }
+
+        /* Arrow down */
+        .arrow-down {
+            font-size: 1.5rem;
+            color: #a855f7;
+            margin: 0.3rem 0;
+        }
+
+        /* Half boxes */
+        .half-row {
+            display: flex;
+            gap: 1.5rem;
+            flex-wrap: wrap;
+            justify-content: center;
+            margin-bottom: 0.5rem;
+        }
+
+        .half-block {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.3rem;
+        }
+
+        .half-label {
+            font-size: 0.75rem;
+            font-weight: 800;
+            color: #a855f7;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        /* Inputs */
+        .half-input {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 1.8rem;
+            font-weight: 900;
+            width: 5rem;
+            text-align: center;
+            border: 4px solid #c4b5fd;
+            border-radius: 1rem;
+            padding: 0.3rem;
+            color: #7c3aed;
+            outline: none;
+            background: #f5f3ff;
+            transition: all 0.2s;
+            -moz-appearance: textfield;
+        }
+
+        .half-input::-webkit-inner-spin-button,
+        .half-input::-webkit-outer-spin-button {
+            -webkit-appearance: none;
+        }
+
+        .half-input:focus {
+            border-color: #7c3aed;
+            box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.2);
+        }
+
+        .half-input.correct {
+            border-color: #16a34a;
+            color: #16a34a;
+            background: #f0fdf4;
+        }
+
+        .half-input.wrong {
+            border-color: #dc2626;
+            color: #dc2626;
+            background: #fef2f2;
+        }
+
+        /* Final answer */
+        .final-wrap {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+            flex-wrap: wrap;
+        }
+
+        .final-label {
+            font-size: 1.2rem;
+            font-weight: 800;
+            color: #374151;
+        }
+
+        .final-input {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 2.5rem;
+            font-weight: 900;
+            width: 7rem;
+            text-align: center;
+            border: 5px solid #c4b5fd;
+            border-radius: 1.2rem;
+            padding: 0.3rem;
+            color: #7c3aed;
+            outline: none;
+            background: #f5f3ff;
+            transition: all 0.2s;
+            -moz-appearance: textfield;
+        }
+
+        .final-input::-webkit-inner-spin-button,
+        .final-input::-webkit-outer-spin-button {
+            -webkit-appearance: none;
+        }
+
+        .final-input:focus {
+            border-color: #7c3aed;
+            box-shadow: 0 0 0 4px rgba(124, 58, 237, 0.15);
+        }
+
+        .final-input.correct {
+            border-color: #16a34a;
+            color: #16a34a;
+            background: #f0fdf4;
+        }
+
+        .final-input.wrong {
+            border-color: #dc2626;
+            color: #dc2626;
+            background: #fef2f2;
+        }
+
+        /* Buttons */
+        .check-btn {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 1.4rem;
+            font-weight: 900;
+            background: linear-gradient(180deg, #8b5cf6, #7c3aed);
+            color: white;
+            border: none;
+            cursor: pointer;
+            border-radius: 9999px;
+            padding: 0.9rem 2.5rem;
+            box-shadow: 0 6px 0 #4c1d95;
+            transition: transform 0.1s, box-shadow 0.1s;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            display: block;
+            margin: 0 auto;
+        }
+
+        .check-btn:active {
+            transform: translateY(3px);
+            box-shadow: 0 3px 0 #4c1d95;
+        }
+
+        /* Feedback */
+        .feedback {
+            display: none;
+            border-radius: 1.5rem;
+            padding: 1.2rem;
+            margin-top: 1rem;
+            animation: bounceIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            text-align: center;
+        }
+
+        .feedback.correct-fb {
+            background: #f0fdf4;
+            border: 3px solid #86efac;
+            display: block;
+        }
+
+        .feedback.wrong-fb {
+            background: #fef2f2;
+            border: 3px solid #fca5a5;
+            display: block;
+        }
+
+        .feedback-emoji {
+            font-size: 2.5rem;
+            display: block;
+            margin-bottom: 0.3rem;
+        }
+
+        .feedback-msg {
+            font-size: 1.1rem;
+            font-weight: 800;
+        }
+
+        .feedback-msg.correct-text {
+            color: #16a34a;
+        }
+
+        .feedback-msg.wrong-text {
+            color: #dc2626;
+        }
+
+        .next-btn {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 1rem;
+            font-weight: 900;
+            background: #7c3aed;
+            color: white;
+            border: none;
+            cursor: pointer;
+            border-radius: 9999px;
+            padding: 0.6rem 1.8rem;
+            box-shadow: 0 4px 0 #4c1d95;
+            margin-top: 0.8rem;
+            text-transform: uppercase;
+        }
+
+        /* Celebration */
+        .celebration {
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            padding: 1rem;
+        }
+
+        .celebration.show {
+            display: flex;
+        }
+
+        .celebration-emoji {
+            font-size: 5rem;
+            margin-bottom: 0.8rem;
+            animation: spin 0.8s ease;
+        }
+
+        .celebration-title {
+            font-size: 2.2rem;
+            font-weight: 900;
+            color: #7c3aed;
+            margin-bottom: 0.4rem;
+        }
+
+        .celebration-sub {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: #6b7280;
+            margin-bottom: 1.5rem;
+        }
+
+        .sticker-reward {
+            font-size: 5rem;
+            animation: bounceIn 0.5s 0.3s backwards;
+        }
+
+        .sticker-label {
+            font-size: 0.85rem;
+            font-weight: 800;
+            color: #7c3aed;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            margin-bottom: 1.2rem;
+        }
+
+        .strategy-box {
+            background: #f5f3ff;
+            border: 3px solid #ddd6fe;
+            border-radius: 1.2rem;
+            padding: 1rem;
+            margin-bottom: 1.5rem;
+            font-size: 0.95rem;
+        }
+
+        .strategy-box strong {
+            color: #7c3aed;
+        }
+
+        .strategy-box .example {
+            font-size: 0.9rem;
+            color: #4b5563;
+            margin-top: 0.4rem;
+        }
+
+        @keyframes bounceIn {
+            0% {
+                transform: scale(0.5);
+                opacity: 0;
+            }
+
+            70% {
+                transform: scale(1.05);
+            }
+
+            100% {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+
+        @keyframes spin {
+            0% {
+                transform: rotate(-15deg) scale(0.5);
+            }
+
+            70% {
+                transform: rotate(10deg) scale(1.1);
+            }
+
+            100% {
+                transform: rotate(0) scale(1);
+            }
+        }
+
+        @media (max-width: 600px) {
+            .big-number {
+                font-size: 3.5rem;
+            }
+
+            .htu-value,
+            .half-input {
+                font-size: 1.4rem;
+                width: 4rem;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <a href="../index.html" class="back-btn">← Back to All Games</a>
+
+    <header>
+        <h1>✂️ Half It!</h1>
+        <div class="stats">
+            <div class="stat-pill">⭐ <span id="score">0</span></div>
+            <div class="stat-pill">🔥 <span id="streak">0</span></div>
+        </div>
+    </header>
+
+    <div class="progress-wrap">
+        <div class="progress-label">
+            <span id="progress-text">Collecting: Real Madrid 🏆</span>
+            <span id="progress-count">0 / 5</span>
+        </div>
+        <div class="progress-bar">
+            <div class="progress-fill" id="progress-fill" style="width:0%"></div>
+        </div>
+    </div>
+
+    <div class="stickers" id="sticker-book">
+        <div class="stickers-label">Archie's Sticker Collection</div>
+        <div class="sticker-row" id="sticker-row"></div>
+    </div>
+
+    <div class="card" id="main-card">
+
+        <div id="game-area">
+            <div class="badge" id="q-badge">Question 1</div>
+            <p class="instruction">Find <span>half</span> of this number!</p>
+
+            <div class="big-number" id="big-number">648</div>
+
+            <div class="strategy-box" id="strategy-box">
+                <strong>🧠 The trick:</strong> Split the number into hundreds, tens &amp; units — then halve each
+                part!<br>
+                <span class="example" id="strategy-example">e.g. 648 = 600 + 40 + 8 → half of 600 = 300, half of 40 =
+                    20, half of 8 = 4 → 300 + 20 + 4 = 324</span>
+            </div>
+
+            <div class="tree-wrap">
+                <div class="tree-top" id="tree-top">648</div>
+                <div class="arrow-down">▼</div>
+                <div class="htu-row" id="htu-row">
+                    <!-- populated by JS -->
+                </div>
+                <div class="arrow-down">▼</div>
+                <div class="half-row" id="half-row">
+                    <!-- populated by JS -->
+                </div>
+                <div class="arrow-down">▼</div>
+            </div>
+
+            <div class="final-wrap">
+                <span class="final-label">Half of <span id="final-num">648</span> is...</span>
+                <input type="number" class="final-input" id="final-input" placeholder="?" />
+            </div>
+
+            <button class="check-btn" id="check-btn" onclick="checkAnswer()">Check! ✨</button>
+
+            <div class="feedback" id="feedback">
+                <span class="feedback-emoji" id="feedback-emoji">🎉</span>
+                <p class="feedback-msg" id="feedback-msg">Amazing!</p>
+                <button class="next-btn" onclick="nextQuestion()">Next Question →</button>
+            </div>
+        </div>
+
+        <div class="celebration" id="celebration">
+            <div class="celebration-emoji" id="cel-emoji">🏆</div>
+            <div class="celebration-title">Level Up! 🎉</div>
+            <div class="celebration-sub" id="cel-sub">You got all 5 right!</div>
+            <div class="sticker-reward" id="cel-sticker">⭐</div>
+            <div class="sticker-label">NEW STICKER UNLOCKED!</div>
+            <button class="check-btn" onclick="afterCelebration()" style="margin-top:1rem;">Keep Going! 🚀</button>
+        </div>
+
+    </div>
+
+    <script>
+        const THEMES = [
+            { name: 'Real Madrid', emoji: '🏆', stickers: ['⚽', '🏟️', '🥅', '👟', '🏆', '🧤', '🥇', '📣', '🎽', '🧣'] },
+            { name: 'Beyblade', emoji: '🌪️', stickers: ['🌪️', '💥', '🌀', '⚙️', '🔧', '🔥', '⚡', '💫', '🛸', '🎯'] },
+            { name: 'Bruno', emoji: '🐶', stickers: ['🐶', '🦴', '🎾', '🐾', '🐕', '🥩', '🦮', '🥎', '🛋️', '🚿'] },
+            { name: 'Judo', emoji: '🥋', stickers: ['🥋', '💪', '🥇', '🤸', '⛩️', '🇯🇵', '🧘', '🏆', '💯', '🎖️'] },
+            { name: 'Agent P', emoji: '🦆', stickers: ['🦆', '🎩', '🎸', '🛠️', '🧪', '🎢', '📻', '🗺️', '⚙️', '🔩'] },
+        ];
+
+        // Generate even numbers (3-digit) that decompose nicely  
+        const EVEN_3_DIGIT = [];
+        for (let h = 1; h <= 9; h++) {
+            for (let t of [0, 2, 4, 6, 8]) {
+                for (let u of [0, 2, 4, 6, 8]) {
+                    EVEN_3_DIGIT.push(h * 100 + t * 10 + u);
+                }
+            }
+        }
+        // Also include some 2-digit for variation
+        const EVEN_2_DIGIT = [48, 92, 56, 74, 36, 82, 68, 54, 76, 98, 34, 62, 88, 46, 72];
+
+        let score = 0, streak = 0, progress = 0, level = 0, qNum = 0;
+        let currentNum, currentH, currentT, currentU;
+        let correctHalf;
+        let halfH, halfT, halfU;
+        let attempts = 0;
+
+        const CORRECT_MSGS = [
+            "🎉 PERFECT! You halved it!",
+            "🔥 Incredible maths brain!",
+            "✂️ Sliced it perfectly!",
+            "⚽ GOAL! That was genius!",
+            "💯 Absolutely correct!",
+            "🌟 You're a Halving Hero!",
+        ];
+        const WRONG_MSGS = [
+            "Not quite — use the decompose trick! 🧠",
+            "Check each part — hundreds, tens, units! 💪",
+            "So close! Try again! 🔄",
+            "Remember: split it up first, then halve each bit! ✂️",
+        ];
+
+        function generateNumber() {
+            // Mix 2-digit and 3-digit
+            if (Math.random() < 0.3) {
+                return EVEN_2_DIGIT[Math.floor(Math.random() * EVEN_2_DIGIT.length)];
+            }
+            let candidates = EVEN_3_DIGIT.filter(n => n >= 200 && n <= 800);
+            return candidates[Math.floor(Math.random() * candidates.length)];
+        }
+
+        function decompose(n) {
+            const h = Math.floor(n / 100) * 100;
+            const t = Math.floor((n % 100) / 10) * 10;
+            const u = n % 10;
+            return { h, t, u };
+        }
+
+        function newQuestion() {
+            attempts = 0;
+            currentNum = generateNumber();
+            const d = decompose(currentNum);
+            currentH = d.h; currentT = d.t; currentU = d.u;
+            halfH = d.h / 2; halfT = d.t / 2; halfU = d.u / 2;
+            correctHalf = currentNum / 2;
+            qNum++;
+
+            document.getElementById('q-badge').textContent = `Question ${qNum}`;
+            document.getElementById('big-number').textContent = currentNum;
+            document.getElementById('tree-top').textContent = currentNum;
+            document.getElementById('final-num').textContent = currentNum;
+            document.getElementById('strategy-example').textContent =
+                `e.g. ${currentNum} = ${currentH || '?'}${currentT ? ' + ' + currentT : ''}${currentU ? ' + ' + currentU : ''} → half of each part, then add them!`;
+
+            // Build HTU row
+            const htuRow = document.getElementById('htu-row');
+            htuRow.innerHTML = '';
+            const parts = [];
+            if (currentH > 0) parts.push({ label: 'Hundreds', cls: 'h', val: currentH });
+            if (currentT > 0) parts.push({ label: 'Tens', cls: 't', val: currentT });
+            if (currentU > 0) parts.push({ label: 'Units', cls: 'u', val: currentU });
+            if (parts.length === 0) parts.push({ label: 'Units', cls: 'u', val: currentNum });
+
+            parts.forEach(p => {
+                const block = document.createElement('div');
+                block.className = 'htu-block';
+                block.innerHTML = `<div class="htu-label ${p.cls}">${p.label}</div><div class="htu-value ${p.cls}">${p.val}</div>`;
+                htuRow.appendChild(block);
+            });
+
+            // Build half row (inputs)
+            const halfRow = document.getElementById('half-row');
+            halfRow.innerHTML = '';
+            parts.forEach((p, idx) => {
+                const halfVal = p.val / 2;
+                const block = document.createElement('div');
+                block.className = 'half-block';
+                block.innerHTML = `
+      <div class="half-label">½ of ${p.val}</div>
+      <input type="number" class="half-input" id="half-input-${idx}" data-correct="${halfVal}" placeholder="?" min="0" max="999" />
+    `;
+                halfRow.appendChild(block);
+            });
+
+            // Bind tab between half inputs
+            document.querySelectorAll('.half-input').forEach((inp, i, all) => {
+                inp.addEventListener('keydown', e => {
+                    if (e.key === 'Enter' || e.key === 'Tab') {
+                        e.preventDefault();
+                        if (i + 1 < all.length) all[i + 1].focus();
+                        else document.getElementById('final-input').focus();
+                    }
+                });
+            });
+
+            const fi = document.getElementById('final-input');
+            fi.value = '';
+            fi.className = 'final-input';
+            document.getElementById('check-btn').style.display = '';
+            document.getElementById('feedback').className = 'feedback';
+
+            // Focus first half input
+            setTimeout(() => {
+                const first = document.querySelector('.half-input');
+                if (first) first.focus();
+            }, 100);
+        }
+
+        function updateProgressUI() {
+            const theme = THEMES[level % THEMES.length];
+            document.getElementById('progress-text').textContent = `Collecting: ${theme.name} ${theme.emoji}`;
+            document.getElementById('progress-count').textContent = `${progress} / 5`;
+            document.getElementById('progress-fill').style.width = `${(progress / 5) * 100}%`;
+        }
+
+        function checkAnswer() {
+            // Check sub-inputs (optional visual feedback, not required for pass)
+            let subCorrect = true;
+            document.querySelectorAll('.half-input').forEach(inp => {
+                const val = parseInt(inp.value);
+                const correct = parseInt(inp.dataset.correct);
+                if (val === correct) {
+                    inp.className = 'half-input correct';
+                } else {
+                    inp.className = 'half-input wrong';
+                    subCorrect = false;
+                }
+            });
+
+            const fi = document.getElementById('final-input');
+            const val = parseInt(fi.value);
+            if (isNaN(val)) { fi.focus(); return; }
+
+            const feedback = document.getElementById('feedback');
+            const fbEmoji = document.getElementById('feedback-emoji');
+            const fbMsg = document.getElementById('feedback-msg');
+            document.getElementById('check-btn').style.display = 'none';
+
+            if (val === correctHalf) {
+                score += attempts === 0 ? 100 : 50;
+                streak++;
+                document.getElementById('score').textContent = score;
+                document.getElementById('streak').textContent = streak;
+                fi.className = 'final-input correct';
+                progress++;
+                updateProgressUI();
+
+                // Sticker
+                const theme = THEMES[level % THEMES.length];
+                const s = theme.stickers[Math.floor(Math.random() * theme.stickers.length)];
+                const sp = document.createElement('span');
+                sp.textContent = s;
+                sp.style.animation = 'bounceIn 0.4s cubic-bezier(0.175,0.885,0.32,1.275)';
+                document.getElementById('sticker-row').appendChild(sp);
+                document.getElementById('sticker-book').className = 'stickers visible';
+
+                if (progress >= 5) {
+                    progress = 0;
+                    const oldLevel = level;
+                    level++;
+                    const celTheme = THEMES[oldLevel % THEMES.length];
+                    document.getElementById('cel-emoji').textContent = celTheme.emoji;
+                    document.getElementById('cel-sub').textContent = `You collected all ${celTheme.name} stickers!`;
+                    document.getElementById('cel-sticker').textContent = celTheme.stickers[Math.floor(Math.random() * celTheme.stickers.length)];
+                    updateProgressUI();
+                    setTimeout(() => {
+                        document.getElementById('game-area').style.display = 'none';
+                        document.getElementById('celebration').className = 'celebration show';
+                    }, 600);
+                    return;
+                }
+
+                const msg = CORRECT_MSGS[Math.floor(Math.random() * CORRECT_MSGS.length)];
+                feedback.className = 'feedback correct-fb';
+                fbEmoji.textContent = s;
+                fbMsg.className = 'feedback-msg correct-text';
+                fbMsg.textContent = msg;
+            } else {
+                attempts++;
+                streak = 0;
+                document.getElementById('streak').textContent = streak;
+                fi.className = 'final-input wrong';
+                const msg = WRONG_MSGS[Math.floor(Math.random() * WRONG_MSGS.length)];
+                feedback.className = 'feedback wrong-fb';
+                fbEmoji.textContent = '🤔';
+                fbMsg.className = 'feedback-msg wrong-text';
+                fbMsg.textContent = msg;
+                document.getElementById('check-btn').style.display = '';
+                fi.value = '';
+                fi.focus();
+            }
+        }
+
+        function nextQuestion() {
+            document.getElementById('feedback').className = 'feedback';
+            document.getElementById('check-btn').style.display = '';
+            newQuestion();
+        }
+
+        function afterCelebration() {
+            document.getElementById('celebration').className = 'celebration';
+            document.getElementById('game-area').style.display = '';
+            newQuestion();
+        }
+
+        document.getElementById('final-input').addEventListener('keydown', e => {
+            if (e.key === 'Enter') {
+                const fb = document.getElementById('feedback');
+                if (fb.classList.contains('correct-fb')) nextQuestion();
+                else checkAnswer();
+            }
+        });
+
+        updateProgressUI();
+        newQuestion();
+    </script>
+</body>
+
+</html>

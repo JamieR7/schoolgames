@@ -1,0 +1,835 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Angle Inspector 📐</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700;800;900&display=swap');
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Montserrat', sans-serif;
+            background-color: #f0f9ff;
+            background-image: radial-gradient(#bae6fd 2px, transparent 2px);
+            background-size: 40px 40px;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 1.5rem 1rem 4rem;
+            color: #1f2937;
+        }
+
+        header {
+            width: 100%;
+            max-width: 800px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: white;
+            border-radius: 2rem;
+            padding: 1rem 1.5rem;
+            margin-bottom: 1.5rem;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
+            border: 4px solid #7dd3fc;
+        }
+
+        header h1 {
+            font-size: 1.8rem;
+            font-weight: 900;
+            color: #0369a1;
+            text-transform: uppercase;
+        }
+
+        .stats {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .stat-pill {
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+            background: #f0f9ff;
+            border-radius: 9999px;
+            padding: 0.4rem 1rem;
+            font-size: 1.3rem;
+            font-weight: 800;
+            color: #0284c7;
+        }
+
+        .back-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            text-decoration: none;
+            color: #075985;
+            font-size: 0.9rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            width: 100%;
+            max-width: 800px;
+        }
+
+        .back-btn:hover {
+            color: #0369a1;
+        }
+
+        .progress-wrap {
+            width: 100%;
+            max-width: 800px;
+            margin-bottom: 1.5rem;
+        }
+
+        .progress-label {
+            display: flex;
+            justify-content: space-between;
+            font-weight: 800;
+            font-size: 0.9rem;
+            color: #0369a1;
+            margin-bottom: 0.5rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .progress-bar {
+            background: white;
+            border: 4px solid #bae6fd;
+            border-radius: 9999px;
+            height: 1.5rem;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            background: linear-gradient(90deg, #0ea5e9, #38bdf8);
+            height: 100%;
+            border-radius: 9999px;
+            transition: width 0.6s ease;
+        }
+
+        .stickers {
+            width: 100%;
+            max-width: 800px;
+            background: white;
+            border-radius: 2rem;
+            padding: 1rem 1.5rem;
+            margin-bottom: 1.5rem;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.06);
+            border: 4px solid #e0f2fe;
+            display: none;
+        }
+
+        .stickers.visible {
+            display: block;
+        }
+
+        .stickers-label {
+            font-size: 0.75rem;
+            font-weight: 800;
+            color: #0ea5e9;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            margin-bottom: 0.5rem;
+        }
+
+        .sticker-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            font-size: 2rem;
+        }
+
+        .card {
+            width: 100%;
+            max-width: 800px;
+            background: white;
+            border-radius: 2.5rem;
+            padding: 2rem;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            border: 8px solid white;
+            outline: 4px solid #bae6fd;
+        }
+
+        /* Definitions panel */
+        .defs {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+            justify-content: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .def-card {
+            background: #f8fafc;
+            border: 3px solid #e2e8f0;
+            border-radius: 1.2rem;
+            padding: 0.8rem 1.2rem;
+            text-align: center;
+            flex: 1;
+            min-width: 120px;
+        }
+
+        .def-card .def-name {
+            font-weight: 900;
+            font-size: 1rem;
+            margin-bottom: 0.4rem;
+        }
+
+        .def-card.right .def-name {
+            color: #16a34a;
+        }
+
+        .def-card.acute .def-name {
+            color: #ea580c;
+        }
+
+        .def-card.obtuse .def-name {
+            color: #7c3aed;
+        }
+
+        .def-card .def-desc {
+            font-size: 0.8rem;
+            font-weight: 700;
+            color: #6b7280;
+        }
+
+        .def-canvas {
+            display: block;
+            margin: 0.3rem auto;
+        }
+
+        /* Question */
+        .badge {
+            display: inline-block;
+            background: #0369a1;
+            color: white;
+            border-radius: 9999px;
+            padding: 0.2rem 0.9rem;
+            font-size: 0.8rem;
+            font-weight: 900;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            margin-bottom: 1rem;
+        }
+
+        .question-text {
+            font-size: 1.3rem;
+            font-weight: 800;
+            text-align: center;
+            margin-bottom: 1.5rem;
+            color: #1f2937;
+        }
+
+        /* SVG angle display */
+        .angle-display {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 2rem;
+        }
+
+        #angle-canvas {
+            border-radius: 1.5rem;
+            background: #f8fafc;
+            border: 4px solid #e2e8f0;
+        }
+
+        /* Angle type indicator */
+        .angle-degree {
+            text-align: center;
+            font-size: 1rem;
+            font-weight: 800;
+            color: #6b7280;
+            margin-bottom: 1rem;
+            font-style: italic;
+        }
+
+        /* Buttons */
+        .choice-row {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+            justify-content: center;
+            margin-bottom: 1rem;
+        }
+
+        .choice-btn {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 1.3rem;
+            font-weight: 900;
+            border: none;
+            cursor: pointer;
+            border-radius: 1.5rem;
+            padding: 1rem 1.8rem;
+            transition: transform 0.15s, box-shadow 0.15s;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+            flex: 1;
+            min-width: 120px;
+        }
+
+        .choice-btn:active {
+            transform: translateY(3px);
+        }
+
+        .btn-right {
+            background: #dcfce7;
+            color: #16a34a;
+            box-shadow: 0 5px 0 #166534;
+            border: 3px solid #86efac;
+        }
+
+        .btn-acute {
+            background: #fff7ed;
+            color: #ea580c;
+            box-shadow: 0 5px 0 #9a3412;
+            border: 3px solid #fdba74;
+        }
+
+        .btn-obtuse {
+            background: #f5f3ff;
+            color: #7c3aed;
+            box-shadow: 0 5px 0 #4c1d95;
+            border: 3px solid #c4b5fd;
+        }
+
+        .choice-btn:hover {
+            filter: brightness(1.05);
+        }
+
+        .choice-btn.selected-correct {
+            filter: brightness(1.1);
+            outline: 4px solid #16a34a;
+        }
+
+        .choice-btn.selected-wrong {
+            opacity: 0.5;
+        }
+
+        /* Feedback */
+        .feedback {
+            display: none;
+            border-radius: 1.5rem;
+            padding: 1.2rem;
+            margin-top: 0.5rem;
+            animation: bounceIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            text-align: center;
+        }
+
+        .feedback.correct-fb {
+            background: #f0fdf4;
+            border: 3px solid #86efac;
+            display: block;
+        }
+
+        .feedback.wrong-fb {
+            background: #fef2f2;
+            border: 3px solid #fca5a5;
+            display: block;
+        }
+
+        .feedback-emoji {
+            font-size: 2.5rem;
+            display: block;
+            margin-bottom: 0.3rem;
+        }
+
+        .feedback-msg {
+            font-size: 1.1rem;
+            font-weight: 800;
+        }
+
+        .feedback-explain {
+            font-size: 0.95rem;
+            font-weight: 700;
+            color: #374151;
+            margin-top: 0.4rem;
+        }
+
+        .feedback-msg.correct-text {
+            color: #16a34a;
+        }
+
+        .feedback-msg.wrong-text {
+            color: #dc2626;
+        }
+
+        .next-btn {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 1rem;
+            font-weight: 900;
+            background: #0369a1;
+            color: white;
+            border: none;
+            cursor: pointer;
+            border-radius: 9999px;
+            padding: 0.6rem 1.8rem;
+            box-shadow: 0 4px 0 #075985;
+            margin-top: 0.8rem;
+            text-transform: uppercase;
+        }
+
+        /* Celebration */
+        .celebration {
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            padding: 1rem;
+        }
+
+        .celebration.show {
+            display: flex;
+        }
+
+        .celebration-emoji {
+            font-size: 5rem;
+            margin-bottom: 0.8rem;
+            animation: spin 0.8s ease;
+        }
+
+        .celebration-title {
+            font-size: 2.2rem;
+            font-weight: 900;
+            color: #0369a1;
+            margin-bottom: 0.4rem;
+        }
+
+        .celebration-sub {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: #6b7280;
+            margin-bottom: 1.5rem;
+        }
+
+        .sticker-reward {
+            font-size: 5rem;
+            animation: bounceIn 0.5s 0.3s backwards;
+        }
+
+        .sticker-label {
+            font-size: 0.85rem;
+            font-weight: 800;
+            color: #0369a1;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            margin-bottom: 1.2rem;
+        }
+
+        .check-btn {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 1.2rem;
+            font-weight: 900;
+            background: linear-gradient(180deg, #0ea5e9, #0369a1);
+            color: white;
+            border: none;
+            cursor: pointer;
+            border-radius: 9999px;
+            padding: 0.8rem 2rem;
+            box-shadow: 0 5px 0 #075985;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        @keyframes bounceIn {
+            0% {
+                transform: scale(0.5);
+                opacity: 0
+            }
+
+            70% {
+                transform: scale(1.05)
+            }
+
+            100% {
+                transform: scale(1);
+                opacity: 1
+            }
+        }
+
+        @keyframes spin {
+            0% {
+                transform: rotate(-15deg) scale(0.5)
+            }
+
+            70% {
+                transform: rotate(10deg) scale(1.1)
+            }
+
+            100% {
+                transform: rotate(0) scale(1)
+            }
+        }
+
+        @media(max-width:600px) {
+            header h1 {
+                font-size: 1.2rem;
+            }
+
+            .choice-btn {
+                font-size: 1.1rem;
+                padding: 0.8rem 1rem;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <a href="../index.html" class="back-btn">← Back to All Games</a>
+
+    <header>
+        <h1>📐 Angle Inspector</h1>
+        <div class="stats">
+            <div class="stat-pill">⭐ <span id="score">0</span></div>
+            <div class="stat-pill">🔥 <span id="streak">0</span></div>
+        </div>
+    </header>
+
+    <div class="progress-wrap">
+        <div class="progress-label">
+            <span id="progress-text">Collecting: Real Madrid 🏆</span>
+            <span id="progress-count">0 / 5</span>
+        </div>
+        <div class="progress-bar">
+            <div class="progress-fill" id="progress-fill" style="width:0%"></div>
+        </div>
+    </div>
+
+    <div class="stickers" id="sticker-book">
+        <div class="stickers-label">Archie's Sticker Collection</div>
+        <div class="sticker-row" id="sticker-row"></div>
+    </div>
+
+    <div class="card" id="main-card">
+
+        <!-- Definitions strip -->
+        <div class="defs">
+            <div class="def-card right">
+                <canvas class="def-canvas" id="def-right" width="80" height="60"></canvas>
+                <div class="def-name">Right ✅</div>
+                <div class="def-desc">Exactly 90° — like a square corner</div>
+            </div>
+            <div class="def-card acute">
+                <canvas class="def-canvas" id="def-acute" width="80" height="60"></canvas>
+                <div class="def-name">Acute 🔪</div>
+                <div class="def-desc">Less than 90° — a sharp corner</div>
+            </div>
+            <div class="def-card obtuse">
+                <canvas class="def-canvas" id="def-obtuse" width="80" height="60"></canvas>
+                <div class="def-name">Obtuse 🌅</div>
+                <div class="def-desc">More than 90° — a wide corner</div>
+            </div>
+        </div>
+
+        <div id="game-area">
+            <div class="badge" id="q-badge">Question 1</div>
+            <p class="question-text">What type of angle is this?</p>
+
+            <div class="angle-display">
+                <canvas id="angle-canvas" width="300" height="220"></canvas>
+            </div>
+
+            <div class="angle-degree" id="angle-degree"></div>
+
+            <div class="choice-row">
+                <button class="choice-btn btn-right" id="btn-right" onclick="guess('right')">⬜ Right</button>
+                <button class="choice-btn btn-acute" id="btn-acute" onclick="guess('acute')">🔪 Acute</button>
+                <button class="choice-btn btn-obtuse" id="btn-obtuse" onclick="guess('obtuse')">🌅 Obtuse</button>
+            </div>
+
+            <div class="feedback" id="feedback">
+                <span class="feedback-emoji" id="feedback-emoji">🎉</span>
+                <p class="feedback-msg" id="feedback-msg">Amazing!</p>
+                <p class="feedback-explain" id="feedback-explain"></p>
+                <button class="next-btn" onclick="nextQuestion()">Next Angle →</button>
+            </div>
+        </div>
+
+        <div class="celebration" id="celebration">
+            <div class="celebration-emoji" id="cel-emoji">🏆</div>
+            <div class="celebration-title">Level Up! 🎉</div>
+            <div class="celebration-sub" id="cel-sub">You got all 5 right!</div>
+            <div class="sticker-reward" id="cel-sticker">⭐</div>
+            <div class="sticker-label">NEW STICKER UNLOCKED!</div>
+            <button class="check-btn" onclick="afterCelebration()" style="margin-top:1rem;">Keep Going! 🚀</button>
+        </div>
+
+    </div>
+
+    <script>
+        const THEMES = [
+            { name: 'Real Madrid', emoji: '🏆', stickers: ['⚽', '🏟️', '🥅', '👟', '🏆', '🧤', '🥇', '📣', '🎽', '🧣'] },
+            { name: 'Beyblade', emoji: '🌪️', stickers: ['🌪️', '💥', '🌀', '⚙️', '🔧', '🔥', '⚡', '💫', '🛸', '🎯'] },
+            { name: 'Bruno', emoji: '🐶', stickers: ['🐶', '🦴', '🎾', '🐾', '🐕', '🥩', '🦮', '🥎', '🛋️', '🚿'] },
+            { name: 'Judo', emoji: '🥋', stickers: ['🥋', '💪', '🥇', '🤸', '⛩️', '🇯🇵', '🧘', '🏆', '💯', '🎖️'] },
+            { name: 'Agent P', emoji: '🦆', stickers: ['🦆', '🎩', '🎸', '🛠️', '🧪', '🎢', '📻', '🗺️', '⚙️', '🔩'] },
+        ];
+
+        let score = 0, streak = 0, progress = 0, level = 0, qNum = 0;
+        let currentType, currentDeg;
+        let answered = false;
+
+        const CORRECT_MSGS = {
+            right: ['✅ Spot on! That\'s exactly 90°!', '📐 Perfect! A right angle!', '🔥 Yes! Square corner — well spotted!'],
+            acute: ['🔪 Sharp thinking! That\'s acute!', '🎯 Nailed it! Less than 90°!', '⭐ Right! A nice pointy acute angle!'],
+            obtuse: ['🌅 Wide and correct! That\'s obtuse!', '💪 Yes! More than 90° — obtuse!', '🌟 Great eye! Obtuse angle!'],
+        };
+        const WRONG_MSGS = [
+            'Not quite — look at the definitions above! 🧐',
+            'Give it another look! Think about whether it\'s more or less than 90°',
+            'Hmm, check the corners above for a clue! 💡',
+        ];
+        const EXPLAINS = {
+            right: 'A right angle is exactly 90° — you can spot it by the small square in the corner.',
+            acute: 'An acute angle is less than 90° — it\'s a sharp, narrow angle.',
+            obtuse: 'An obtuse angle is more than 90° — it\'s a wide, open angle.',
+        };
+
+        // Draw a small demo angle on a canvas
+        function drawAngle(canvas, deg, color, showSquare) {
+            const ctx = canvas.getContext('2d');
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            const cx = canvas.width * 0.25;
+            const cy = canvas.height * 0.8;
+            const len = Math.min(canvas.width, canvas.height) * 0.65;
+            const rad = (deg * Math.PI) / 180;
+
+            ctx.lineWidth = 3;
+            ctx.strokeStyle = color;
+            ctx.lineCap = 'round';
+
+            // Base line (0°)
+            ctx.beginPath();
+            ctx.moveTo(cx, cy);
+            ctx.lineTo(cx + len, cy);
+            ctx.stroke();
+
+            // Second arm
+            ctx.beginPath();
+            ctx.moveTo(cx, cy);
+            ctx.lineTo(cx + len * Math.cos(-rad), cy + len * Math.sin(-rad));
+            ctx.stroke();
+
+            // Arc
+            ctx.beginPath();
+            ctx.strokeStyle = color + '80';
+            ctx.lineWidth = 2;
+            ctx.arc(cx, cy, len * 0.3, -rad, 0);
+            ctx.stroke();
+
+            // Right-angle square
+            if (showSquare) {
+                const sq = 12;
+                ctx.strokeStyle = color;
+                ctx.lineWidth = 2;
+                ctx.beginPath();
+                ctx.moveTo(cx + sq, cy);
+                ctx.lineTo(cx + sq, cy - sq);
+                ctx.lineTo(cx, cy - sq);
+                ctx.stroke();
+            }
+        }
+
+        // Draw the big question angle
+        function drawBigAngle(deg) {
+            const canvas = document.getElementById('angle-canvas');
+            const ctx = canvas.getContext('2d');
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            // Randomise orientation
+            const offset = (Math.random() * 60 - 30) * (Math.PI / 180);
+            const cx = 100 + Math.random() * 100;
+            const cy = 100 + Math.random() * 80;
+            const len = 80 + Math.random() * 40;
+            const rad = (deg * Math.PI) / 180;
+
+            // Pick a nice colour for this angle
+            const COLORS = ['#3b82f6', '#0ea5e9', '#6366f1', '#8b5cf6', '#ec4899', '#14b8a6', '#f97316'];
+            const col = COLORS[qNum % COLORS.length];
+
+            ctx.lineWidth = 5;
+            ctx.strokeStyle = col;
+            ctx.lineCap = 'round';
+
+            // Base arm
+            const a1x = cx + len * Math.cos(offset);
+            const a1y = cy + len * Math.sin(offset);
+            ctx.beginPath(); ctx.moveTo(cx, cy); ctx.lineTo(a1x, a1y); ctx.stroke();
+
+            // Second arm
+            const a2x = cx + len * Math.cos(offset + rad);
+            const a2y = cy + len * Math.sin(offset + rad);
+            ctx.beginPath(); ctx.moveTo(cx, cy); ctx.lineTo(a2x, a2y); ctx.stroke();
+
+            // Arc
+            ctx.beginPath();
+            ctx.strokeStyle = col + '60';
+            ctx.lineWidth = 3;
+            ctx.arc(cx, cy, len * 0.35, offset, offset + rad);
+            ctx.stroke();
+
+            // Little dot at vertex
+            ctx.fillStyle = col;
+            ctx.beginPath(); ctx.arc(cx, cy, 5, 0, Math.PI * 2); ctx.fill();
+
+            // Right angle square (if 90°)
+            if (deg === 90) {
+                const sq = 16;
+                const ax = cx + sq * Math.cos(offset);
+                const ay = cy + sq * Math.sin(offset);
+                const bx = ax + sq * Math.cos(offset + Math.PI / 2);
+                const by = ay + sq * Math.sin(offset + Math.PI / 2);
+                const ex = cx + sq * Math.cos(offset + Math.PI / 2);
+                const ey = cy + sq * Math.sin(offset + Math.PI / 2);
+                ctx.strokeStyle = col;
+                ctx.lineWidth = 3;
+                ctx.beginPath();
+                ctx.moveTo(ax, ay); ctx.lineTo(bx, by); ctx.lineTo(ex, ey);
+                ctx.stroke();
+            }
+        }
+
+        function pickAngle() {
+            const types = ['right', 'acute', 'obtuse'];
+            // Weight: right 20%, acute 40%, obtuse 40%
+            const weights = [0.2, 0.4, 0.4];
+            const r = Math.random();
+            let acc = 0;
+            for (let i = 0; i < types.length; i++) {
+                acc += weights[i];
+                if (r < acc) { currentType = types[i]; break; }
+            }
+            if (currentType === 'right') currentDeg = 90;
+            else if (currentType === 'acute') currentDeg = Math.round(15 + Math.random() * 70); // 15–85
+            else currentDeg = Math.round(100 + Math.random() * 70); // 100–170
+        }
+
+        function newQuestion() {
+            answered = false;
+            pickAngle();
+            qNum++;
+            document.getElementById('q-badge').textContent = `Question ${qNum}`;
+            document.getElementById('angle-degree').textContent = '';
+            document.getElementById('feedback').className = 'feedback';
+            ['btn-right', 'btn-acute', 'btn-obtuse'].forEach(id => {
+                const b = document.getElementById(id);
+                b.className = b.className.replace(/\s*(selected-correct|selected-wrong)/g, '');
+                b.disabled = false;
+            });
+            drawBigAngle(currentDeg);
+        }
+
+        function guess(type) {
+            if (answered) return;
+            answered = true;
+
+            const feedback = document.getElementById('feedback');
+            const fbEmoji = document.getElementById('feedback-emoji');
+            const fbMsg = document.getElementById('feedback-msg');
+            const fbExpl = document.getElementById('feedback-explain');
+
+            // Disable all buttons
+            ['btn-right', 'btn-acute', 'btn-obtuse'].forEach(id => document.getElementById(id).disabled = true);
+
+            // Show degree
+            document.getElementById('angle-degree').textContent = `This angle is ${currentDeg}°`;
+
+            if (type === currentType) {
+                score += 100;
+                streak++;
+                document.getElementById('score').textContent = score;
+                document.getElementById('streak').textContent = streak;
+                document.getElementById('btn-' + type).className += ' selected-correct';
+                progress++;
+                updateProgressUI();
+
+                // Sticker
+                const theme = THEMES[level % THEMES.length];
+                const s = theme.stickers[Math.floor(Math.random() * theme.stickers.length)];
+                const sp = document.createElement('span');
+                sp.textContent = s; sp.style.animation = 'bounceIn 0.4s cubic-bezier(0.175,0.885,0.32,1.275)';
+                document.getElementById('sticker-row').appendChild(sp);
+                document.getElementById('sticker-book').className = 'stickers visible';
+
+                if (progress >= 5) {
+                    progress = 0;
+                    const oldLevel = level; level++;
+                    const celTheme = THEMES[oldLevel % THEMES.length];
+                    document.getElementById('cel-emoji').textContent = celTheme.emoji;
+                    document.getElementById('cel-sub').textContent = `You collected all ${celTheme.name} stickers!`;
+                    document.getElementById('cel-sticker').textContent = celTheme.stickers[Math.floor(Math.random() * celTheme.stickers.length)];
+                    updateProgressUI();
+                    setTimeout(() => {
+                        document.getElementById('game-area').style.display = 'none';
+                        document.getElementById('celebration').className = 'celebration show';
+                    }, 800);
+                    feedback.className = 'feedback correct-fb';
+                    fbEmoji.textContent = s;
+                    const msgs = CORRECT_MSGS[type];
+                    fbMsg.className = 'feedback-msg correct-text';
+                    fbMsg.textContent = msgs[Math.floor(Math.random() * msgs.length)];
+                    fbExpl.textContent = EXPLAINS[type];
+                    return;
+                }
+
+                feedback.className = 'feedback correct-fb';
+                fbEmoji.textContent = s;
+                const msgs = CORRECT_MSGS[type];
+                fbMsg.className = 'feedback-msg correct-text';
+                fbMsg.textContent = msgs[Math.floor(Math.random() * msgs.length)];
+                fbExpl.textContent = EXPLAINS[currentType];
+
+            } else {
+                streak = 0;
+                document.getElementById('streak').textContent = streak;
+                document.getElementById('btn-' + type).className += ' selected-wrong';
+                // Show correct one
+                document.getElementById('btn-' + currentType).className += ' selected-correct';
+
+                feedback.className = 'feedback wrong-fb';
+                fbEmoji.textContent = '🤔';
+                fbMsg.className = 'feedback-msg wrong-text';
+                fbMsg.textContent = WRONG_MSGS[Math.floor(Math.random() * WRONG_MSGS.length)];
+                fbExpl.textContent = `The answer was ${currentType}. ${EXPLAINS[currentType]}`;
+            }
+        }
+
+        function nextQuestion() {
+            document.getElementById('game-area').style.display = '';
+            newQuestion();
+        }
+
+        function afterCelebration() {
+            document.getElementById('celebration').className = 'celebration';
+            document.getElementById('game-area').style.display = '';
+            newQuestion();
+        }
+
+        function updateProgressUI() {
+            const theme = THEMES[level % THEMES.length];
+            document.getElementById('progress-text').textContent = `Collecting: ${theme.name} ${theme.emoji}`;
+            document.getElementById('progress-count').textContent = `${progress} / 5`;
+            document.getElementById('progress-fill').style.width = `${(progress / 5) * 100}%`;
+        }
+
+        // Draw definition demos
+        function drawDefs() {
+            drawAngle(document.getElementById('def-right'), 90, '#16a34a', true);
+            drawAngle(document.getElementById('def-acute'), 45, '#ea580c', false);
+            drawAngle(document.getElementById('def-obtuse'), 130, '#7c3aed', false);
+        }
+
+        drawDefs();
+        updateProgressUI();
+        newQuestion();
+    </script>
+</body>
+
+</html>

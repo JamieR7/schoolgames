@@ -1,0 +1,498 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Archie's Time Travel Adventure 🕰️🚀</title>
+    <!-- React and ReactDOM CDNs -->
+    <script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
+    <!-- Babel for JSX support in the browser -->
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700;800;900&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Montserrat', sans-serif;
+            background-color: #f0fdfa;
+            background-image: radial-gradient(#99f6e4 1px, transparent 1px);
+            background-size: 30px 30px;
+        }
+
+        .back-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+            text-decoration: none;
+            color: #0d9488;
+            font-family: 'Montserrat', sans-serif;
+            font-size: 0.9rem;
+            font-weight: 700;
+            padding: 1rem 1.5rem;
+            position: relative;
+            z-index: 10;
+        }
+
+        .back-link:hover {
+            color: #0f766e;
+        }
+
+        @keyframes pulse-slow {
+
+            0%,
+            100% {
+                transform: scale(1);
+            }
+
+            50% {
+                transform: scale(1.02);
+            }
+        }
+
+        .animate-pulse-slow {
+            animation: pulse-slow 4s ease-in-out infinite;
+        }
+
+        .glass {
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        input::-webkit-outer-spin-button,
+        input::-webkit-inner-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+
+        .time-input {
+            appearance: none;
+            -moz-appearance: textfield;
+            text-align: center;
+            font-weight: 900;
+            border: 4px solid #ccfbf1;
+            border-radius: 1rem;
+            outline: none;
+            transition: all 0.2s;
+        }
+
+        .time-input:focus {
+            border-color: #14b8a6;
+            background-color: white;
+            box-shadow: 0 0 20px rgba(20, 184, 166, 0.2);
+        }
+
+        .clock-face {
+            filter: drop-shadow(0 10px 15px rgba(0, 0, 0, 0.1));
+        }
+    </style>
+</head>
+
+<body>
+    <a href="../index.html" class="back-link">← Back to All Games</a>
+    <div id="root"></div>
+
+    <script type="text/babel">
+        const { useState, useEffect, useRef } = React;
+
+        const RARE_STICKERS = [
+            { emoji: '💎', name: 'Diamond' }, { emoji: '👑', name: 'Crown' }, { emoji: '🦄', name: 'Unicorn' },
+            { emoji: '🐉', name: 'Dragon' }, { emoji: '🌈', name: 'Rainbow' }, { emoji: '🔮', name: 'Crystal Ball' },
+            { emoji: '🍀', name: 'Lucky Clover' }, { emoji: '🦅', name: 'Eagle' }, { emoji: '🎆', name: 'Fireworks' },
+            { emoji: '⚡', name: 'Lightning Bolt' }, { emoji: '🌙', name: 'Golden Moon' }, { emoji: '🎭', name: 'Magic Mask' },
+            { emoji: '🦋', name: 'Butterfly' }, { emoji: '🐋', name: 'Blue Whale' }, { emoji: '🌋', name: 'Volcano' },
+        ];
+        const TIME_STICKERS = ['🚀', '🕰️', '⌛', '🪐', '🌠', '📜', '🛸', '🛰️', '⚡', '🗝️', '📅', '🔭', '🌍', '💎'];
+        const RARE_CHANCE = 0.07;
+
+        const HISTORICAL_EVENTS = [
+            { year: 1977, text: "Archie arrives in 1977, the year his Mummy and Daddy were born; Led Zeppelin are rocking out on their tour of North America." },
+            { year: 1969, text: "Archie arrives in 1969 and lands on the dusty Moon! Neil Armstrong is about to take his first step." },
+            { year: 1928, text: "Archie arrives in 1928 and visits a cinema to see the very first Mickey Mouse cartoon, 'Steamboat Willie'!" },
+            { year: 1903, text: "Archie arrives in 1903 and watches the Wright Brothers fly their first airplane at Kitty Hawk!" },
+            { year: 1889, text: "Archie arrives in 1889 in Paris for the grand opening of the Eiffel Tower!" },
+            { year: 2012, text: "Archie arrives in 2012 in London for the amazing Olympic Games opening ceremony!" },
+            { year: 1997, text: "Archie arrives in 1997 and finds the very first Harry Potter book in a little bookshop!" },
+            { year: 1985, text: "Archie arrives in 1985 and sees Marty McFly's DeLorean zoom through time in 'Back to the Future'!" },
+            { year: 1945, text: "Archie arrives in 1945 and joins the big street parties as WWII finally ends!" },
+            { year: 1815, text: "Archie arrives in 1815 and watches from afar as Napoleon faces his final battle at Waterloo!" },
+            { year: 1605, text: "Archie arrives in 1605 and spots Guy Fawkes hiding in a cellar with lots of gunpowder!" },
+            { year: 1666, text: "Archie arrives in 1666 and sees the start of the Great Fire of London – it's very hot!" },
+            { year: 1066, text: "Archie arrives in 1066 at the Battle of Hastings – watch out for the knights!" },
+            { year: 1953, text: "Archie arrives in 1953 and watches Queen Elizabeth II being crowned in Westminster Abbey!" },
+            { year: 1922, text: "Archie arrives in 1922 and helps Howard Carter open the golden tomb of King Tutankhamun!" },
+            { year: 1783, text: "Archie arrives in 1783 and watches the first-ever hot air balloon lift off into the sky in Paris!" },
+            { year: 1865, text: "Archie arrives in 1865 and meets Alice as she starts her journey to Wonderland!" },
+            { year: 1980, text: "Archie arrives in 1980 and finds a neon arcade and plays the very first game of Pac-Man!" },
+            { year: 1990, text: "Archie arrives in 1990 and watches as the very first website is created on the World Wide Web!" },
+            { year: 1908, text: "Archie arrives in 1908 and sees the first Ford Model T car driving down the road!" },
+            { year: 1837, text: "Archie arrives in 1837 as young Victoria becomes the Queen of England!" },
+            { year: 1503, text: "Archie arrives in 1503 and watches Leonardo da Vinci start painting the mysterious Mona Lisa!" },
+            { year: 1609, text: "Archie arrives in 1609 and looks through Galileo's telescope and sees craters on the Moon!" },
+            { year: 1940, text: "Archie arrives in 1940 and sees Spitfires flying high during the Battle of Britain!" },
+            { year: 1994, text: "Archie arrives in 1994 and watches the movie 'The Lion King' for the first time!" },
+            { year: 1876, text: "Archie arrives in 1876 and hears Alexander Graham Bell make the first-ever telephone call!" },
+            { year: 1954, text: "Archie arrives in 1954 in Tokyo as a giant monster named Godzilla appears!" },
+            { year: 1752, text: "Archie arrives in 1752 and watches Benjamin Franklin fly his kite during a lightning storm!" },
+            { year: 1962, text: "Archie arrives in 1962 and hears 'The Beatles' play their first hit song on the radio!" },
+            { year: 1989, text: "Archie arrives in 1989 and joins the crowds as the Berlin Wall starts to come down!" },
+            { year: 1455, text: "Archie arrives in 1455 and sees the very first book being printed on Gutenberg's press!" },
+            { year: 1770, text: "Archie arrives in 1770 and watches Captain Cook arrive in Australia for the first time!" }
+        ];
+
+        function AnalogueClock({ hour, minute }) {
+            const canvasRef = useRef(null);
+
+            useEffect(() => {
+                const canvas = canvasRef.current;
+                const ctx = canvas.getContext('2d');
+                const radius = canvas.height / 2;
+                ctx.translate(radius, radius);
+                const r = radius * 0.90;
+
+                const draw = () => {
+                    ctx.clearRect(-radius, -radius, canvas.width, canvas.height);
+
+                    // Face
+                    ctx.beginPath();
+                    ctx.arc(0, 0, r, 0, 2 * Math.PI);
+                    ctx.fillStyle = 'white';
+                    ctx.fill();
+                    ctx.strokeStyle = '#14b8a6';
+                    ctx.lineWidth = r * 0.05;
+                    ctx.stroke();
+
+                    // Hub
+                    ctx.beginPath();
+                    ctx.arc(0, 0, r * 0.05, 0, 2 * Math.PI);
+                    ctx.fillStyle = '#0f766e';
+                    ctx.fill();
+
+                    // Numbers
+                    ctx.font = `bold ${r * 0.18}px Montserrat`;
+                    ctx.textBaseline = "middle";
+                    ctx.textAlign = "center";
+                    ctx.fillStyle = "#1e293b";
+                    for (let num = 1; num <= 12; num++) {
+                        const ang = num * Math.PI / 6;
+                        ctx.rotate(ang);
+                        ctx.translate(0, -r * 0.82);
+                        ctx.rotate(-ang);
+                        ctx.fillText(num.toString(), 0, 0);
+                        ctx.rotate(ang);
+                        ctx.translate(0, r * 0.82);
+                        ctx.rotate(-ang);
+                    }
+
+                    // Hands
+                    const drawHand = (pos, length, width, color) => {
+                        ctx.beginPath();
+                        ctx.lineWidth = width;
+                        ctx.lineCap = "round";
+                        ctx.strokeStyle = color;
+                        ctx.moveTo(0, 0);
+                        ctx.rotate(pos);
+                        ctx.lineTo(0, -length);
+                        ctx.stroke();
+                        ctx.rotate(-pos);
+                    }
+
+                    // Hour hand
+                    const hr = (hour % 12) * Math.PI / 6 + (minute * Math.PI / (6 * 60));
+                    drawHand(hr, r * 0.5, r * 0.06, "#1e293b");
+
+                    // Minute hand
+                    const mn = minute * Math.PI / 30;
+                    drawHand(mn, r * 0.8, r * 0.04, "#0f766e");
+                };
+
+                draw();
+                ctx.translate(-radius, -radius);
+            }, [hour, minute]);
+
+            return <canvas ref={canvasRef} width="400" height="400" className="clock-face max-w-full" />;
+        }
+
+        function App() {
+            const [mode, setMode] = useState('select'); // select, play
+            const [level, setLevel] = useState(1);
+            const [currentEvent, setCurrentEvent] = useState(null);
+            const [targetTime, setTargetTime] = useState({ h: 12, m: 0 });
+            const [userInput, setUserInput] = useState({ h: '', m: '' });
+            const [status, setStatus] = useState('waiting'); // waiting, correct, incorrect
+            const [score, setScore] = useState(0);
+            const [streak, setStreak] = useState(0);
+            const [collection, setCollection] = useState(() => {
+                try {
+                    return JSON.parse(sessionStorage.getItem('stickers_clock') || '[]');
+                } catch { return []; }
+            });
+            const [nextSticker, setNextSticker] = useState('');
+            const [isRarePending, setIsRarePending] = useState(false);
+            const [rareInfo, setRareInfo] = useState(null);
+            const [showRare, setShowRare] = useState(false);
+
+            const hRef = useRef(null);
+            const mRef = useRef(null);
+
+            useEffect(() => {
+                sessionStorage.setItem('stickers_clock', JSON.stringify(collection));
+            }, [collection]);
+
+            const generateNewProblem = (lv = level) => {
+                const event = HISTORICAL_EVENTS[Math.floor(Math.random() * HISTORICAL_EVENTS.length)];
+                setCurrentEvent(event);
+
+                let h = Math.floor(Math.random() * 12) || 12;
+                let m = 0;
+
+                if (lv === 1) {
+                    m = Math.random() > 0.5 ? 0 : 30;
+                } else if (lv === 2) {
+                    const opts = [0, 15, 30, 45];
+                    m = opts[Math.floor(Math.random() * opts.length)];
+                } else {
+                    m = Math.floor(Math.random() * 12) * 5;
+                }
+
+                setTargetTime({ h, m });
+                setUserInput({ h: '', m: '' });
+                setStatus('waiting');
+
+                // Pick sticker
+                if (Math.random() < RARE_CHANCE) {
+                    const rareOwned = JSON.parse(sessionStorage.getItem('stickers_rare') || '[]');
+                    const available = RARE_STICKERS.filter(s => !rareOwned.includes(s.emoji));
+                    const pool = available.length > 0 ? available : RARE_STICKERS;
+                    const r = pool[Math.floor(Math.random() * pool.length)];
+                    setNextSticker(r.emoji);
+                    setRareInfo(r);
+                    setIsRarePending(true);
+                } else {
+                    setNextSticker(TIME_STICKERS[Math.floor(Math.random() * TIME_STICKERS.length)]);
+                    setIsRarePending(false);
+                }
+                setTimeout(() => hRef.current?.focus(), 100);
+            };
+
+            const checkAnswer = () => {
+                const h = parseInt(userInput.h);
+                const m = parseInt(userInput.m === '' ? '0' : userInput.m);
+
+                if (h === targetTime.h && m === targetTime.m) {
+                    setStatus('correct');
+                    setScore(s => s + 50);
+                    setStreak(s => s + 1);
+                    setCollection(p => [...p, nextSticker]);
+                    if (isRarePending && rareInfo) {
+                        const rareOwned = JSON.parse(sessionStorage.getItem('stickers_rare') || '[]');
+                        if (!rareOwned.includes(rareInfo.emoji)) {
+                            rareOwned.push(rareInfo.emoji);
+                            sessionStorage.setItem('stickers_rare', JSON.stringify(rareOwned));
+                        }
+                        setTimeout(() => setShowRare(true), 500);
+                    }
+                } else {
+                    setStatus('incorrect');
+                    setStreak(0);
+                }
+            };
+
+            const startLevel = (lv) => {
+                setLevel(lv);
+                setMode('play');
+                generateNewProblem(lv);
+            };
+
+            if (mode === 'select') {
+                return (
+                    <div className="flex flex-col items-center justify-center min-h-[85vh] p-4">
+                        <div className="bg-white/90 backdrop-blur-md p-10 md:p-16 rounded-[4rem] shadow-2xl border-8 border-teal-400 max-w-3xl w-full text-center">
+                            <div className="text-9xl mb-8 animate-pulse-slow">🕰️🚀</div>
+                            <h1 className="text-4xl md:text-5xl font-black text-teal-900 mb-4 uppercase tracking-tight">Time Travel Adventure</h1>
+                            <p className="text-xl font-bold text-teal-700 mb-12">"Help Archie check the time as he zooms through history!"</p>
+
+                            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                                <button onClick={() => startLevel(1)} className="bg-emerald-500 hover:bg-emerald-600 text-white font-black py-8 px-4 rounded-3xl shadow-xl transition transform active:scale-95 border-b-8 border-emerald-700">
+                                    <div className="text-3xl">Lvl 1</div>
+                                    <div className="text-sm opacity-80 uppercase">o'clock / half</div>
+                                </button>
+                                <button onClick={() => startLevel(2)} className="bg-teal-500 hover:bg-teal-600 text-white font-black py-8 px-4 rounded-3xl shadow-xl transition transform active:scale-95 border-b-8 border-teal-700">
+                                    <div className="text-3xl">Lvl 2</div>
+                                    <div className="text-sm opacity-80 uppercase">quarters</div>
+                                </button>
+                                <button onClick={() => startLevel(3)} className="bg-cyan-500 hover:bg-cyan-600 text-white font-black py-8 px-4 rounded-3xl shadow-xl transition transform active:scale-95 border-b-8 border-cyan-700">
+                                    <div className="text-3xl">Lvl 3</div>
+                                    <div className="text-sm opacity-80 uppercase">5 minutes</div>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                );
+            }
+
+            return (
+                <div className="flex flex-col items-center py-6 px-4 max-w-5xl mx-auto">
+                    {/* Stats */}
+                    <div className="w-full flex justify-between items-center bg-white p-4 rounded-3xl shadow-lg border-4 border-teal-200 mb-8 overflow-hidden relative">
+                        <div className="flex items-center gap-3">
+                            <span className="text-3xl">🚀</span>
+                            <h2 className="text-xl font-black text-teal-900 uppercase">TIME LOG: Lvl {level}</h2>
+                        </div>
+                        <div className="flex gap-4 relative z-10">
+                            <div className="bg-teal-50 px-5 py-2 rounded-2xl text-teal-700 font-extrabold text-xl shadow-inner border border-teal-100">✨ {score}</div>
+                            <div className="bg-orange-50 px-5 py-2 rounded-2xl text-orange-700 font-extrabold text-xl shadow-inner border border-orange-100">🔥 {streak}</div>
+                        </div>
+                    </div>
+
+                    {/* Sticker Collection Preview */}
+                    {collection.length > 0 && (
+                        <div className="w-full bg-teal-800/5 p-4 rounded-3xl mb-8 flex flex-wrap gap-2 text-3xl shadow-inner border-2 border-dashed border-teal-200">
+                            {collection.map((s, i) => <span key={i} className="hover:scale-125 transition-transform cursor-default">{s}</span>)}
+                        </div>
+                    )}
+
+                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center w-full">
+                        {/* Left Side: Clock */}
+                        <div className="flex justify-center bg-white p-10 rounded-[4rem] shadow-2xl border-4 border-teal-100 relative">
+                            <div className="absolute -top-4 -right-4 bg-teal-500 text-white w-16 h-16 rounded-full flex items-center justify-center text-3xl font-black shadow-lg border-4 border-white">?</div>
+                            <AnalogueClock hour={targetTime.h} minute={targetTime.m} />
+                        </div>
+
+                        {/* Right Side: Adventure Status */}
+                        <div className="space-y-8 flex flex-col items-center lg:items-start text-center lg:text-left">
+                            <div className="bg-white p-8 rounded-[3rem] shadow-xl border-4 border-teal-200 relative group transition-all hover:border-teal-400">
+                                <div className="text-teal-500 font-black text-sm uppercase mb-2 tracking-widest">Year {currentEvent?.year}</div>
+                                <p className="text-2xl font-black text-slate-800 leading-tight">
+                                    "{currentEvent?.text}"
+                                </p>
+                                <div className="absolute -left-4 top-1/2 -translate-y-1/2 w-8 h-8 bg-white rotate-45 border-l-4 border-b-4 border-teal-200 hidden lg:block"></div>
+                            </div>
+
+                            <div className="bg-slate-800 text-white p-10 rounded-[3.5rem] shadow-2xl w-full max-w-md border-b-8 border-slate-950">
+                                <h3 className="text-teal-400 font-black mb-6 uppercase tracking-widest text-center">Enter Arrival Time:</h3>
+
+                                <div className="flex items-center justify-center gap-4 mb-8">
+                                    <div className="flex flex-col items-center">
+                                        <input
+                                            ref={hRef}
+                                            type="number"
+                                            value={userInput.h}
+                                            onChange={(e) => {
+                                                const v = e.target.value.slice(-2);
+                                                setUserInput(p => ({ ...p, h: v }));
+                                                if (v.length >= 1 && parseInt(v) > 0) mRef.current?.focus();
+                                            }}
+                                            className="time-input w-24 h-28 text-5xl text-slate-800"
+                                            placeholder="12"
+                                        />
+                                        <span className="text-xs mt-2 font-bold text-teal-400 opacity-60">HOUR</span>
+                                    </div>
+                                    <span className="text-6xl font-black text-teal-400 mb-6">:</span>
+                                    <div className="flex flex-col items-center">
+                                        <input
+                                            ref={mRef}
+                                            type="number"
+                                            value={userInput.m}
+                                            onChange={(e) => {
+                                                const v = e.target.value.slice(-2);
+                                                setUserInput(p => ({ ...p, m: v }));
+                                            }}
+                                            className="time-input w-24 h-28 text-5xl text-slate-800"
+                                            placeholder="00"
+                                        />
+                                        <span className="text-xs mt-2 font-bold text-teal-400 opacity-60">MINS</span>
+                                    </div>
+                                </div>
+
+                                {status === 'correct' ? (
+                                    <div className="space-y-4 animate-bounce">
+                                        <div className="text-2xl font-black text-emerald-400 text-center uppercase">Correct Time Logged! ✨</div>
+                                        <button onClick={() => generateNewProblem()} className="w-full bg-teal-500 hover:bg-teal-600 py-5 rounded-2xl font-black text-xl shadow-lg transition">NEXT JUMP 🚀</button>
+                                    </div>
+                                ) : status === 'incorrect' ? (
+                                    <div className="space-y-4">
+                                        <div className="text-sm font-bold text-red-400 text-center uppercase">Not quite! Check the clock hands! 🕰️</div>
+                                        <button onClick={() => { setStatus('waiting'); setUserInput({ h: '', m: '' }); hRef.current?.focus(); }} className="w-full bg-slate-700 hover:bg-slate-600 py-3 rounded-2xl font-bold transition">TRY AGAIN</button>
+                                    </div>
+                                ) : (
+                                    <button
+                                        onClick={checkAnswer}
+                                        disabled={userInput.h === ''}
+                                        className="w-full bg-teal-500 hover:bg-teal-600 disabled:bg-slate-700 disabled:opacity-40 py-6 rounded-2xl font-black text-2xl shadow-[0_8px_0_rgb(13,148,136)] active:translate-y-1 active:shadow-none transition-all uppercase"
+                                    >
+                                        VERIFY TIME 📅
+                                    </button>
+                                )}
+                            </div>
+
+                            <div className="flex items-center gap-3 bg-teal-50 p-4 rounded-2xl border-2 border-teal-200">
+                                <span className={isRarePending ? "text-2xl" : "text-2xl"}>{isRarePending ? '⭐' : '🎁'}</span>
+                                <span className="font-bold text-teal-800 uppercase text-sm">Next Reward: {nextSticker}</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    {showRare && rareInfo && (
+                        <RareBanner emoji={rareInfo.emoji} name={rareInfo.name} onClose={() => setShowRare(false)} />
+                    )}
+                </div>
+            );
+        }
+
+        // Shared RareBanner component
+        function RareBanner({ emoji, name, onClose }) {
+            const canvasRef = useRef(null);
+            useEffect(() => {
+                const canvas = canvasRef.current; if (!canvas) return;
+                canvas.width = window.innerWidth; canvas.height = window.innerHeight;
+                const ctx = canvas.getContext('2d');
+                let particles = [];
+                const colors = ['#fbbf24', '#ec4899', '#3b82f6', '#10b981', '#f97316', '#8b5cf6', '#ef4444', '#fff'];
+                const burst = () => {
+                    for (let i = 0; i < 6; i++) {
+                        const cx = Math.random() * canvas.width, cy = Math.random() * canvas.height * 0.7;
+                        for (let j = 0; j < 40; j++) {
+                            const angle = (j / 40) * Math.PI * 2;
+                            const spd = 2 + Math.random() * 6;
+                            particles.push({ x: cx, y: cy, vx: Math.cos(angle) * spd, vy: Math.sin(angle) * spd, alpha: 1, color: colors[Math.floor(Math.random() * colors.length)], r: 2 + Math.random() * 3 });
+                        }
+                    }
+                };
+                burst(); const interval = setInterval(burst, 1000);
+                let anim;
+                const tick = () => {
+                    ctx.clearRect(0, 0, canvas.width, canvas.height);
+                    particles.forEach(p => {
+                        p.x += p.vx; p.y += p.vy; p.vy += 0.1; p.alpha -= 0.01;
+                        ctx.globalAlpha = Math.max(0, p.alpha); ctx.fillStyle = p.color;
+                        ctx.beginPath(); ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2); ctx.fill();
+                    });
+                    particles = particles.filter(p => p.alpha > 0);
+                    anim = requestAnimationFrame(tick);
+                };
+                anim = requestAnimationFrame(tick);
+                return () => { clearInterval(interval); cancelAnimationFrame(anim); };
+            }, []);
+
+            return (
+                <div className="fixed inset-0 z-[9999] bg-black/80 flex items-center justify-center flex-col p-6 text-center">
+                    <canvas ref={canvasRef} className="fixed inset-0 pointer-events-none" />
+                    <div className="relative z-10 bg-gradient-to-br from-yellow-400 via-amber-500 to-yellow-400 p-12 rounded-[4rem] border-8 border-white shadow-[0_0_80px_rgba(251,191,36,0.5)] max-w-lg w-full">
+                        <span className="text-9xl mb-6 block drop-shadow-2xl animate-bounce">{emoji}</span>
+                        <h2 className="text-4xl font-black text-white uppercase italic tracking-tighter mb-2">⭐ RARE FIND! ⭐</h2>
+                        <p className="text-2xl font-bold text-amber-100 mb-8">{name}</p>
+                        <button onClick={onClose} className="bg-amber-900 text-white font-black py-4 px-12 rounded-full text-xl shadow-lg border-b-4 border-amber-950 active:translate-y-1 transform transition">AWESOME! 🎉</button>
+                    </div>
+                </div>
+            );
+        }
+
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<App />);
+    </script>
+</body>
+
+</html>

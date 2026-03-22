@@ -1,1 +1,195 @@
-Landing page placeholder
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Archie's School Games 👑</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@700;800;900&display=swap');
+
+        :root {
+            --bg-color: #f0fdf4;
+            --primary-color: #10b981;
+            --secondary-color: #3b82f6;
+            --accent-color: #f59e0b;
+            --card-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
+        }
+
+        body {
+            font-family: 'Montserrat', sans-serif;
+            background-color: var(--bg-color);
+            background-image: radial-gradient(#bbf7d0 2px, transparent 2px);
+            background-size: 40px 40px;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+            color: #1f2937;
+        }
+
+        header {
+            width: 100%;
+            max-width: 1000px;
+            padding: 2rem;
+            text-align: center;
+            margin-top: 2rem;
+        }
+
+        h1 {
+            font-size: 3.5rem;
+            font-weight: 900;
+            color: var(--primary-color);
+            text-transform: uppercase;
+            letter-spacing: -0.025em;
+            margin-bottom: 0.5rem;
+            text-shadow: 2px 2px 0px white, 4px 4px 0px rgba(16, 185, 129, 0.2);
+            animation: bounceIn 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        p.subtitle {
+            font-size: 1.5rem;
+            color: #6b7280;
+            margin-bottom: 3rem;
+            animation: fadeIn 1s ease-out 0.3s backwards;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 1000px;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            padding: 0 2rem 4rem 2rem;
+            box-sizing: border-box;
+        }
+
+        .game-card {
+            background: white;
+            border-radius: 2.5rem;
+            padding: 2.5rem;
+            text-decoration: none;
+            color: inherit;
+            box-shadow: var(--card-shadow);
+            border: 8px solid white;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+            animation: fadeInUp 0.6s ease-out backwards;
+        }
+
+        .game-card:hover {
+            transform: translateY(-10px) scale(1.02);
+            box-shadow: 0 25px 50px -12px rgb(0 0 0 / 0.15);
+        }
+
+        .game-card.math {
+            border-color: #d1fae5;
+        }
+
+        .game-card .emoji {
+            font-size: 6rem;
+            margin-bottom: 1.5rem;
+            transition: transform 0.3s ease;
+        }
+
+        .game-card:hover .emoji {
+            transform: scale(1.2) rotate(5deg);
+        }
+
+        .game-card h2 {
+            font-size: 2rem;
+            font-weight: 900;
+            margin: 0 0 1rem 0;
+            color: var(--primary-color);
+        }
+
+        .game-card p {
+            font-size: 1.1rem;
+            color: #4b5563;
+            margin: 0;
+            line-height: 1.5;
+        }
+
+        .badge {
+            background: var(--primary-color);
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 9999px;
+            font-size: 0.875rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            margin-bottom: 1rem;
+        }
+
+        @keyframes bounceIn {
+            0% { transform: scale(0.3); opacity: 0; }
+            50% { transform: scale(1.05); opacity: 1; }
+            70% { transform: scale(0.9); }
+            100% { transform: scale(1); }
+        }
+
+        @keyframes fadeInUp {
+            0% { transform: translateY(20px); opacity: 0; }
+            100% { transform: translateY(0); opacity: 1; }
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .coming-soon {
+            filter: grayscale(0.5);
+            opacity: 0.8;
+            cursor: not-allowed;
+            pointer-events: none;
+        }
+
+        .coming-soon .badge {
+            background: #9ca3af;
+        }
+
+        footer {
+            margin-top: auto;
+            padding: 2rem;
+            color: #9ca3af;
+            font-size: 0.875rem;
+        }
+
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Archie's School Games 👑</h1>
+        <p class="subtitle">Fun games to help you learn and grow!</p>
+    </header>
+
+    <div class="container">
+        <!-- Up to 100 Game -->
+        <a href="up-to-100/index.html" class="game-card math">
+            <span class="badge">MATH QUEST</span>
+            <div class="emoji">🔢✨</div>
+            <h2>Up to 100</h2>
+            <p>Master your number bonds and reach 100! Collect stickers as you go!</p>
+        </a>
+
+        <!-- Placeholder for future games -->
+        <div class="game-card coming-soon">
+            <span class="badge">COMING SOON</span>
+            <div class="emoji">🧪🥽</div>
+            <h2>Science Adventure</h2>
+            <p>Future games will appear here to help you with other subjects!</p>
+        </div>
+    </div>
+
+    <footer>
+        Designed for Archie with ❤️
+    </footer>
+</body>
+</html>

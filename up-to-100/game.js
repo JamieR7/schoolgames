@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+const { useState, useEffect, useRef } = React;
 
 // Modern, trendy font injection
 const fontStyles = `
@@ -52,7 +52,7 @@ const THEMES = [
   { id: 'piano', title: 'Piano Virtuoso', emoji: '🎹', color: 'from-slate-100 to-slate-300', text: 'text-slate-900', border: 'border-slate-400', label: 'Piano', stickers: ['🎹', '🎵', '🎼', '🎶', '🖤', '🤍', '🎧', '📻', '🎙️', '🎻'], congrats: ["Mozart would be proud of those keys! 🎹", "Mozart serait fier de toi! 🎹", "You hit the perfect note with that answer! 🎵", "Tu as joué la note parfaite! 🎵", "A beautiful symphony of numbers! 🎼", "Une mélodie de nombres! 🎼", "Rocking the math keyboard! 🎶", "Tu joues un vrai chef-d'œuvre! 🎻"] }
 ];
 
-export default function App() {
+function App() {
   const [target] = useState(100);
   const [number, setNumber] = useState(0);
   const [tens, setTens] = useState('');
@@ -65,7 +65,7 @@ export default function App() {
   const [progress, setProgress] = useState(0);
   const [level, setLevel] = useState(0);
   const [currentCongrats, setCurrentCongrats] = useState('');
-  
+
   const tensRef = useRef(null);
   const unitsRef = useRef(null);
 
@@ -85,18 +85,18 @@ export default function App() {
     let newNum;
     do {
       newNum = Math.floor(Math.random() * 99) + 1;
-    } while (newNum % 10 === 0 && Math.random() > 0.2); 
-    
+    } while (newNum % 10 === 0 && Math.random() > 0.2);
+
     setNumber(newNum);
     setTens('');
     setUnits('');
     setStatus('playing');
-    
+
     // Pick the next sticker
     const currentTheme = THEMES[level % THEMES.length];
     const randomSticker = currentTheme.stickers[Math.floor(Math.random() * currentTheme.stickers.length)];
     setNextSticker(randomSticker);
-    
+
     // Auto focus the units box first as that's the first step of the strategy
     setTimeout(() => {
       if (unitsRef.current) unitsRef.current.focus();
@@ -111,18 +111,18 @@ export default function App() {
     if (number + total === target) {
       const newProgress = progress + 1;
       const currentTheme = THEMES[level % THEMES.length];
-      
+
       setScore(s => s + 100);
       setStreak(s => s + 1);
       setCollection(prev => [...prev, nextSticker]);
-      
+
       // Grab a random funny congratulations message for this theme
       const randomCongrats = currentTheme.congrats[Math.floor(Math.random() * currentTheme.congrats.length)];
       setCurrentCongrats(randomCongrats);
-      
+
       // Scroll to the top to ensure Archie sees his full equation and message
       window.scrollTo({ top: 0, behavior: 'smooth' });
-      
+
       if (newProgress >= 5) {
         setStatus('reward');
         setLevel(l => l + 1);
@@ -165,7 +165,7 @@ export default function App() {
 
   return (
     <div className="min-h-screen flex flex-col items-center py-8 px-4 text-slate-800">
-      
+
       {/* Header Info */}
       <div className="w-full max-w-4xl flex justify-between items-center bg-white/80 backdrop-blur-md p-4 rounded-3xl shadow-xl mb-8 border-4 border-emerald-400">
         <h1 className="text-3xl md:text-4xl font-black text-emerald-600 tracking-tight uppercase">
@@ -204,44 +204,44 @@ export default function App() {
           </span>
         </div>
         <div className="w-full bg-white border-4 border-emerald-200 rounded-full h-10 md:h-12 relative overflow-hidden shadow-sm">
-           <div 
-             className="bg-gradient-to-r from-emerald-400 to-teal-400 h-full transition-all duration-700 ease-out"
-             style={{ width: `${(progress / 5) * 100}%` }}
-           />
+          <div
+            className="bg-gradient-to-r from-emerald-400 to-teal-400 h-full transition-all duration-700 ease-out"
+            style={{ width: `${(progress / 5) * 100}%` }}
+          />
         </div>
       </div>
 
       {/* Main Game Card */}
       <div className="w-full max-w-4xl bg-white rounded-[3rem] shadow-2xl p-8 md:p-12 relative overflow-hidden border-8 border-white">
-        
+
         {status === 'reward' ? (
           /* Level Up Milestone View */
           (() => {
             const rewardTheme = THEMES[(level - 1 + THEMES.length) % THEMES.length];
             return (
               <div className={`flex flex-col items-center text-center bounce-animation w-full p-8 md:p-12 rounded-[2rem] bg-gradient-to-br ${rewardTheme.color} border-8 ${rewardTheme.border}`}>
-                 <h2 className={`text-5xl md:text-7xl font-black mb-4 ${rewardTheme.text}`}>
-                   NEW THEME UNLOCKED! 🎉
-                 </h2>
-                 <div className="text-[120px] md:text-[180px] my-4 drop-shadow-2xl">
-                   {rewardTheme.emoji}
-                 </div>
-                 <h3 className={`text-4xl md:text-6xl font-extrabold mb-12 ${rewardTheme.text}`}>
-                   {rewardTheme.title}
-                 </h3>
-                 <button 
-                   onClick={handleMetacognitionClick}
-                   className="bg-white text-slate-800 text-3xl md:text-4xl font-black py-6 px-12 rounded-full shadow-xl transform transition active:scale-95 border-b-8 border-slate-300"
-                 >
-                   Keep Going! / Continue! 🚀
-                 </button>
+                <h2 className={`text-5xl md:text-7xl font-black mb-4 ${rewardTheme.text}`}>
+                  NEW THEME UNLOCKED! 🎉
+                </h2>
+                <div className="text-[120px] md:text-[180px] my-4 drop-shadow-2xl">
+                  {rewardTheme.emoji}
+                </div>
+                <h3 className={`text-4xl md:text-6xl font-extrabold mb-12 ${rewardTheme.text}`}>
+                  {rewardTheme.title}
+                </h3>
+                <button
+                  onClick={handleMetacognitionClick}
+                  className="bg-white text-slate-800 text-3xl md:text-4xl font-black py-6 px-12 rounded-full shadow-xl transform transition active:scale-95 border-b-8 border-slate-300"
+                >
+                  Keep Going! / Continue! 🚀
+                </button>
               </div>
             );
           })()
         ) : status === 'correct' ? (
           /* Metacognition View */
           <div className="flex flex-col items-center text-center bounce-animation w-full">
-            
+
             {/* The Completed Sum Banner */}
             <div className="flex flex-wrap justify-center items-center gap-4 md:gap-6 mb-8 bg-emerald-50 py-4 px-8 md:px-12 rounded-[2rem] border-4 border-emerald-200 shadow-inner w-full max-w-2xl">
               <span className="text-4xl md:text-6xl font-black text-slate-700">{number}</span>
@@ -258,26 +258,26 @@ export default function App() {
               <span className="text-xl font-bold text-slate-500 uppercase tracking-widest mb-3">Sticker! / Autocollant!</span>
               <span className="text-7xl bounce-animation">{nextSticker}</span>
             </div>
-            
+
             <div className="w-full bg-blue-50 p-8 rounded-[2rem] border-4 border-blue-200">
               <h3 className="text-3xl md:text-4xl font-extrabold text-blue-800 mb-6">
                 How did you figure that out, Archie? 🤔
               </h3>
-              
+
               <div className="flex flex-col gap-4">
-                <button 
+                <button
                   onClick={handleMetacognitionClick}
                   className="w-full bg-indigo-500 hover:bg-indigo-600 text-white text-2xl md:text-4xl font-bold py-6 px-8 rounded-3xl transform transition active:scale-95 shadow-lg border-b-8 border-indigo-700"
                 >
                   Jumped to the next 10! 🦘
                 </button>
-                <button 
+                <button
                   onClick={handleMetacognitionClick}
                   className="w-full bg-emerald-500 hover:bg-emerald-600 text-white text-2xl md:text-4xl font-bold py-6 px-8 rounded-3xl transform transition active:scale-95 shadow-lg border-b-8 border-emerald-700"
                 >
                   Counted backwards! ⏪
                 </button>
-                <button 
+                <button
                   onClick={handleMetacognitionClick}
                   className="w-full bg-purple-500 hover:bg-purple-600 text-white text-2xl md:text-4xl font-bold py-6 px-8 rounded-3xl transform transition active:scale-95 shadow-lg border-b-8 border-purple-700"
                 >
@@ -289,7 +289,7 @@ export default function App() {
         ) : (
           /* Equation View */
           <div className="flex flex-col items-center w-full">
-            
+
             {/* Next Sticker Hint */}
             <div className={`font-bold text-xl md:text-2xl py-3 px-6 rounded-full mb-8 animate-pulse border-4 bg-gradient-to-r ${currentTheme.color} ${currentTheme.border} ${currentTheme.text}`}>
               ✨ Get this right for a {currentTheme.label} sticker: <span className="text-3xl ml-2">{nextSticker}</span> ✨
@@ -303,7 +303,7 @@ export default function App() {
               <span className="huge-text font-black text-slate-400">
                 +
               </span>
-              
+
               {/* Input Boxes */}
               <div className="flex gap-2 md:gap-4 p-4 bg-slate-100 rounded-[2rem]">
                 {/* Tens Input */}

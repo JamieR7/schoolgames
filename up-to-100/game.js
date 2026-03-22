@@ -12,7 +12,7 @@ const fontStyles = `
   }
 
   .huge-text {
-    font-size: clamp(60px, 10vw, 140px);
+    font-size: clamp(40px, 7vw, 100px);
     line-height: 1.1;
   }
   

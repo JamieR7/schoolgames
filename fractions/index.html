@@ -619,24 +619,28 @@
             const totalW = canvas.width - margin * 2;
             const totalH = canvas.height - margin * 2;
 
-            // Decide split direction
-            let cols, rows;
-            if (tall) {
-                // vertical strips
-                cols = denominator <= 6 ? denominator : Math.ceil(Math.sqrt(denominator));
-                rows = Math.ceil(denominator / cols);
-            } else {
-                rows = denominator <= 6 ? 1 : Math.ceil(Math.sqrt(denominator));
-                cols = Math.ceil(denominator / rows);
-            }
+            // Fixed unambiguous layouts — never any phantom empty cells
+            const LAYOUTS = {
+                2:  [1, 2],   // 1 row × 2 cols
+                3:  [1, 3],
+                4:  [1, 4],
+                5:  [1, 5],
+                6:  [2, 3],
+                8:  [2, 4],   // Always 2×4 — never 3×3!
+                10: [2, 5],
+            };
+            let [rows, cols] = LAYOUTS[denominator] || [1, denominator];
+            // For the "tall" variant, swap rows and cols
+            if (tall) { [rows, cols] = [cols, rows]; }
 
             const cellW = totalW / cols;
             const cellH = totalH / rows;
             let count = 0;
 
+            outer:
             for (let r = 0; r < rows; r++) {
                 for (let c = 0; c < cols; c++) {
-                    if (count >= denominator) break;
+                    if (count >= denominator) break outer; // break BOTH loops
                     const x = margin + c * cellW;
                     const y = margin + r * cellH;
                     ctx.fillStyle = count < numerator ? fillColor : '#fff';

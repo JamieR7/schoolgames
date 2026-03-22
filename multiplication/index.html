@@ -945,7 +945,7 @@
             document.getElementById('hint-step-btn').style.display = '';
             // Show the instruction
             const runEl = document.getElementById('hint-running');
-            runEl.textContent = `${currentA} groups of ${currentB} — let’s build it up!`;
+            runEl.innerHTML = `${currentA} groups of ${currentB}<br><span style="font-size:0.8rem;opacity:0.8;font-weight:600">Let’s build it up!</span>`;
         }
 
         function hintNextGroup() {
@@ -978,7 +978,8 @@
             for (let i = 1; i <= hintGroupsShown; i++) parts.push(i * currentB - currentB === 0 ? String(currentB) : null);
             // Build addition string
             const addStr = Array.from({ length: hintGroupsShown }, () => currentB).join(' + ');
-            document.getElementById('hint-running').textContent = addStr + ' = ' + runTotal;
+            document.getElementById('hint-running').textContent = `${addStr} = ${runTotal}`;
+            document.getElementById('hint-sum').textContent = `${hintGroupsShown} group${hintGroupsShown > 1 ? 's' : ''} of ${currentB}`;
 
             if (hintGroupsShown === currentA) {
                 document.getElementById('hint-sum').textContent = `🎉 ${currentA} × ${currentB} = ${correctAnswer}!`;

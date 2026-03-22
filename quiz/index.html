@@ -285,6 +285,26 @@
             margin-top: 0.6rem;
         }
 
+        .skip-btn {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 0.75rem;
+            font-weight: 800;
+            color: #6d28d9;
+            background: #f3e8ff;
+            border: 2px solid #ddd6fe;
+            border-radius: 9999px;
+            padding: 0.35rem 1rem;
+            cursor: pointer;
+            margin: 0.5rem auto 0;
+            display: block;
+            transition: all 0.15s;
+        }
+
+        .skip-btn:hover {
+            background: #ede9fe;
+            border-color: #7c3aed;
+        }
+
         .celebration {
             display: none;
             text-align: center;
@@ -524,6 +544,7 @@
             <div class="question-text" id="question-text">Loading...</div>
             <div class="question-context" id="question-context" style="display:none"></div>
             <div class="choices" id="choices"></div>
+            <button class="skip-btn" id="skip-btn" onclick="skipQuestion()">⏩ Skip for now</button>
             <div class="feedback" id="feedback">
                 <span class="feedback-emoji" id="feedback-emoji">🎉</span>
                 <p class="feedback-msg" id="feedback-msg"></p>
@@ -974,6 +995,8 @@
             if (currentQ.context) { ctx.textContent = currentQ.context; ctx.style.display = ''; }
             else ctx.style.display = 'none';
 
+            document.getElementById('skip-btn').style.display = 'block';
+
             const choicesEl = document.getElementById('choices');
             choicesEl.innerHTML = '';
             currentQ.choices.forEach((c, i) => {
@@ -992,6 +1015,7 @@
             if (answered) return;
             answered = true;
             document.querySelectorAll('.choice-btn').forEach(b => b.onclick = null);
+            document.getElementById('skip-btn').style.display = 'none';
 
             const feedback = document.getElementById('feedback');
             const fbEmoji = document.getElementById('feedback-emoji');
@@ -1054,6 +1078,11 @@
             currentQIdx++;
             document.getElementById('feedback').className = 'feedback';
             loadQuestion();
+        }
+
+        function skipQuestion() {
+            if (answered) return;
+            nextQuestion();
         }
 
         function afterCelebration() {

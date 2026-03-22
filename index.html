@@ -134,6 +134,12 @@
             color: #9d174d;
         }
 
+        .label-gold {
+            background: #fef9c3;
+            color: #854d0e;
+            border: 2px solid #fbbf24;
+        }
+
         .sticker-row {
             display: flex;
             flex-wrap: wrap;
@@ -403,6 +409,11 @@
                     <span class="sticker-section-label label-pink">🍕 Fraction Spotter</span>
                     <div class="sticker-row" id="stickers-fractions"></div>
                 </div>
+                <div class="sticker-section" id="sec-rare"
+                    style="border-top:2px solid #fef08a;margin-top:0.5rem;padding-top:0.8rem">
+                    <span class="sticker-section-label label-gold">✨ Rare Collection</span>
+                    <div class="sticker-row" id="stickers-rare"></div>
+                </div>
             </div>
         </div>
     </div>
@@ -467,6 +478,17 @@
                 }
             } catch (e) { }
         });
+
+        // Rare stickers (collected across all games)
+        try {
+            const rare = JSON.parse(sessionStorage.getItem('stickers_rare') || '[]');
+            if (rare.length > 0) {
+                anyStickers = true;
+                const row = document.getElementById('stickers-rare');
+                rare.forEach(s => { const sp = document.createElement('span'); sp.textContent = s; row.appendChild(sp); });
+                document.getElementById('sec-rare').className = 'sticker-section has-stickers';
+            }
+        } catch (e) { }
 
         if (anyStickers) document.getElementById('sticker-book').className = 'visible';
     </script>

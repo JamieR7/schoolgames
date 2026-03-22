@@ -428,6 +428,94 @@
         }
 
         /* Animations */
+        /* Rare sticker overlay */
+        .rare-banner {
+            display: none;
+            position: fixed;
+            inset: 0;
+            z-index: 9999;
+            background: rgba(0, 0, 0, 0.75);
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+        }
+
+        .rare-banner.show {
+            display: flex;
+        }
+
+        #fw-canvas {
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+            z-index: 9998;
+        }
+
+        .rare-inner {
+            background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 50%, #fbbf24 100%);
+            background-size: 200% auto;
+            animation: shimmer 2s linear infinite, bounceIn 0.5s;
+            border-radius: 3rem;
+            padding: 2.5rem 3rem;
+            text-align: center;
+            max-width: 380px;
+            box-shadow: 0 0 80px rgba(251, 191, 36, 0.8), 0 25px 50px rgba(0, 0, 0, 0.4);
+            position: relative;
+            z-index: 10000;
+        }
+
+        .rare-emoji-big {
+            font-size: 7rem;
+            display: block;
+            animation: spin 1s ease;
+        }
+
+        .rare-title {
+            font-size: 2rem;
+            font-weight: 900;
+            color: white;
+            text-shadow: 2px 3px 0 #92400e;
+            margin: 0.5rem 0 0.2rem;
+            letter-spacing: 0.05em;
+        }
+
+        .rare-subtitle {
+            font-size: 1.1rem;
+            font-weight: 800;
+            color: #fef3c7;
+        }
+
+        .rare-hint {
+            font-size: 0.85rem;
+            color: #fde68a;
+            font-weight: 700;
+            margin-top: 0.4rem;
+        }
+
+        .rare-close-btn {
+            font-family: 'Montserrat', sans-serif;
+            margin-top: 1.2rem;
+            font-size: 1rem;
+            font-weight: 900;
+            background: #92400e;
+            color: white;
+            border: none;
+            cursor: pointer;
+            border-radius: 9999px;
+            padding: 0.6rem 2rem;
+            box-shadow: 0 4px 0 #451a03;
+        }
+
+        @keyframes shimmer {
+            0% {
+                background-position: 200% center;
+            }
+
+            100% {
+                background-position: -200% center;
+            }
+        }
+
         @keyframes bounceIn {
             0% {
                 transform: scale(0.5);
@@ -544,12 +632,87 @@
 
     <script>
         const THEMES = [
-            { name: 'Real Madrid', emoji: '🏆', color: '#3b82f6', bg: '#eff6ff', stickers: ['⚽', '🏟️', '🥅', '👟', '🏆', '🧤', '🥇', '📣', '🎽', '🧣'] },
-            { name: 'Beyblade', emoji: '🌪️', color: '#f97316', bg: '#fff7ed', stickers: ['🌪️', '💥', '🌀', '⚙️', '🔧', '🔥', '⚡', '💫', '🛸', '🎯'] },
-            { name: 'Bruno the Dog', emoji: '🐶', color: '#d97706', bg: '#fffbeb', stickers: ['🐶', '🦴', '🎾', '🐾', '🐕', '🥩', '🦮', '🥎', '🛋️', '🚿'] },
-            { name: 'Judo Master', emoji: '🥋', color: '#dc2626', bg: '#fef2f2', stickers: ['🥋', '💪', '🥇', '🤸', '⛩️', '🇯🇵', '🧘', '🏆', '💯', '🎖️'] },
-            { name: 'Agent P', emoji: '🦆', color: '#0d9488', bg: '#f0fdfa', stickers: ['🦆', '🎩', '🎸', '🛠️', '🧪', '🎢', '📻', '🗺️', '⚙️', '🔩'] },
+            { name: 'Real Madrid', emoji: '🏆', color: '#3b82f6', bg: '#eff6ff', stickers: ['⚽', '🏟️', '🥅', '👟', '🏆', '🧤', '🥇', '📣', '🎽', '🧣', '🎖️', '🔵', '⬜', '🌟', '🎯'] },
+            { name: 'Beyblade', emoji: '🌪️', color: '#f97316', bg: '#fff7ed', stickers: ['🌪️', '💥', '🌀', '⚙️', '🔧', '🔥', '⚡', '💫', '🛸', '🎯', '💿', '🔩', '🎪', '🎰', '🌀'] },
+            { name: 'Bruno', emoji: '🐶', color: '#d97706', bg: '#fffbeb', stickers: ['🐶', '🦴', '🎾', '🐾', '🐕', '🥩', '🦮', '🥎', '🛋️', '🚿', '🐕‍🦺', '🌿', '🏡', '🎀', '🐩'] },
+            { name: 'Judo Master', emoji: '🥋', color: '#dc2626', bg: '#fef2f2', stickers: ['🥋', '💪', '🥇', '🤸', '⛩️', '🇯🇵', '🧘', '🏆', '💯', '🎖️', '🏯', '🎌', '🌸', '🥁', '🎍'] },
+            { name: 'Agent P', emoji: '🦆', color: '#0d9488', bg: '#f0fdfa', stickers: ['🦆', '🎩', '🎸', '🛠️', '🧪', '🎢', '📻', '🗺️', '⚙️', '🔩', '🔬', '🧲', '📡', '🎬', '🛩️'] },
+            { name: 'Space', emoji: '🚀', color: '#7c3aed', bg: '#f5f3ff', stickers: ['🚀', '🌍', '🌙', '⭐', '🛸', '☄️', '🪐', '👨‍🚀', '🌠', '🔭', '🛰️', '💫', '🌌', '🌟', '🌛'] },
         ];
+
+        const RARE_STICKERS = [
+            { emoji: '💎', name: 'Diamond' }, { emoji: '👑', name: 'Crown' }, { emoji: '🦄', name: 'Unicorn' },
+            { emoji: '🐉', name: 'Dragon' }, { emoji: '🌈', name: 'Rainbow' }, { emoji: '🔮', name: 'Crystal Ball' },
+            { emoji: '🍀', name: 'Lucky Clover' }, { emoji: '🦅', name: 'Eagle' }, { emoji: '🎆', name: 'Fireworks' },
+            { emoji: '⚡', name: 'Lightning Bolt' }, { emoji: '🌙', name: 'Golden Moon' }, { emoji: '🎭', name: 'Magic Mask' },
+            { emoji: '🦋', name: 'Butterfly' }, { emoji: '🐋', name: 'Blue Whale' }, { emoji: '🌋', name: 'Volcano' },
+        ];
+        const RARE_CHANCE = 0.07;
+
+        function pickSticker() {
+            if (Math.random() < RARE_CHANCE) {
+                const r = RARE_STICKERS[Math.floor(Math.random() * RARE_STICKERS.length)];
+                const rare = JSON.parse(sessionStorage.getItem('stickers_rare') || '[]');
+                rare.push(r.emoji);
+                sessionStorage.setItem('stickers_rare', JSON.stringify(rare));
+                setTimeout(() => showRareBanner(r), 500);
+                return r.emoji;
+            }
+            const theme = THEMES[level % THEMES.length];
+            return theme.stickers[Math.floor(Math.random() * theme.stickers.length)];
+        }
+
+        function showRareBanner(r) {
+            document.getElementById('rare-emoji').textContent = r.emoji;
+            document.getElementById('rare-name').textContent = r.name;
+            document.getElementById('rare-banner').classList.add('show');
+            launchFireworks();
+        }
+        function closeRare() {
+            document.getElementById('rare-banner').classList.remove('show');
+            stopFireworks();
+        }
+
+        /* ── Fireworks ── */
+        let fwAnim = null, fwParticles = [];
+        function launchFireworks() {
+            const canvas = document.getElementById('fw-canvas');
+            canvas.width = window.innerWidth; canvas.height = window.innerHeight;
+            const ctx = canvas.getContext('2d');
+            const colors = ['#fbbf24', '#ec4899', '#3b82f6', '#10b981', '#f97316', '#8b5cf6', '#ef4444', '#fff'];
+            fwParticles = [];
+            for (let i = 0; i < 6; i++) {
+                const cx = Math.random() * canvas.width;
+                const cy = Math.random() * canvas.height * 0.6;
+                for (let j = 0; j < 40; j++) {
+                    const angle = (j / 40) * Math.PI * 2;
+                    const spd = 3 + Math.random() * 5;
+                    fwParticles.push({
+                        x: cx, y: cy, vx: Math.cos(angle) * spd, vy: Math.sin(angle) * spd,
+                        alpha: 1, color: colors[Math.floor(Math.random() * colors.length)], r: 3 + Math.random() * 3
+                    });
+                }
+            }
+            function tick() {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                fwParticles.forEach(p => {
+                    p.x += p.vx; p.y += p.vy; p.vy += 0.12; p.alpha -= 0.015;
+                    ctx.globalAlpha = Math.max(0, p.alpha);
+                    ctx.fillStyle = p.color;
+                    ctx.beginPath(); ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2); ctx.fill();
+                });
+                fwParticles = fwParticles.filter(p => p.alpha > 0);
+                if (fwParticles.length > 0) fwAnim = requestAnimationFrame(tick);
+                else ctx.clearRect(0, 0, canvas.width, canvas.height);
+            }
+            if (fwAnim) cancelAnimationFrame(fwAnim);
+            fwAnim = requestAnimationFrame(tick);
+        }
+        function stopFireworks() {
+            if (fwAnim) { cancelAnimationFrame(fwAnim); fwAnim = null; }
+            const canvas = document.getElementById('fw-canvas');
+            canvas.getContext('2d').clearRect(0, 0, canvas.width, canvas.height);
+        }
 
         const PROBLEMS = [
             (a, b) => ({ text: `Ruby made <span class="highlight">${a} necklaces</span> with <span class="highlight">${b} beads</span> each. How many beads did she use in total?`, a, b }),
@@ -674,9 +837,8 @@
                 progress++;
                 updateProgressUI();
 
-                // Add sticker
-                const theme = THEMES[level % THEMES.length];
-                const s = theme.stickers[Math.floor(Math.random() * theme.stickers.length)];
+                // Add sticker (rare check included)
+                const s = pickSticker();
                 stickers.push(s);
                 saveStickers();
                 const row = document.getElementById('sticker-row');
@@ -764,6 +926,20 @@
         updateProgressUI();
         newQuestion();
     </script>
+    <!-- Fireworks canvas (behind everything) -->
+    <canvas id="fw-canvas"></canvas>
+
+    <!-- Rare sticker overlay -->
+    <div class="rare-banner" id="rare-banner">
+        <div class="rare-inner">
+            <span class="rare-emoji-big" id="rare-emoji">💎</span>
+            <div class="rare-title">✨ RARE STICKER! ✨</div>
+            <div class="rare-subtitle" id="rare-name">Diamond</div>
+            <div class="rare-hint">This one doesn't show up often — you're lucky! 🍀</div>
+            <button class="rare-close-btn" onclick="closeRare()">Amazing! Keep it! 🎉</button>
+        </div>
+    </div>
+
 </body>
 
 </html>

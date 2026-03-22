@@ -49,10 +49,105 @@
         p.subtitle {
             font-size: 1.3rem;
             color: #6b7280;
-            margin-bottom: 2.5rem;
+            margin-bottom: 2rem;
             animation: fadeIn 1s ease-out 0.3s backwards;
         }
 
+        /* ─── STICKER BOOK ─── */
+        #sticker-book {
+            display: none;
+            width: 100%;
+            max-width: 1100px;
+            padding: 0 2rem;
+            margin-bottom: 1.5rem;
+            box-sizing: border-box;
+        }
+
+        #sticker-book.visible {
+            display: block;
+        }
+
+        .sticker-book-card {
+            background: white;
+            border-radius: 2rem;
+            padding: 1.2rem 1.8rem;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.07);
+            border: 4px solid #fef9c3;
+        }
+
+        .sticker-book-title {
+            font-size: 0.8rem;
+            font-weight: 900;
+            color: #ca8a04;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            margin-bottom: 0.8rem;
+        }
+
+        .sticker-sections {
+            display: flex;
+            flex-direction: column;
+            gap: 0.8rem;
+        }
+
+        .sticker-section {
+            display: none;
+        }
+
+        .sticker-section.has-stickers {
+            display: block;
+        }
+
+        .sticker-section-label {
+            font-size: 0.75rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.07em;
+            margin-bottom: 0.3rem;
+            padding: 0.15rem 0.6rem;
+            border-radius: 9999px;
+            display: inline-block;
+        }
+
+        .label-green {
+            background: #dcfce7;
+            color: #15803d;
+        }
+
+        .label-orange {
+            background: #ffedd5;
+            color: #c2410c;
+        }
+
+        .label-purple {
+            background: #ede9fe;
+            color: #6d28d9;
+        }
+
+        .label-blue {
+            background: #e0f2fe;
+            color: #0369a1;
+        }
+
+        .label-pink {
+            background: #fce7f3;
+            color: #9d174d;
+        }
+
+        .sticker-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.4rem;
+            font-size: 1.8rem;
+            line-height: 1;
+        }
+
+        .sticker-row span {
+            display: inline-block;
+            animation: stickerPop 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        /* ─── GAMES ─── */
         .section-label {
             width: 100%;
             max-width: 1100px;
@@ -69,7 +164,7 @@
             width: 100%;
             max-width: 1100px;
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
             gap: 1.5rem;
             padding: 0 2rem 4rem;
             box-sizing: border-box;
@@ -96,7 +191,7 @@
         }
 
         .game-card:nth-child(2) {
-            animation-delay: 0.1s;
+            animation-delay: 0.10s;
         }
 
         .game-card:nth-child(3) {
@@ -104,7 +199,11 @@
         }
 
         .game-card:nth-child(4) {
-            animation-delay: 0.2s;
+            animation-delay: 0.20s;
+        }
+
+        .game-card:nth-child(5) {
+            animation-delay: 0.25s;
         }
 
         .game-card:hover {
@@ -112,7 +211,6 @@
             box-shadow: 0 30px 60px -12px rgb(0 0 0 / 0.15);
         }
 
-        /* Per-game accent colours */
         .card-green {
             border-color: #d1fae5;
         }
@@ -129,6 +227,10 @@
             border-color: #bae6fd;
         }
 
+        .card-pink {
+            border-color: #fbcfe8;
+        }
+
         .card-green h2 {
             color: #059669;
         }
@@ -143,6 +245,10 @@
 
         .card-blue h2 {
             color: #0369a1;
+        }
+
+        .card-pink h2 {
+            color: #be185d;
         }
 
         .badge {
@@ -172,6 +278,10 @@
             background: #0ea5e9;
         }
 
+        .badge-pink {
+            background: #ec4899;
+        }
+
         .game-card .emoji {
             font-size: 5rem;
             margin-bottom: 1rem;
@@ -183,23 +293,16 @@
         }
 
         .game-card h2 {
-            font-size: 1.6rem;
+            font-size: 1.4rem;
             font-weight: 900;
             margin: 0 0 0.7rem;
         }
 
         .game-card p {
-            font-size: 1rem;
+            font-size: 0.95rem;
             color: #4b5563;
             margin: 0;
             line-height: 1.5;
-        }
-
-        .coming-soon {
-            filter: grayscale(0.6);
-            opacity: 0.7;
-            cursor: not-allowed;
-            pointer-events: none;
         }
 
         footer {
@@ -243,11 +346,27 @@
 
         @keyframes fadeIn {
             from {
-                opacity: 0
+                opacity: 0;
             }
 
             to {
-                opacity: 1
+                opacity: 1;
+            }
+        }
+
+        @keyframes stickerPop {
+            0% {
+                transform: scale(0);
+                opacity: 0;
+            }
+
+            70% {
+                transform: scale(1.2);
+            }
+
+            100% {
+                transform: scale(1);
+                opacity: 1;
             }
         }
     </style>
@@ -259,45 +378,98 @@
         <p class="subtitle">Choose your mission and start learning!</p>
     </header>
 
+    <!-- SESSION STICKER BOOK -->
+    <div id="sticker-book">
+        <div class="sticker-book-card">
+            <div class="sticker-book-title">📒 Archie's Session Sticker Book</div>
+            <div class="sticker-sections">
+                <div class="sticker-section" id="sec-up-to-100">
+                    <span class="sticker-section-label label-green">🔢 Up to 100</span>
+                    <div class="sticker-row" id="stickers-up-to-100"></div>
+                </div>
+                <div class="sticker-section" id="sec-multiplication">
+                    <span class="sticker-section-label label-orange">✖️ Multiplication Mission</span>
+                    <div class="sticker-row" id="stickers-multiplication"></div>
+                </div>
+                <div class="sticker-section" id="sec-halving">
+                    <span class="sticker-section-label label-purple">✂️ Half It!</span>
+                    <div class="sticker-row" id="stickers-halving"></div>
+                </div>
+                <div class="sticker-section" id="sec-angles">
+                    <span class="sticker-section-label label-blue">📐 Angle Inspector</span>
+                    <div class="sticker-row" id="stickers-angles"></div>
+                </div>
+                <div class="sticker-section" id="sec-fractions">
+                    <span class="sticker-section-label label-pink">🍕 Fraction Spotter</span>
+                    <div class="sticker-row" id="stickers-fractions"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <div class="section-label">🧮 Maths Games</div>
 
     <div class="container">
-
-        <!-- Up to 100 -->
         <a href="up-to-100/index.html" class="game-card card-green">
             <span class="badge badge-green">NUMBER BONDS</span>
             <div class="emoji">🔢✨</div>
             <h2>Up to 100</h2>
-            <p>Find the missing number to make 100! Collect stickers as you go!</p>
+            <p>Find the missing number to make 100!</p>
         </a>
-
-        <!-- Multiplication Mission -->
         <a href="multiplication/index.html" class="game-card card-orange">
             <span class="badge badge-orange">TIMES TABLES</span>
             <div class="emoji">✖️🚀</div>
             <h2>Multiplication Mission</h2>
-            <p>Solve word problems using multiplication — bar diagrams help you see it!</p>
+            <p>Solve word problems using multiplication!</p>
         </a>
-
-        <!-- Half It! -->
         <a href="halving/index.html" class="game-card card-purple">
             <span class="badge badge-purple">HALVING</span>
             <div class="emoji">✂️💜</div>
             <h2>Half It!</h2>
-            <p>Halve big even numbers by splitting them into hundreds, tens &amp; units!</p>
+            <p>Halve big even numbers by splitting H, T &amp; U!</p>
         </a>
-
-        <!-- Angle Inspector -->
         <a href="angles/index.html" class="game-card card-blue">
             <span class="badge badge-blue">GEOMETRY</span>
             <div class="emoji">📐🔍</div>
             <h2>Angle Inspector</h2>
-            <p>Can you spot a right angle, an acute angle, or an obtuse angle?</p>
+            <p>Spot right, acute &amp; obtuse angles!</p>
         </a>
-
+        <a href="fractions/index.html" class="game-card card-pink">
+            <span class="badge badge-pink">FRACTIONS</span>
+            <div class="emoji">🍕🎨</div>
+            <h2>Fraction Spotter</h2>
+            <p>Which fraction of the shape is coloured? Use numérateur &amp; dénominateur!</p>
+        </a>
     </div>
 
     <footer>Designed for Archie with ❤️</footer>
+
+    <script>
+        const GAMES = [
+            { key: 'up-to-100', secId: 'sec-up-to-100', rowId: 'stickers-up-to-100' },
+            { key: 'multiplication', secId: 'sec-multiplication', rowId: 'stickers-multiplication' },
+            { key: 'halving', secId: 'sec-halving', rowId: 'stickers-halving' },
+            { key: 'angles', secId: 'sec-angles', rowId: 'stickers-angles' },
+            { key: 'fractions', secId: 'sec-fractions', rowId: 'stickers-fractions' },
+        ];
+
+        let anyStickers = false;
+        GAMES.forEach(({ key, secId, rowId }) => {
+            try {
+                const arr = JSON.parse(sessionStorage.getItem('stickers_' + key) || '[]');
+                if (arr.length > 0) {
+                    anyStickers = true;
+                    const row = document.getElementById(rowId);
+                    arr.forEach(s => {
+                        const sp = document.createElement('span'); sp.textContent = s; row.appendChild(sp);
+                    });
+                    document.getElementById(secId).className = 'sticker-section has-stickers';
+                }
+            } catch (e) { }
+        });
+
+        if (anyStickers) document.getElementById('sticker-book').className = 'visible';
+    </script>
 </body>
 
 </html>

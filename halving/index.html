@@ -705,6 +705,11 @@
         let correctHalf;
         let halfH, halfT, halfU;
         let attempts = 0;
+        let stickers = JSON.parse(sessionStorage.getItem('stickers_halving') || '[]');
+
+        function saveStickers() {
+            sessionStorage.setItem('stickers_halving', JSON.stringify(stickers));
+        }
 
         const CORRECT_MSGS = [
             "🎉 PERFECT! You halved it!",
@@ -849,6 +854,8 @@
                 // Sticker
                 const theme = THEMES[level % THEMES.length];
                 const s = theme.stickers[Math.floor(Math.random() * theme.stickers.length)];
+                stickers.push(s);
+                saveStickers();
                 const sp = document.createElement('span');
                 sp.textContent = s;
                 sp.style.animation = 'bounceIn 0.4s cubic-bezier(0.175,0.885,0.32,1.275)';
@@ -911,6 +918,17 @@
                 else checkAnswer();
             }
         });
+
+        // Init
+        (function restoreStickers() {
+            if (stickers.length > 0) {
+                const row = document.getElementById('sticker-row');
+                stickers.forEach(s => {
+                    const sp = document.createElement('span'); sp.textContent = s; row.appendChild(sp);
+                });
+                document.getElementById('sticker-book').className = 'stickers visible';
+            }
+        })();
 
         updateProgressUI();
         newQuestion();

@@ -568,10 +568,14 @@
 
         let score = 0, streak = 0, progress = 0, level = 0;
         let currentA, currentB, correctAnswer;
-        let stickers = [];
+        let stickers = JSON.parse(sessionStorage.getItem('stickers_multiplication') || '[]');
         let questionIndex = 0;
         let currentProblemIdx = 0;
         let attempts = 0;
+
+        function saveStickers() {
+            sessionStorage.setItem('stickers_multiplication', JSON.stringify(stickers));
+        }
 
         const CORRECT_MSGS = [
             "🎉 PERFECT! You nailed it!",
@@ -674,6 +678,7 @@
                 const theme = THEMES[level % THEMES.length];
                 const s = theme.stickers[Math.floor(Math.random() * theme.stickers.length)];
                 stickers.push(s);
+                saveStickers();
                 const row = document.getElementById('sticker-row');
                 const sp = document.createElement('span');
                 sp.textContent = s;
@@ -745,7 +750,17 @@
             }
         });
 
-        // Init
+        // Init — restore any session stickers
+        (function restoreStickers() {
+            if (stickers.length > 0) {
+                const row = document.getElementById('sticker-row');
+                stickers.forEach(s => {
+                    const sp = document.createElement('span'); sp.textContent = s; row.appendChild(sp);
+                });
+                document.getElementById('sticker-book').className = 'stickers visible';
+            }
+        })();
+
         updateProgressUI();
         newQuestion();
     </script>

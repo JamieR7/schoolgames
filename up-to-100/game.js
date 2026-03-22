@@ -60,7 +60,9 @@ function App() {
   const [score, setScore] = useState(0);
   const [streak, setStreak] = useState(0);
   const [status, setStatus] = useState('playing'); // playing, correct, incorrect, reward
-  const [collection, setCollection] = useState([]);
+  const [collection, setCollection] = useState(() => {
+    try { return JSON.parse(sessionStorage.getItem('stickers_up-to-100') || '[]'); } catch { return []; }
+  });
   const [nextSticker, setNextSticker] = useState('');
   const [progress, setProgress] = useState(0);
   const [level, setLevel] = useState(0);
@@ -78,6 +80,11 @@ function App() {
     document.head.appendChild(styleSheet);
     return () => { styleSheet.remove(); }
   }, []);
+
+  // Save stickers to sessionStorage whenever collection changes
+  useEffect(() => {
+    sessionStorage.setItem('stickers_up-to-100', JSON.stringify(collection));
+  }, [collection]);
 
   const generateNewNumber = () => {
     // Generate a number between 1 and 99. 

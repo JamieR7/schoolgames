@@ -788,10 +788,16 @@
 
         function pickSticker() {
             if (Math.random() < RARE_CHANCE) {
-                const r = RARE_STICKERS[Math.floor(Math.random() * RARE_STICKERS.length)];
-                const rare = JSON.parse(sessionStorage.getItem('stickers_rare') || '[]');
-                rare.push(r.emoji);
-                sessionStorage.setItem('stickers_rare', JSON.stringify(rare));
+                const rareOwned = JSON.parse(sessionStorage.getItem('stickers_rare') || '[]');
+                const available = RARE_STICKERS.filter(s => !rareOwned.includes(s.emoji));
+                const pool = available.length > 0 ? available : RARE_STICKERS;
+                const r = pool[Math.floor(Math.random() * pool.length)];
+
+                if (!rareOwned.includes(r.emoji)) {
+                    rareOwned.push(r.emoji);
+                    sessionStorage.setItem('stickers_rare', JSON.stringify(rareOwned));
+                }
+
                 setTimeout(() => showRareBanner(r), 500);
                 return r.emoji;
             }

@@ -52,6 +52,15 @@ const THEMES = [
   { id: 'piano', title: 'Piano Virtuoso', emoji: '🎹', color: 'from-slate-100 to-slate-300', text: 'text-slate-900', border: 'border-slate-400', label: 'Piano', stickers: ['🎹', '🎵', '🎼', '🎶', '🖤', '🤍', '🎧', '📻', '🎙️', '🎻'], congrats: ["Mozart would be proud of those keys! 🎹", "Mozart serait fier de toi! 🎹", "You hit the perfect note with that answer! 🎵", "Tu as joué la note parfaite! 🎵", "A beautiful symphony of numbers! 🎼", "Une mélodie de nombres! 🎼", "Rocking the math keyboard! 🎶", "Tu joues un vrai chef-d'œuvre! 🎻"] }
 ];
 
+const RARE_STICKERS = [
+  { emoji: '💎', name: 'Diamond' }, { emoji: '👑', name: 'Crown' }, { emoji: '🦄', name: 'Unicorn' },
+  { emoji: '🐉', name: 'Dragon' }, { emoji: '🌈', name: 'Rainbow' }, { emoji: '🔮', name: 'Crystal Ball' },
+  { emoji: '🍀', name: 'Lucky Clover' }, { emoji: '🦅', name: 'Eagle' }, { emoji: '🎆', name: 'Fireworks' },
+  { emoji: '⚡', name: 'Lightning Bolt' }, { emoji: '🌙', name: 'Golden Moon' }, { emoji: '🎭', name: 'Magic Mask' },
+  { emoji: '🦋', name: 'Butterfly' }, { emoji: '🐋', name: 'Blue Whale' }, { emoji: '🌋', name: 'Volcano' },
+];
+const RARE_CHANCE = 0.07;
+
 function App() {
   const [target] = useState(100);
   const [number, setNumber] = useState(0);
@@ -67,6 +76,9 @@ function App() {
   const [progress, setProgress] = useState(0);
   const [level, setLevel] = useState(0);
   const [currentCongrats, setCurrentCongrats] = useState('');
+  const [showRare, setShowRare] = useState(false);
+  const [rareInfo, setRareInfo] = useState(null);
+  const [isRarePending, setIsRarePending] = useState(false);
 
   const tensRef = useRef(null);
   const unitsRef = useRef(null);
@@ -99,10 +111,22 @@ function App() {
     setUnits('');
     setStatus('playing');
 
-    // Pick the next sticker
-    const currentTheme = THEMES[level % THEMES.length];
-    const randomSticker = currentTheme.stickers[Math.floor(Math.random() * currentTheme.stickers.length)];
-    setNextSticker(randomSticker);
+    // Pick the next sticker (Rare or Normal)
+    if (Math.random() < RARE_CHANCE) {
+      const rareOwned = JSON.parse(sessionStorage.getItem('stickers_rare') || '[]');
+      const available = RARE_STICKERS.filter(s => !rareOwned.includes(s.emoji));
+      const pool = available.length > 0 ? available : RARE_STICKERS;
+      const r = pool[Math.floor(Math.random() * pool.length)];
+      setNextSticker(r.emoji);
+      setRareInfo(r);
+      setIsRarePending(true);
+    } else {
+      const currentTheme = THEMES[level % THEMES.length];
+      const randomSticker = currentTheme.stickers[Math.floor(Math.random() * currentTheme.stickers.length)];
+      setNextSticker(randomSticker);
+      setRareInfo(null);
+      setIsRarePending(false);
+    }
 
     // Auto focus the units box first as that's the first step of the strategy
     setTimeout(() => {
@@ -122,6 +146,15 @@ function App() {
       setScore(s => s + 100);
       setStreak(s => s + 1);
       setCollection(prev => [...prev, nextSticker]);
+
+      if (isRarePending && rareInfo) {
+        const rareOwned = JSON.parse(sessionStorage.getItem('stickers_rare') || '[]');
+        if (!rareOwned.includes(rareInfo.emoji)) {
+          rareOwned.push(rareInfo.emoji);
+          sessionStorage.setItem('stickers_rare', JSON.stringify(rareOwned));
+        }
+        setTimeout(() => setShowRare(true), 500);
+      }
 
       // Grab a random funny congratulations message for this theme
       const randomCongrats = currentTheme.congrats[Math.floor(Math.random() * currentTheme.congrats.length)];
@@ -298,8 +331,9 @@ function App() {
           <div className="flex flex-col items-center w-full">
 
             {/* Next Sticker Hint */}
-            <div className={`font-bold text-xl md:text-2xl py-3 px-6 rounded-full mb-8 animate-pulse border-4 bg-gradient-to-r ${currentTheme.color} ${currentTheme.border} ${currentTheme.text}`}>
-              ✨ Get this right for a {currentTheme.label} sticker: <span className="text-3xl ml-2">{nextSticker}</span> ✨
+            <div className={`font-bold text-xl md:text-2xl py-3 px-6 rounded-full mb-8 animate-pulse border-4 shadow-lg ${isRarePending ? 'bg-gradient-to-r from-yellow-400 via-amber-200 to-yellow-400 border-yellow-500 text-amber-900 scale-105' : `bg-gradient-to-r ${currentTheme.color} ${currentTheme.border} ${currentTheme.text}`}`}>
+              {isRarePending ? '⭐ RARE STICKER CHALLENGE! ⭐' : `✨ Get this right for a ${currentTheme.label} sticker: ✨`}
+              <span className="text-4xl ml-3 drop-shadow-sm">{nextSticker}</span>
             </div>
 
             {/* The Math Equation */}
@@ -372,6 +406,92 @@ function App() {
           </div>
         )}
       </div>
+
+      {/* Rare Sticker Banner */}
+      {showRare && rareInfo && (
+        <RareBanner
+          emoji={rareInfo.emoji}
+          name={rareInfo.name}
+          onClose={() => setShowRare(false)}
+        />
+      )}
+    </div>
+  );
+}
+
+function RareBanner({ emoji, name, onClose }) {
+  const canvasRef = useRef(null);
+
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+    const ctx = canvas.getContext('2d');
+
+    let particles = [];
+    const colors = ['#fbbf24', '#ec4899', '#3b82f6', '#10b981', '#f97316', '#8b5cf6', '#ef4444', '#fff', '#a3e635', '#f0abfc'];
+
+    function burst() {
+      for (let i = 0; i < 8; i++) {
+        const cx = Math.random() * canvas.width, cy = Math.random() * canvas.height * 0.7;
+        for (let j = 0; j < 55; j++) {
+          const angle = (j / 55) * Math.PI * 2, spd = 2 + Math.random() * 7;
+          particles.push({ x: cx, y: cy, vx: Math.cos(angle) * spd, vy: Math.sin(angle) * spd, alpha: 1, color: colors[Math.floor(Math.random() * colors.length)], r: 2 + Math.random() * 4 });
+        }
+      }
+    }
+
+    burst();
+    const interval = setInterval(burst, 800);
+
+    let anim;
+    function tick() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      particles.forEach(p => {
+        p.x += p.vx; p.y += p.vy; p.vy += 0.1; p.alpha -= 0.005;
+        ctx.globalAlpha = Math.max(0, p.alpha); ctx.fillStyle = p.color;
+        ctx.beginPath(); ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2); ctx.fill();
+      });
+      ctx.globalAlpha = 1;
+      particles = particles.filter(p => p.alpha > 0);
+      anim = requestAnimationFrame(tick);
+    }
+    anim = requestAnimationFrame(tick);
+
+    return () => {
+      clearInterval(interval);
+      cancelAnimationFrame(anim);
+    };
+  }, []);
+
+  return (
+    <div className="fixed inset-0 z-[9999] bg-black/80 flex items-center justify-center flex-col">
+      <canvas ref={canvasRef} className="fixed inset-0 pointer-events-none" />
+      <div className="relative z-10 bg-gradient-to-br from-yellow-400 via-amber-500 to-yellow-400 p-12 rounded-[3rem] text-center shadow-[0_0_80px_rgba(251,191,36,0.8)] border-8 border-white animate-bounce-in max-w-sm">
+        <span className="text-9xl mb-4 block drop-shadow-2xl animate-spin-once">{emoji}</span>
+        <h2 className="text-4xl font-black text-white drop-shadow-md uppercase tracking-tighter">⭐ RARE STICKER! ⭐</h2>
+        <p className="text-2xl font-bold text-amber-100 mt-2 mb-8">{name}</p>
+        <button
+          onClick={onClose}
+          className="bg-amber-900 text-white font-black py-4 px-10 rounded-full text-xl shadow-lg hover:scale-105 active:scale-95 transition-transform"
+        >
+          AMAZING! 🎉
+        </button>
+      </div>
+      <style>{`
+        @keyframes bounce-in {
+          0% { transform: scale(0.5); opacity: 0; }
+          70% { transform: scale(1.05); }
+          100% { transform: scale(1); opacity: 1; }
+        }
+        @keyframes spin-once {
+          0% { transform: rotate(-15deg) scale(0.8); }
+          100% { transform: rotate(0) scale(1); }
+        }
+        .animate-bounce-in { animation: bounce-in 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+        .animate-spin-once { animation: spin-once 0.8s ease-out; }
+      `}</style>
     </div>
   );
 }

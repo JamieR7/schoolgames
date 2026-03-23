@@ -104,7 +104,14 @@
             { emoji: '⚡', name: 'Lightning Bolt' }, { emoji: '🌙', name: 'Golden Moon' }, { emoji: '🎭', name: 'Magic Mask' },
             { emoji: '🦋', name: 'Butterfly' }, { emoji: '🐋', name: 'Blue Whale' }, { emoji: '🌋', name: 'Volcano' },
         ];
-        const TIME_STICKERS = ['🚀', '🕰️', '⌛', '🪐', '🌠', '📜', '🛸', '🛰️', '🗝️', '📅', '🔭', '🌍'];
+        const THEMES = [
+            { name: 'Real Madrid', emoji: '🏆', stickers: ['⚽', '🏟️', '🥅', '👟', '🏆', '🧤', '🥇', '📣', '🎽', '🧣', '🎖️', '🔵', '⬜', '🌟', '🎯'] },
+            { name: 'Beyblade', emoji: '🌪️', stickers: ['🌪️', '💥', '🌀', '⚙️', '🔧', '🔥', '⚡', '💫', '🛸', '🎯', '💿', '🔩', '🎪', '🎰', '🌀'] },
+            { name: 'Bruno', emoji: '🐶', stickers: ['🐶', '🦴', '🎾', '🐾', '🐕', '🥩', '🦮', '🥎', '🛋️', '🚿', '🐕‍🦺', '🌿', '🏡', '🎀', '🐩'] },
+            { name: 'Judo Master', emoji: '🥋', stickers: ['🥋', '💪', '🥇', '🤸', '⛩️', '🇯🇵', '🧘', '🏆', '💯', '🎖️', '🏯', '🎌', '🌸', '🥁', '🎍'] },
+            { name: 'Agent P', emoji: '🦆', stickers: ['🦆', '🎩', '🎸', '🛠️', '🧪', '🎢', '📻', '🗺️', '⚙️', '🔩', '🔬', '🧲', '📡', '🎬', '🛩️'] },
+            { name: 'Space', emoji: '🚀', stickers: ['🚀', '🌍', '🌙', '⭐', '🛸', '☄️', '🪐', '👨‍🚀', '🌠', '🔭', '🛰️', '💫', '🌌', '🌟', '🌛'] },
+        ];
         const RARE_CHANCE = 0.07;
 
         const HISTORICAL_EVENTS = [
@@ -230,6 +237,7 @@
                 } catch { return []; }
             });
             const [nextSticker, setNextSticker] = useState('');
+            const [nextTheme, setNextTheme] = useState(null);
             const [isRarePending, setIsRarePending] = useState(false);
             const [rareInfo, setRareInfo] = useState(null);
             const [showRare, setShowRare] = useState(false);
@@ -262,16 +270,20 @@
                 setStatus('waiting');
 
                 // Pick sticker
+                const themeIndex = Math.floor(score / 250) % THEMES.length;
+                const theme = THEMES[themeIndex];
                 if (Math.random() < RARE_CHANCE) {
                     const rareOwned = JSON.parse(sessionStorage.getItem('stickers_rare') || '[]');
                     const available = RARE_STICKERS.filter(s => !rareOwned.includes(s.emoji));
                     const pool = available.length > 0 ? available : RARE_STICKERS;
                     const r = pool[Math.floor(Math.random() * pool.length)];
                     setNextSticker(r.emoji);
+                    setNextTheme(null);
                     setRareInfo(r);
                     setIsRarePending(true);
                 } else {
-                    setNextSticker(TIME_STICKERS[Math.floor(Math.random() * TIME_STICKERS.length)]);
+                    setNextSticker(theme.stickers[Math.floor(Math.random() * theme.stickers.length)]);
+                    setNextTheme(theme);
                     setIsRarePending(false);
                 }
                 setTimeout(() => hRef.current?.focus(), 100);
@@ -430,7 +442,7 @@
 
                             <div className="flex items-center gap-3 bg-teal-50 p-4 rounded-2xl border-2 border-teal-200">
                                 <span className={isRarePending ? "text-2xl" : "text-2xl"}>{isRarePending ? '⭐' : '🎁'}</span>
-                                <span className="font-bold text-teal-800 uppercase text-sm">Next Reward: {nextSticker}</span>
+                                <span className="font-bold text-teal-800 uppercase text-sm">{isRarePending ? '⭐ Rare Sticker!' : `${nextTheme ? nextTheme.name + ' ' + nextTheme.emoji : '🎁'}`}: {nextSticker}</span>
                             </div>
                         </div>
                     </div>

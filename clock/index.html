@@ -450,26 +450,27 @@
                 canvas.width = window.innerWidth; canvas.height = window.innerHeight;
                 const ctx = canvas.getContext('2d');
                 let particles = [];
-                const colors = ['#fbbf24', '#ec4899', '#3b82f6', '#10b981', '#f97316', '#8b5cf6', '#ef4444', '#fff'];
+                const colors = ['#fbbf24', '#ec4899', '#3b82f6', '#10b981', '#f97316', '#8b5cf6', '#ef4444', '#fff', '#a3e635', '#f0abfc'];
                 const burst = () => {
-                    for (let i = 0; i < 6; i++) {
+                    for (let i = 0; i < 8; i++) {
                         const cx = Math.random() * canvas.width, cy = Math.random() * canvas.height * 0.7;
-                        for (let j = 0; j < 40; j++) {
-                            const angle = (j / 40) * Math.PI * 2;
-                            const spd = 2 + Math.random() * 6;
-                            particles.push({ x: cx, y: cy, vx: Math.cos(angle) * spd, vy: Math.sin(angle) * spd, alpha: 1, color: colors[Math.floor(Math.random() * colors.length)], r: 2 + Math.random() * 3 });
+                        for (let j = 0; j < 55; j++) {
+                            const angle = (j / 55) * Math.PI * 2;
+                            const spd = 2 + Math.random() * 7;
+                            particles.push({ x: cx, y: cy, vx: Math.cos(angle) * spd, vy: Math.sin(angle) * spd, alpha: 1, color: colors[Math.floor(Math.random() * colors.length)], r: 2 + Math.random() * 4 });
                         }
                     }
                 };
-                burst(); const interval = setInterval(burst, 1000);
+                burst(); const interval = setInterval(burst, 800);
                 let anim;
                 const tick = () => {
                     ctx.clearRect(0, 0, canvas.width, canvas.height);
                     particles.forEach(p => {
-                        p.x += p.vx; p.y += p.vy; p.vy += 0.1; p.alpha -= 0.01;
+                        p.x += p.vx; p.y += p.vy; p.vy += 0.1; p.alpha -= 0.005;
                         ctx.globalAlpha = Math.max(0, p.alpha); ctx.fillStyle = p.color;
                         ctx.beginPath(); ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2); ctx.fill();
                     });
+                    ctx.globalAlpha = 1;
                     particles = particles.filter(p => p.alpha > 0);
                     anim = requestAnimationFrame(tick);
                 };

@@ -55,6 +55,41 @@
             animation: pulse-slow 4s ease-in-out infinite;
         }
 
+        /* Sticker Flash */
+        #sticker-flash-overlay {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 15rem;
+            pointer-events: none;
+            z-index: 10000;
+            opacity: 0;
+            display: none;
+        }
+
+        @keyframes sticker-pop {
+            0% {
+                transform: translate(-50%, -50%) scale(0.5);
+                opacity: 0;
+            }
+
+            50% {
+                transform: translate(-50%, -50%) scale(1.2);
+                opacity: 1;
+            }
+
+            100% {
+                transform: translate(-50%, -50%) scale(1);
+                opacity: 0;
+            }
+        }
+
+        .animate-sticker-pop {
+            display: block !important;
+            animation: sticker-pop 1.5s ease-out forwards;
+        }
+
         .glass {
             background: rgba(255, 255, 255, 0.9);
             backdrop-filter: blur(10px);
@@ -241,6 +276,7 @@
             const [isRarePending, setIsRarePending] = useState(false);
             const [rareInfo, setRareInfo] = useState(null);
             const [showRare, setShowRare] = useState(false);
+            const [flashEmoji, setFlashEmoji] = useState(null);
 
             const hRef = useRef(null);
             const mRef = useRef(null);
@@ -289,6 +325,31 @@
                 setTimeout(() => hRef.current?.focus(), 100);
             };
 
+            const playRareFanfare = () => {
+                try {
+                    const ctx = new (window.AudioContext || window.webkitAudioContext)();
+                    const now = ctx.currentTime;
+                    const notes = [523.25, 659.25, 783.99, 1046.50]; // C5, E5, G5, C6
+                    notes.forEach((freq, i) => {
+                        const osc = ctx.createOscillator();
+                        const gain = ctx.createGain();
+                        osc.type = 'sine';
+                        osc.frequency.setValueAtTime(freq, now + i * 0.1);
+                        gain.gain.setValueAtTime(0.2, now + i * 0.1);
+                        gain.gain.exponentialRampToValueAtTime(0.01, now + (i * 0.1) + 0.3);
+                        osc.connect(gain);
+                        gain.connect(ctx.destination);
+                        osc.start(now + i * 0.1);
+                        osc.stop(now + i * 0.1 + 0.3);
+                    });
+                } catch (e) { console.log('Audio failed:', e); }
+            };
+
+            const showStickerFlash = (emoji) => {
+                setFlashEmoji(emoji);
+                setTimeout(() => setFlashEmoji(null), 1500);
+            };
+
             const checkAnswer = () => {
                 const h = parseInt(userInput.h);
                 const m = parseInt(userInput.m === '' ? '0' : userInput.m);
@@ -298,13 +359,17 @@
                     setScore(s => s + 50);
                     setStreak(s => s + 1);
                     setCollection(p => [...p, nextSticker]);
+                    showStickerFlash(nextSticker);
                     if (isRarePending && rareInfo) {
                         const rareOwned = JSON.parse(sessionStorage.getItem('stickers_rare') || '[]');
                         if (!rareOwned.includes(rareInfo.emoji)) {
                             rareOwned.push(rareInfo.emoji);
                             sessionStorage.setItem('stickers_rare', JSON.stringify(rareOwned));
                         }
-                        setTimeout(() => setShowRare(true), 500);
+                        setTimeout(() => {
+                            setShowRare(true);
+                            playRareFanfare();
+                        }, 500);
                     }
                 } else {
                     setStatus('incorrect');
@@ -347,6 +412,11 @@
 
             return (
                 <div className="flex flex-col items-center py-6 px-4 max-w-5xl mx-auto">
+                    {flashEmoji && (
+                        <div id="sticker-flash-overlay" className="animate-sticker-pop">
+                            {flashEmoji}
+                        </div>
+                    )}
                     {/* Stats */}
                     <div className="w-full flex justify-between items-center bg-white p-4 rounded-3xl shadow-lg border-4 border-teal-200 mb-8 overflow-hidden relative">
                         <div className="flex items-center gap-3">
@@ -493,12 +563,20 @@
             return (
                 <div className="fixed inset-0 z-[9999] bg-black/80 flex items-center justify-center flex-col p-6 text-center">
                     <canvas ref={canvasRef} className="fixed inset-0 pointer-events-none" />
-                    <div className="relative z-10 bg-gradient-to-br from-yellow-400 via-amber-500 to-yellow-400 p-12 rounded-[4rem] border-8 border-white shadow-[0_0_80px_rgba(251,191,36,0.5)] max-w-lg w-full">
+                    <div className="relative z-10 bg-gradient-to-br from-yellow-400 via-amber-500 to-yellow-400 p-12 rounded-[4rem] border-8 border-white shadow-[0_0_80px_rgba(251,191,36,0.5)] max-w-lg w-full animate-bounce-in">
                         <span className="text-9xl mb-6 block drop-shadow-2xl animate-bounce">{emoji}</span>
                         <h2 className="text-4xl font-black text-white uppercase italic tracking-tighter mb-2">⭐ RARE FIND! ⭐</h2>
                         <p className="text-2xl font-bold text-amber-100 mb-8">{name}</p>
                         <button onClick={onClose} className="bg-amber-900 text-white font-black py-4 px-12 rounded-full text-xl shadow-lg border-b-4 border-amber-950 active:translate-y-1 transform transition">AWESOME! 🎉</button>
                     </div>
+                    <style>{`
+                        @keyframes bounce-in {
+                            0% { transform: scale(0.5); opacity: 0; }
+                            70% { transform: scale(1.05); }
+                            100% { transform: scale(1); opacity: 1; }
+                        }
+                        .animate-bounce-in { animation: bounce-in 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+                    `}</style>
                 </div>
             );
         }

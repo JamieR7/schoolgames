@@ -39,6 +39,30 @@ const fontStyles = `
     0% { transform: scale(0.8); opacity: 0; }
     100% { transform: scale(1); opacity: 1; }
   }
+
+  /* Sticker Flash */
+  #sticker-flash-overlay {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 15rem;
+    pointer-events: none;
+    z-index: 10000;
+    opacity: 0;
+    display: none;
+  }
+
+  @keyframes sticker-pop {
+    0% { transform: translate(-50%, -50%) scale(0.5); opacity: 0; }
+    50% { transform: translate(-50%, -50%) scale(1.2); opacity: 1; }
+    100% { transform: translate(-50%, -50%) scale(1); opacity: 0; }
+  }
+
+  .animate-sticker-pop {
+    display: block !important;
+    animation: sticker-pop 1.5s ease-out forwards;
+  }
 `;
 
 const THEMES = [
@@ -79,6 +103,7 @@ function App() {
   const [showRare, setShowRare] = useState(false);
   const [rareInfo, setRareInfo] = useState(null);
   const [isRarePending, setIsRarePending] = useState(false);
+  const [flashEmoji, setFlashEmoji] = useState(null);
 
   const tensRef = useRef(null);
   const unitsRef = useRef(null);
@@ -134,6 +159,31 @@ function App() {
     }, 100);
   };
 
+  const playRareFanfare = () => {
+    try {
+      const ctx = new (window.AudioContext || window.webkitAudioContext)();
+      const now = ctx.currentTime;
+      const notes = [523.25, 659.25, 783.99, 1046.50]; // C5, E5, G5, C6
+      notes.forEach((freq, i) => {
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(freq, now + i * 0.1);
+        gain.gain.setValueAtTime(0.2, now + i * 0.1);
+        gain.gain.exponentialRampToValueAtTime(0.01, now + (i * 0.1) + 0.3);
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+        osc.start(now + i * 0.1);
+        osc.stop(now + i * 0.1 + 0.3);
+      });
+    } catch (e) { console.log('Audio failed:', e); }
+  };
+
+  const showStickerFlash = (emoji) => {
+    setFlashEmoji(emoji);
+    setTimeout(() => setFlashEmoji(null), 1500);
+  };
+
   const checkAnswer = () => {
     const t = parseInt(tens || 0);
     const u = parseInt(units || 0);
@@ -146,6 +196,7 @@ function App() {
       setScore(s => s + 100);
       setStreak(s => s + 1);
       setCollection(prev => [...prev, nextSticker]);
+      showStickerFlash(nextSticker);
 
       if (isRarePending && rareInfo) {
         const rareOwned = JSON.parse(sessionStorage.getItem('stickers_rare') || '[]');
@@ -153,7 +204,10 @@ function App() {
           rareOwned.push(rareInfo.emoji);
           sessionStorage.setItem('stickers_rare', JSON.stringify(rareOwned));
         }
-        setTimeout(() => setShowRare(true), 500);
+        setTimeout(() => {
+          setShowRare(true);
+          playRareFanfare();
+        }, 500);
       }
 
       // Grab a random funny congratulations message for this theme
@@ -205,6 +259,11 @@ function App() {
 
   return (
     <div className="min-h-screen flex flex-col items-center py-8 px-4 text-slate-800">
+      {flashEmoji && (
+        <div id="sticker-flash-overlay" className="animate-sticker-pop">
+          {flashEmoji}
+        </div>
+      )}
 
       {/* Header Info */}
       <div className="w-full max-w-4xl flex justify-between items-center bg-white/80 backdrop-blur-md p-4 rounded-3xl shadow-xl mb-8 border-4 border-emerald-400">

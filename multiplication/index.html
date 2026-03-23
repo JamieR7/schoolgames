@@ -629,6 +629,41 @@
             box-shadow: 0 4px 0 #451a03;
         }
 
+        /* Sticker Flash */
+        #sticker-flash-overlay {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 15rem;
+            pointer-events: none;
+            z-index: 10000;
+            opacity: 0;
+            display: none;
+        }
+
+        @keyframes sticker-pop {
+            0% {
+                transform: translate(-50%, -50%) scale(0.5);
+                opacity: 0;
+            }
+
+            50% {
+                transform: translate(-50%, -50%) scale(1.2);
+                opacity: 1;
+            }
+
+            100% {
+                transform: translate(-50%, -50%) scale(1);
+                opacity: 0;
+            }
+        }
+
+        .animate-sticker-pop {
+            display: block !important;
+            animation: sticker-pop 1.5s ease-out forwards;
+        }
+
         @keyframes shimmer {
             0% {
                 background-position: 200% center;
@@ -811,6 +846,33 @@
             document.getElementById('rare-name').textContent = r.name;
             document.getElementById('rare-banner').classList.add('show');
             launchFireworks();
+            playRareFanfare();
+        }
+        function playRareFanfare() {
+            try {
+                const ctx = new (window.AudioContext || window.webkitAudioContext)();
+                const now = ctx.currentTime;
+                const notes = [523.25, 659.25, 783.99, 1046.50]; // C5, E5, G5, C6
+                notes.forEach((freq, i) => {
+                    const osc = ctx.createOscillator();
+                    const gain = ctx.createGain();
+                    osc.type = 'sine';
+                    osc.frequency.setValueAtTime(freq, now + i * 0.1);
+                    gain.gain.setValueAtTime(0.2, now + i * 0.1);
+                    gain.gain.exponentialRampToValueAtTime(0.01, now + (i * 0.1) + 0.3);
+                    osc.connect(gain);
+                    gain.connect(ctx.destination);
+                    osc.start(now + i * 0.1);
+                    osc.stop(now + i * 0.1 + 0.3);
+                });
+            } catch (e) { console.log('Audio failed:', e); }
+        }
+        function showStickerFlash(emoji) {
+            const overlay = document.getElementById('sticker-flash-overlay');
+            overlay.textContent = emoji;
+            overlay.classList.remove('animate-sticker-pop');
+            void overlay.offsetWidth; // Trigger reflow
+            overlay.classList.add('animate-sticker-pop');
         }
         function closeRare() {
             document.getElementById('rare-banner').classList.remove('show');
@@ -1055,6 +1117,7 @@
                 const s = pickSticker();
                 stickers.push(s);
                 saveStickers();
+                showStickerFlash(s);
                 const row = document.getElementById('sticker-row');
                 const sp = document.createElement('span');
                 sp.textContent = s;
@@ -1142,6 +1205,7 @@
     </script>
     <!-- Fireworks canvas (behind everything) -->
     <canvas id="fw-canvas"></canvas>
+    <div id="sticker-flash-overlay"></div>
 
     <!-- Rare sticker overlay -->
     <div class="rare-banner" id="rare-banner">

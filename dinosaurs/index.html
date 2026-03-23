@@ -199,22 +199,25 @@
             position: relative;
         }
 
-        .math-row {
-            display: flex;
-            gap: 1rem;
-            position: relative;
+        .math-row span {
+            width: 4rem;
+            display: inline-block;
+            text-align: center;
         }
 
         .op-sign {
             position: absolute;
-            left: -3rem;
+            left: -4.5rem;
             color: #9ca3af;
+            width: 4rem;
+            text-align: center;
         }
 
         .math-line {
             height: 6px;
             background: #1f2937;
-            width: 100%;
+            width: calc(100% + 1rem);
+            /* Extend slightly for better look */
             border-radius: 3px;
         }
 
@@ -225,16 +228,17 @@
         }
 
         .carry-box {
-            width: 3rem;
-            height: 3rem;
+            width: 4rem;
+            height: 4rem;
             border: 3px dashed #f59e0b;
-            border-radius: 0.5rem;
-            font-size: 1.2rem;
+            border-radius: 0.8rem;
+            font-size: 1.5rem;
             display: flex;
             align-items: center;
             justify-content: center;
             color: #d97706;
             cursor: pointer;
+            background: white;
         }
 
         .carry-box.active {
@@ -666,21 +670,24 @@
                                 <div style={{display:'flex', justifyContent:'center', width:'100%'}}>
                                     <div className="column-math">
                                         <div className="carry-row">
-                                            <div className="carry-box" style={{visibility:'hidden'}}></div>
-                                            <div className={`carry-box ${carries.h?'active':''}`} onClick={() => setCarries(p=>({...p,h:p.h?'':'1'}))}>{carries.h}</div>
-                                            <div className={`carry-box ${carries.t?'active':''}`} onClick={() => setCarries(p=>({...p,t:p.t?'':'1'}))}>{carries.t}</div>
+                                            <div className={`carry-box ${carries.h?'active':''}`} onClick={() => setCarries(p=>({...p,h:p.h?'':'1'}))}>{carries.h || '\u00A0'}</div>
+                                            <div className={`carry-box ${carries.t?'active':''}`} onClick={() => setCarries(p=>({...p,t:p.t?'':'1'}))}>{carries.t || '\u00A0'}</div>
                                             <div className="carry-box" style={{visibility:'hidden'}}></div>
                                         </div>
                                         <div className="math-row">
-                                            <span>{n1s[0]}</span><span>{n1s[1]}</span><span>{n1s[2]}</span>
+                                            <span>{n1s[0] === '0' ? '\u00A0' : n1s[0]}</span>
+                                            <span>{(n1s[0] === '0' && n1s[1] === '0') ? '\u00A0' : n1s[1]}</span>
+                                            <span>{n1s[2]}</span>
                                         </div>
                                         <div className="math-row">
                                             <span className="op-sign">{operation==='add'?'+':'-'}</span>
-                                            <span>{n2s[0]}</span><span>{n2s[1]}</span><span>{n2s[2]}</span>
+                                            <span>{n2s[0] === '0' ? '\u00A0' : n2s[0]}</span>
+                                            <span>{(n2s[0] === '0' && n2s[1] === '0') ? '\u00A0' : n2s[1]}</span>
+                                            <span>{n2s[2]}</span>
                                         </div>
                                         <div className="math-line"></div>
                                         <div className="answer-row">
-                                            <input ref={hRef} type="number" className="column-input" value={answer.h} onChange={e=>{const v=e.target.value.slice(-1);setAnswer(p=>({...p,h:v})); if(v && !answer.t) tRef.current?.focus();}} onKeyDown={e=>e.key==='Enter'&&checkAnswer()} />
+                                            <input ref={hRef} type="number" className="column-input" value={answer.h} onChange={e=>{const v=e.target.value.slice(-1);setAnswer(p=>({...p,h:v}));}} onKeyDown={e=>e.key==='Enter'&&checkAnswer()} />
                                             <input ref={tRef} type="number" className="column-input" value={answer.t} onChange={e=>{const v=e.target.value.slice(-1);setAnswer(p=>({...p,t:v})); if(v && !answer.h) hRef.current?.focus();}} onKeyDown={e=>e.key==='Enter'&&checkAnswer()} />
                                             <input ref={uRef} type="number" className="column-input" value={answer.u} onChange={e=>{const v=e.target.value.slice(-1);setAnswer(p=>({...p,u:v})); if(v && !answer.t) tRef.current?.focus();}} onKeyDown={e=>e.key==='Enter'&&checkAnswer()} />
                                         </div>

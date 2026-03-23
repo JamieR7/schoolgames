@@ -253,30 +253,40 @@
     <button class="btn-check" onclick="checkWork()">Check Drawing!</button>
 
     <script>
-        const levels = [
-            {
-                name: "Cross",
-                lines: [
-                    [2, 1, 4, 1], [4, 1, 4, 3], [4, 3, 6, 3], [6, 3, 6, 5], [6, 5, 4, 5], [4, 5, 4, 7],
-                    [4, 7, 2, 7], [2, 7, 2, 5], [2, 5, 0, 5], [0, 5, 0, 3], [0, 3, 2, 3], [2, 3, 2, 1]
-                ]
-            },
-            {
-                name: "House",
-                lines: [
-                    [1, 3, 4, 0], [4, 0, 7, 3], [7, 3, 7, 7], [7, 7, 1, 7], [1, 7, 1, 3],
-                    [3, 7, 3, 5], [3, 5, 5, 5], [5, 5, 5, 7] // Door
-                ]
-            },
-            {
-                name: "3D Cube",
-                lines: [
-                    [1, 1, 4, 1], [4, 1, 4, 4], [4, 4, 1, 4], [1, 4, 1, 1], // Front square
-                    [2, 0, 5, 0], [5, 0, 5, 3], [5, 3, 2, 3], [2, 3, 2, 0], // Back square
-                    [1, 1, 2, 0], [4, 1, 5, 0], [4, 4, 5, 3], [1, 4, 2, 3]  // Connections
-                ]
+        function generateRandomLevel(round) {
+            const numLines = Math.min(4 + Math.floor(round / 2), 12);
+            const lines = [];
+            let x = Math.floor(Math.random() * 6) + 1;
+            let y = Math.floor(Math.random() * 6) + 1;
+
+            const directions = [
+                [1, 0], [-1, 0], [0, 1], [0, -1],
+                [1, 1], [1, -1], [-1, 1], [-1, -1]
+            ];
+
+            for (let i = 0; i < numLines; i++) {
+                let attempts = 0;
+                let found = false;
+                while (attempts < 20 && !found) {
+                    const d = directions[Math.floor(Math.random() * directions.length)];
+                    const nx = x + d[0];
+                    const ny = y + d[1];
+
+                    if (nx >= 0 && nx <= 7 && ny >= 0 && ny <= 7) {
+                        const newLine = normalizeLine([x, y, nx, ny]);
+                        if (!lines.some(l => linesMatch(l, newLine))) {
+                            lines.push(newLine);
+                            x = nx;
+                            y = ny;
+                            found = true;
+                        }
+                    }
+                    attempts++;
+                }
+                if (!found) break; // Stuck, stop here
             }
-        ];
+            return { name: "Random Challenge", lines };
+        }
 
         const RARE_STICKERS = [
             '💎', '👑', '🐉', '🌈', '🔮', '🍀', '🦅', '🎆', '⚡', '🌙', '🎭', '🐋', '🌋'
@@ -296,7 +306,8 @@
             });
         }
 
-        let currentLevel = 0;
+        let currentRound = 1;
+        let currentPattern = null;
         let userLines = [];
         let selectedDot = null;
         let GRID_SIZE = 40; // match CSS
@@ -308,7 +319,7 @@
 
         function init() {
             updateGridSize();
-            loadLevel(0);
+            loadNextChallenge();
             userGrid.onclick = handleGridClick;
         }
 
@@ -316,16 +327,27 @@
             GRID_SIZE = window.innerWidth < 750 ? 30 : 40;
         }
 
-        function loadLevel(idx) {
-            currentLevel = idx;
+        function loadNextChallenge() {
             userLines = [];
             selectedDot = null;
-            dotHighlight.style.display = 'none';
-            document.getElementById('lvl-text').textContent = `Level ${idx + 1}: ${levels[idx].name}`;
-            renderSvg(targetSvg, levels[idx].lines, '#94a3b8');
+            if (dotHighlight) dotHighlight.style.display = 'none';
+
+            const level = generateRandomLevel(currentRound);
+            currentPattern = level.lines;
+
+            document.getElementById('lvl-text').textContent = `Round ${currentRound}`;
+            renderSvg(targetSvg, currentPattern, '#94a3b8');
             renderSvg(userSvg, [], '#6366f1');
-            document.getElementById('feedback').textContent = "";
-            document.getElementById('feedback').style.color = "inherit";
+
+            const fb = document.getElementById('feedback');
+            fb.textContent = "";
+            fb.style.color = "inherit";
+        }
+
+        /* Legacy loadLevel function simplified or removed */
+        function loadLevel(idx) {
+            currentRound = idx + 1;
+            loadNextChallenge();
         }
 
         function renderSvg(svg, lines, color) {
@@ -386,7 +408,7 @@
         }
 
         function checkWork() {
-            const targetLines = levels[currentLevel].lines.map(normalizeLine);
+            const targetLines = currentPattern.map(normalizeLine);
             const normalizedUserLines = userLines.map(normalizeLine);
 
             const missing = targetLines.filter(tl => !normalizedUserLines.some(ul => linesMatch(tl, ul)));
@@ -396,12 +418,14 @@
             if (missing.length === 0 && extra.length === 0) {
                 fb.textContent = "Perfect! 🌟";
                 fb.style.color = "#10b981";
-                if (currentLevel < levels.length - 1) {
-                    setTimeout(() => loadLevel(currentLevel + 1), 1500);
-                } else {
-                    fb.textContent = "Amazing! You finished all levels! 🏆";
+
+                // Award sticker every 5 rounds
+                if (currentRound % 5 === 0) {
                     addSticker();
                 }
+
+                currentRound++;
+                setTimeout(() => loadNextChallenge(), 1500);
             } else {
                 fb.textContent = "Almost! Check the lines again. 👀";
                 fb.style.color = "#ef4444";

@@ -5,47 +5,268 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Angus's Dino Maths Adventure 🦖🧭</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700;800;900&display=swap"
+        rel="stylesheet" />
     <!-- React and ReactDOM CDNs -->
     <script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
     <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
     <!-- Babel for JSX support in the browser -->
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
-    <!-- Tailwind CSS CDN -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700;800;900&display=swap" rel="stylesheet">
     <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
         body {
             font-family: 'Montserrat', sans-serif;
             background-color: #fefce8;
             background-image: radial-gradient(#fef08a 2px, transparent 2px);
             background-size: 40px 40px;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 1.5rem 1rem 4rem;
+            color: #1f2937;
         }
 
-        .back-link {
-            display: inline-flex;
+        header {
+            width: 100%;
+            max-width: 800px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: white;
+            border-radius: 2rem;
+            padding: 1rem 1.5rem;
+            margin-bottom: 1.5rem;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
+            border: 4px solid #fef08a;
+        }
+
+        header h1 {
+            font-size: 1.8rem;
+            font-weight: 900;
+            color: #854d0e;
+            text-transform: uppercase;
+        }
+
+        .stats {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+        }
+
+        .stat-pill {
+            display: flex;
             align-items: center;
             gap: 0.4rem;
-            text-decoration: none;
-            color: #854d0e;
-            font-family: 'Montserrat', sans-serif;
-            font-size: 0.9rem;
-            font-weight: 700;
-            padding: 0.8rem 1.5rem;
-            position: relative;
-            z-index: 10;
+            background: #fefce8;
+            border-radius: 9999px;
+            padding: 0.4rem 1rem;
+            font-size: 1.3rem;
+            font-weight: 800;
+            color: #713f12;
+            border: 2px solid #fef08a;
         }
 
-        .back-link:hover {
+        .header-stickers {
+            display: flex;
+            gap: 0.3rem;
+            font-size: 1.5rem;
+        }
+
+        .back-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            text-decoration: none;
+            color: #854d0e;
+            font-size: 0.9rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            width: 100%;
+            max-width: 800px;
+        }
+
+        .back-btn:hover {
             color: #a16207;
         }
 
-        .column-input {
-            appearance: none;
-            -webkit-appearance: none;
-            margin: 0;
-            -moz-appearance: textfield;
+        /* Progress */
+        .progress-wrap {
+            width: 100%;
+            max-width: 800px;
+            margin-bottom: 1.5rem;
+        }
+
+        .progress-label {
+            display: flex;
+            justify-content: space-between;
+            font-weight: 800;
+            font-size: 0.9rem;
+            color: #854d0e;
+            margin-bottom: 0.5rem;
+            text-transform: uppercase;
+        }
+
+        .progress-bar {
+            background: white;
+            border: 4px solid #fef08a;
+            border-radius: 9999px;
+            height: 1.5rem;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            background: linear-gradient(90deg, #facc15, #fde047);
+            height: 100%;
+            border-radius: 9999px;
+            transition: width 0.6s ease;
+        }
+
+        /* Stickers */
+        .stickers {
+            width: 100%;
+            max-width: 800px;
+            background: white;
+            border-radius: 2rem;
+            padding: 1rem 1.5rem;
+            margin-bottom: 1.5rem;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.06);
+            border: 4px solid #fefce8;
+            display: none;
+        }
+
+        .stickers.visible {
+            display: block;
+        }
+
+        .stickers-label {
+            font-size: 0.75rem;
+            font-weight: 800;
+            color: #a16207;
+            text-transform: uppercase;
+            margin-bottom: 0.5rem;
+        }
+
+        .sticker-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            font-size: 2rem;
+        }
+
+        /* Card */
+        .card {
+            width: 100%;
+            max-width: 800px;
+            background: white;
+            border-radius: 2.5rem;
+            padding: 2.5rem;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            border: 8px solid white;
+            outline: 4px solid #fef08a;
             text-align: center;
+        }
+
+        .badge {
+            display: inline-block;
+            background: #854d0e;
+            color: white;
+            border-radius: 9999px;
+            padding: 0.2rem 0.9rem;
+            font-size: 0.8rem;
             font-weight: 900;
+            text-transform: uppercase;
+            margin-bottom: 1rem;
+        }
+
+        /* Column Addition/Subtraction Style */
+        .column-math {
+            font-family: monospace;
+            font-size: 3.5rem;
+            font-weight: 900;
+            color: #1f2937;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            gap: 0.5rem;
+            margin: 2rem 0;
+            position: relative;
+        }
+
+        .math-row {
+            display: flex;
+            gap: 1rem;
+            position: relative;
+        }
+
+        .op-sign {
+            position: absolute;
+            left: -3rem;
+            color: #9ca3af;
+        }
+
+        .math-line {
+            height: 6px;
+            background: #1f2937;
+            width: 100%;
+            border-radius: 3px;
+        }
+
+        .carry-row {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .carry-box {
+            width: 3rem;
+            height: 3rem;
+            border: 3px dashed #f59e0b;
+            border-radius: 0.5rem;
+            font-size: 1.2rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #d97706;
+            cursor: pointer;
+        }
+
+        .carry-box.active {
+            background: #fef3c7;
+            border-style: solid;
+            font-weight: 900;
+        }
+
+        /* Inputs */
+        .answer-row {
+            display: flex;
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        .column-input {
+            width: 4rem;
+            height: 5.5rem;
+            font-size: 3.5rem;
+            font-weight: 900;
+            text-align: center;
+            border: 4px solid #fef08a;
+            border-radius: 1rem;
+            color: #854d0e;
+            outline: none;
+            transition: all 0.2s;
+            background: #fffbeb;
+        }
+
+        .column-input:focus {
+            border-color: #854d0e;
+            background: white;
         }
 
         .column-input::-webkit-inner-spin-button,
@@ -54,25 +275,80 @@
             margin: 0;
         }
 
-        @keyframes float {
-            0% {
-                transform: translateY(0px);
-            }
-
-            50% {
-                transform: translateY(-10px);
-            }
-
-            100% {
-                transform: translateY(0px);
-            }
+        /* Problem Text */
+        .problem-bubble {
+            background: #fffbeb;
+            border: 4px solid #fef08a;
+            border-radius: 2rem;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: #713f12;
+            position: relative;
+            text-align: left;
         }
 
-        .animate-float {
-            animation: float 3s ease-in-out infinite;
+        .problem-bubble:after {
+            content: '';
+            position: absolute;
+            bottom: -20px;
+            left: 40px;
+            border-width: 20px 20px 0 0;
+            border-style: solid;
+            border-color: #fef08a transparent;
         }
 
-        /* Sticker Flash */
+        .check-btn {
+            font-family: inherit;
+            font-size: 1.5rem;
+            font-weight: 900;
+            background: #854d0e;
+            color: white;
+            border: none;
+            cursor: pointer;
+            border-radius: 9999px;
+            padding: 1rem 3rem;
+            box-shadow: 0 6px 0 #451a03;
+            text-transform: uppercase;
+            margin-top: 1.5rem;
+            transition: all 0.1s;
+        }
+
+        .check-btn:active {
+            transform: translateY(4px);
+            box-shadow: 0 2px 0 #451a03;
+        }
+
+        /* Feedback */
+        .feedback-area {
+            margin-top: 1.5rem;
+        }
+
+        .feedback {
+            border-radius: 1.5rem;
+            padding: 1.2rem;
+            text-align: center;
+            display: none;
+        }
+
+        .feedback.show {
+            display: block;
+        }
+
+        .feedback.correct {
+            background: #f0fdf4;
+            border: 3px solid #86efac;
+            color: #16a34a;
+        }
+
+        .feedback.wrong {
+            background: #fef2f2;
+            border: 3px solid #fca5a5;
+            color: #dc2626;
+        }
+
+        /* Celebration & Rare */
         #sticker-flash-overlay {
             position: fixed;
             top: 50%;
@@ -83,6 +359,87 @@
             z-index: 10000;
             opacity: 0;
             display: none;
+        }
+
+        #fw-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            pointer-events: none;
+            z-index: 2500;
+        }
+
+        .celebration {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(133, 77, 14, 0.95);
+            z-index: 2000;
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            backdrop-filter: blur(15px);
+            color: white;
+            text-align: center;
+            padding: 2rem;
+        }
+
+        .celebration.show {
+            display: flex;
+        }
+
+        .rare-banner {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.85);
+            z-index: 3000;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            backdrop-filter: blur(10px);
+        }
+
+        .rare-banner.show {
+            display: flex;
+        }
+
+        .rare-inner {
+            background: linear-gradient(135deg, #fbbf24, #f59e0b);
+            border: 8px solid white;
+            border-radius: 3rem;
+            padding: 3rem;
+            max-width: 500px;
+            width: 90%;
+            text-align: center;
+            color: white;
+            box-shadow: 0 0 60px rgba(251, 191, 36, 0.6);
+        }
+
+        .select-btn {
+            font-family: inherit;
+            font-size: 1.8rem;
+            font-weight: 900;
+            background: white;
+            color: #854d0e;
+            border: 6px solid #fef08a;
+            border-radius: 2rem;
+            padding: 2rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            width: 100%;
+            max-width: 300px;
+        }
+
+        .select-btn:hover {
+            background: #fefce8;
+            transform: translateY(-5px);
+            box-shadow: 0 10px 0 #fef08a;
         }
 
         @keyframes sticker-pop {
@@ -106,471 +463,267 @@
             display: block !important;
             animation: sticker-pop 1.5s ease-out forwards;
         }
-
-        .carry-box {
-            width: 2rem;
-            height: 2rem;
-            font-size: 0.8rem;
-            border: 2px dashed #ca8a04;
-            color: #ca8a04;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            border-radius: 0.5rem;
-            background: #fef9c3;
-        }
-
-        .digit-cell {
-            width: 4rem;
-            height: 5rem;
-            font-size: 2.5rem;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            border: 4px solid #e2e8f0;
-            border-radius: 0.75rem;
-            background: white;
-        }
     </style>
 </head>
 
 <body>
-    <a href="../index.html" class="back-link">← Back to All Games</a>
+    <a href="../index.html" class="back-btn">← Back to All Games</a>
     <div id="root"></div>
 
     <script type="text/babel">
         const { useState, useEffect, useRef } = React;
 
-        const RARE_STICKERS = [
-            { emoji: '💎', name: 'Diamond' }, { emoji: '👑', name: 'Crown' }, { emoji: '🦄', name: 'Unicorn' },
-            { emoji: '🐉', name: 'Dragon' }, { emoji: '🌈', name: 'Rainbow' }, { emoji: '🔮', name: 'Crystal Ball' },
-            { emoji: '🍀', name: 'Lucky Clover' }, { emoji: '🦅', name: 'Eagle' }, { emoji: '🎆', name: 'Fireworks' },
-            { emoji: '⚡', name: 'Lightning Bolt' }, { emoji: '🌙', name: 'Golden Moon' }, { emoji: '🎭', name: 'Magic Mask' },
-            { emoji: '🦋', name: 'Butterfly' }, { emoji: '🐋', name: 'Blue Whale' }, { emoji: '🌋', name: 'Volcano' },
-        ];
-        const DINO_SPECIES = [
-            "Tyrannosaurus Rex", "Triceratops", "Stegosaurus", "Velociraptor", "Brachiosaurus",
-            "Diplodocus", "Spinosaurus", "Ankylosaurus", "Parasaurolophus", "Carnotaurus",
-            "Therizinosaurus", "Amargasaurus", "Nigersaurus", "Deinocheirus", "Yi qi",
-            "Halszkaraptor", "Microraptor", "Archaeopteryx", "Giganotosaurus", "Allosaurus",
-            "Baryonyx", "Iguanodon", "Pachycephalosaurus", "Deinonychus", "Utahraptor",
-            "Argentinosaurus", "Maiasaura", "Protoceratops", "Oviraptor", "Coelophysis",
-            "Dilophosaurus", "Edmontosaurus", "Styracosaurus", "Euoplocephalus", "Corythosaurus",
-            "Lambeosaurus", "Albertosaurus", "Tarbosaurus", "Daspletosaurus", "Struthiomimus",
-            "Gallimimus", "Ornithomimus", "Troodon", "Sinosauropteryx", "Caudipteryx",
-            "Beipiaosaurus", "Citipati", "Gigantoraptor", "Chirostenotes", "Mononykus",
-            "Alvarezsaurus", "Shuvuuia", "Patagonykus", "Hesperonychus", "Buitreraptor",
-            "Austroraptor", "Mahakala", "Rahonavis", "Unenlagia", "Shanag", "Tianyulong",
-            "Heterodontosaurus", "Abrictosaurus", "Lycorhinus", "Eocursor", "Lesothosaurus",
-            "Scutellosaurus", "Scelidosaurus", "Huayangosaurus", "Kentrosaurus", "Tuojiangosaurus",
-            "Wuerhosaurus", "Miragaia", "Dacentrurus", "Hesperosaurus", "Loricatosaurus",
-            "Gastonia", "Polacanthus", "Hylaeosaurus", "Nodosaurus", "Sauropelta",
-            "Edmontonia", "Panoplosaurus", "Minmi", "Antarctopelta", "Liaoningosaurus",
-            "Zhongyuansaurus", "Cedarpelta", "Peloroplites", "Animantarx", "Hungarosaurus",
-            "Struthiosaurus", "Zhejiangosaurus", "Dracopelta", "Acanthopholis", "Stegopelta",
-            "Texasetes", "Pawpawsaurus", "Silvisaurus", "Sauroposeidon", "Giraffatitan",
-            "Camarasaurus", "Apatosaurus", "Dreadnoughtus", "Patagotitan", "Saltasaurus",
-            "Alamosaurus", "Isanosaurus", "Spinophorosaurus", "Shunosaurus", "Mamenchisaurus",
-            "Omeisaurus", "Euhelopus", "Turiasaurus", "Losillasaurus", "Galveosaurus",
-            "Lusotitan", "Dinheirosaurus", "Lourinhasaurus", "Supersaurus", "Futalognkosaurus",
-            "Puertasaurus", "Antarctosaurus", "Janenschia", "Tendaguria", "Dicraeosaurus",
-            "Brachytrachelopan", "Limaysaurus", "Cathartesaura", "Zapalasaurus", "Comahuesaurus",
-            "Nopcsaspondylus", "Rayososaurus", "Histriasaurus", "Amazonsaurus", "Brontosaurus"
-        ];
         const THEMES = [
             { name: 'Real Madrid', emoji: '🏆', stickers: ['⚽', '🏟️', '🥅', '👟', '🏆', '🧤', '🥇', '📣', '🎽', '🧣', '🎖️', '🔵', '⬜', '🌟', '🎯'] },
             { name: 'Beyblade', emoji: '🌪️', stickers: ['🌪️', '💥', '🌀', '⚙️', '🔧', '🔥', '⚡', '💫', '🛸', '🎯', '💿', '🔩', '🎪', '🎰', '🌀'] },
-            { name: 'Bruno', emoji: '🐶', stickers: ['🐶', '🦴', '🎾', '🐾', '🐕', '🥩', '🦮', '🥎', '🛋️', '🚿', '🐕‍🦺', '🌿', '🏡', '🎀', '🐩'] },
-            { name: 'Judo Master', emoji: '🥋', stickers: ['🥋', '💪', '🥇', '🤸', '⛩️', '🇯🇵', '🧘', '🏆', '💯', '🎖️', '🏯', '🎌', '🌸', '🥁', '🎍'] },
+            { name: 'Bruno', emoji: '🐶', stickers: ['🐶', '🦴', '🎾', '🐾', '🐕', '🥩', '🦮', '🥎', '🚿', '🐕‍🦺', '🌿', '🏡', '🎀'] },
+            { name: 'Judo Master', emoji: '🥋', stickers: ['🥋', '💪', '🥇', '🤸', '⛩️', '🇯🇵', '🧘', '🏆', '💯', '🎖️', '🏯', '🌸', '🥁'] },
             { name: 'Agent P', emoji: '🦆', stickers: ['🦆', '🎩', '🎸', '🛠️', '🧪', '🎢', '📻', '🗺️', '⚙️', '🔩', '🔬', '🧲', '📡', '🎬', '🛩️'] },
-            { name: 'Space', emoji: '🚀', stickers: ['🚀', '🌍', '🌙', '⭐', '🛸', '☄️', '🪐', '👨‍🚀', '🌠', '🔭', '🛰️', '💫', '🌌', '🌟', '🌛'] },
+            { name: 'Space', emoji: '🚀', stickers: ['🚀', '🌍', '🌙', '⭐', '🛸', '☄️', '🪐', '👨‍🚀', '🌠', '🔭', '🛰️', '💫', '🌌', '🌟'] },
         ];
+        const RARE_STICKERS = [
+            { emoji: '💎', name: 'Diamond' }, { emoji: '👑', name: 'Crown' },
+            { emoji: '🐉', name: 'Dragon' }, { emoji: '🌈', name: 'Rainbow' }, { emoji: '🔮', name: 'Crystal Ball' },
+            { emoji: '🍀', name: 'Lucky Clover' }, { emoji: '🦅', name: 'Eagle' }, { emoji: '🎆', name: 'Fireworks' },
+            { emoji: '⚡', name: 'Lightning Bolt' }, { emoji: '🌙', name: 'Golden Moon' }, { emoji: '🎭', name: 'Magic Mask' },
+            { emoji: '🐋', name: 'Blue Whale' }, { emoji: '🌋', name: 'Volcano' },
+        ];
+        const DINO_CHARS = ["Tyrannosaurus Rex", "Triceratops", "Stegosaurus", "Velociraptor", "Brachiosaurus", "Diplodocus", "Spinosaurus", "Ankylosaurus"];
         const RARE_CHANCE = 0.2;
-
-        const StickerHeader = ({ collection, color, borderColor }) => {
-            const rare = JSON.parse(sessionStorage.getItem('stickers_rare') || '[]');
-            return (
-                <div style={{
-                    position: 'fixed',
-                    top: '15px',
-                    right: '20px',
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: '10px',
-                    background: 'rgba(255,255,255,0.9)',
-                    padding: '8px 15px',
-                    borderRadius: '99px',
-                    backdropFilter: 'blur(10px)',
-                    border: `2px solid ${borderColor}`,
-                    zIndex: 1000,
-                    boxShadow: '0 4px 15px rgba(0,0,0,0.05)'
-                }}>
-                    <span style={{ fontSize: '0.7rem', fontWeight: 900, color: color, textTransform: 'uppercase', letterSpacing: '1px' }}>Stickers:</span>
-                    <div style={{ display: 'flex', gap: '5px', fontSize: '1.4rem' }}>
-                        {[...collection, ...rare].map((s, i) => <span key={i}>{s}</span>)}
-                    </div>
-                </div>
-            );
-        };
 
         function App() {
             const [mode, setMode] = useState('select'); // select, play, reward
-            const [operation, setOperation] = useState('add'); // add, subtract
+            const [operation, setOperation] = useState('add');
             const [num1, setNum1] = useState(0);
             const [num2, setNum2] = useState(0);
             const [answer, setAnswer] = useState({ h: '', t: '', u: '' });
             const [carries, setCarries] = useState({ h: '', t: '' });
             const [score, setScore] = useState(0);
             const [streak, setStreak] = useState(0);
-            const [collection, setCollection] = useState(() => {
-                try {
-                    return JSON.parse(sessionStorage.getItem('stickers_dinosaurs') || '[]');
-                } catch {
-                    return [];
-                }
-            });
+            const [progress, setProgress] = useState(0);
+            const [level, setLevel] = useState(0);
+            const [status, setStatus] = useState('playing'); 
+            const [collection, setCollection] = useState(() => JSON.parse(sessionStorage.getItem('stickers_dinosaurs') || '[]'));
             const [nextSticker, setNextSticker] = useState('');
-            const [nextTheme, setNextTheme] = useState(null);
+            const [problemText, setProblemText] = useState('');
             const [isRarePending, setIsRarePending] = useState(false);
             const [rareInfo, setRareInfo] = useState(null);
             const [showRare, setShowRare] = useState(false);
-            const [status, setStatus] = useState('waiting'); // waiting, checking, correct, incorrect
             const [flashEmoji, setFlashEmoji] = useState(null);
-            const [problemText, setProblemText] = useState('');
 
-            const hRef = useRef(null);
-            const tRef = useRef(null);
-            const uRef = useRef(null);
+            const hRef = useRef(null); const tRef = useRef(null); const uRef = useRef(null);
 
             useEffect(() => {
                 sessionStorage.setItem('stickers_dinosaurs', JSON.stringify(collection));
             }, [collection]);
 
-            const generateProblem = (op) => {
+            const generateProblem = (op = operation) => {
                 let n1, n2;
-                const species1 = DINO_SPECIES[Math.floor(Math.random() * DINO_SPECIES.length)];
-                const species2 = DINO_SPECIES[Math.floor(Math.random() * DINO_SPECIES.length)];
-                const eras = ['Cretaceous', 'Jurassic', 'Triassic'];
-                const era = eras[Math.floor(Math.random() * eras.length)];
-
+                const d1 = DINO_CHARS[Math.floor(Math.random() * DINO_CHARS.length)];
+                const d2 = DINO_CHARS[Math.floor(Math.random() * DINO_CHARS.length)];
                 if (op === 'add') {
-                    n1 = Math.floor(Math.random() * 800) + 100;
-                    n2 = Math.floor(Math.random() * (999 - n1)) + 1;
-                    setProblemText(`"Angus went on a field trip to the ${era} era. He counted ${n1} ${species1} and then spotted ${n2} ${species2}. How many dinosaurs did he see altogether on his trip?"`);
+                    n1 = Math.floor(Math.random() * 800) + 100; n2 = Math.floor(Math.random() * (999 - n1)) + 1;
+                    setProblemText(`Angus spotted ${n1} ${d1}s and then ${n2} ${d2}s. How many altogether?`);
                 } else {
-                    n1 = Math.floor(Math.random() * 899) + 100;
-                    n2 = Math.floor(Math.random() * (n1 - 1)) + 1;
-                    setProblemText(`"On a trip to the ${era} era, Angus was tracking ${n1} ${species1}. Suddenly, ${n2} of them ran away into a cave! How many ${species1} can he still see?"`);
+                    n1 = Math.floor(Math.random() * 899) + 100; n2 = Math.floor(Math.random() * (n1 - 1)) + 1;
+                    setProblemText(`Angus saw ${n1} ${d1}s, but ${n2} of them ran away! How many left?`);
                 }
-                setNum1(n1);
-                setNum2(n2);
-                setAnswer({ h: '', t: '', u: '' });
-                setCarries({ h: '', t: '' });
-                setStatus('waiting');
-
-                // Pick sticker
-                const themeIndex = Math.floor(score / 500) % THEMES.length;
-                const theme = THEMES[themeIndex];
+                setNum1(n1); setNum2(n2); setAnswer({ h: '', t: '', u: '' }); setCarries({ h: '', t: '' }); setStatus('playing');
+                
+                const theme = THEMES[level % THEMES.length];
                 if (Math.random() < RARE_CHANCE) {
                     const rareOwned = JSON.parse(sessionStorage.getItem('stickers_rare') || '[]');
                     const available = RARE_STICKERS.filter(s => !rareOwned.includes(s.emoji));
                     const pool = available.length > 0 ? available : RARE_STICKERS;
                     const r = pool[Math.floor(Math.random() * pool.length)];
-                    setNextSticker(r.emoji);
-                    setNextTheme(null);
-                    setRareInfo(r);
-                    setIsRarePending(true);
+                    setNextSticker(r.emoji); setRareInfo(r); setIsRarePending(true);
                 } else {
                     setNextSticker(theme.stickers[Math.floor(Math.random() * theme.stickers.length)]);
-                    setNextTheme(theme);
                     setIsRarePending(false);
                 }
                 setTimeout(() => uRef.current?.focus(), 100);
             };
 
-            const startPlaying = (op) => {
-                setOperation(op);
-                setMode('play');
-                generateProblem(op);
+            const startPlaying = (op) => { setOperation(op); setMode('play'); generateProblem(op); };
+
+            const checkAnswer = () => {
+                const userVal = parseInt(`${answer.h || 0}${answer.t || 0}${answer.u || 0}`);
+                const correctVal = operation === 'add' ? num1 + num2 : num1 - num2;
+                if (userVal === correctVal) {
+                    setScore(s => s + 100); setStreak(s => s + 1);
+                    setCollection(p => [...p, nextSticker]);
+                    showStickerFlash(nextSticker);
+                    if (isRarePending && rareInfo) {
+                        const rareOwned = JSON.parse(sessionStorage.getItem('stickers_rare') || '[]');
+                        if (!rareOwned.includes(rareInfo.emoji)) {
+                            rareOwned.push(rareInfo.emoji); sessionStorage.setItem('stickers_rare', JSON.stringify(rareOwned));
+                        }
+                        setTimeout(() => { setShowRare(true); playRareFanfare(); }, 500);
+                    }
+                    const nextProgress = progress + 1;
+                    if (nextProgress >= 5) {
+                        setTimeout(() => setStatus('reward'), 800);
+                    } else {
+                        setProgress(nextProgress); setStatus('correct');
+                    }
+                } else {
+                    setStatus('incorrect'); setStreak(0);
+                }
+            };
+
+            const showStickerFlash = (emoji) => {
+                setFlashEmoji(emoji); setTimeout(() => setFlashEmoji(null), 1500);
             };
 
             const playRareFanfare = () => {
                 try {
                     const ctx = new (window.AudioContext || window.webkitAudioContext)();
                     const now = ctx.currentTime;
-                    const notes = [523.25, 659.25, 783.99, 1046.50]; // C5, E5, G5, C6
+                    const notes = [523.25, 659.25, 783.99, 1046.50];
                     notes.forEach((freq, i) => {
-                        const osc = ctx.createOscillator();
-                        const gain = ctx.createGain();
-                        osc.type = 'sine';
-                        osc.frequency.setValueAtTime(freq, now + i * 0.1);
+                        const osc = ctx.createOscillator(); const gain = ctx.createGain();
+                        osc.type = 'sine'; osc.frequency.setValueAtTime(freq, now + i * 0.1);
                         gain.gain.setValueAtTime(0.2, now + i * 0.1);
                         gain.gain.exponentialRampToValueAtTime(0.01, now + (i * 0.1) + 0.3);
-                        osc.connect(gain);
-                        gain.connect(ctx.destination);
-                        osc.start(now + i * 0.1);
-                        osc.stop(now + i * 0.1 + 0.3);
+                        osc.connect(gain); gain.connect(ctx.destination);
+                        osc.start(now + i * 0.1); osc.stop(now + i * 0.1 + 0.3);
                     });
-                } catch (e) { console.log('Audio failed:', e); }
+                } catch (e) {}
             };
 
-            const showStickerFlash = (emoji) => {
-                setFlashEmoji(emoji);
-                setTimeout(() => setFlashEmoji(null), 1500);
-            };
+            const nextLevel = () => { setLevel(l => l + 1); setProgress(0); setStatus('playing'); generateProblem(); };
+            const nextQuestion = () => { generateProblem(); };
 
-            const checkAnswer = () => {
-                const userAns = parseInt(`${answer.h || 0}${answer.t || 0}${answer.u || 0}`);
-                const correctAns = operation === 'add' ? num1 + num2 : num1 - num2;
-
-                if (userAns === correctAns) {
-                    setScore(s => s + 100);
-                    setStreak(s => s + 1);
-                    setCollection(p => [...p, nextSticker]);
-                    showStickerFlash(nextSticker);
-                    if (isRarePending && rareInfo) {
-                        const rareOwned = JSON.parse(sessionStorage.getItem('stickers_rare') || '[]');
-                        if (!rareOwned.includes(rareInfo.emoji)) {
-                            rareOwned.push(rareInfo.emoji);
-                            sessionStorage.setItem('stickers_rare', JSON.stringify(rareOwned));
-                        }
-                        setTimeout(() => {
-                            setShowRare(true);
-                            playRareFanfare();
-                        }, 500);
-                    }
-                    setStatus('correct');
-                } else {
-                    setStatus('incorrect');
-                    setStreak(0);
-                }
-            };
-
-            const handleInput = (val, pos) => {
-                const v = val.replace(/[^0-9]/g, '').slice(-1);
-                setAnswer(prev => ({ ...prev, [pos]: v }));
-                if (v !== '') {
-                    if (pos === 'u') tRef.current?.focus();
-                    else if (pos === 't') hRef.current?.focus();
-                }
-            };
-
-            const toggleCarry = (pos) => {
-                setCarries(prev => ({ ...prev, [pos]: prev[pos] === '1' ? '' : '1' }));
-            };
+            const currentTheme = THEMES[level % THEMES.length];
+            const rareOwned = JSON.parse(sessionStorage.getItem('stickers_rare') || '[]');
+            const n1s = String(num1).padStart(3, '0'), n2s = String(num2).padStart(3, '0');
 
             if (mode === 'select') {
                 return (
-                    <div className="flex flex-col items-center justify-center min-h-[80vh] p-4 text-center">
-                        <div className="bg-white p-12 rounded-[3rem] shadow-2xl border-8 border-yellow-400 max-w-2xl w-full">
-                            <div className="text-8xl mb-6 animate-float">🧭🦕</div>
-                            <h1 className="text-4xl md:text-5xl font-black text-amber-900 mb-4 uppercase">Angus's Adventure</h1>
-                            <p className="text-xl font-bold text-amber-700 mb-12">"Help Angus travel through time and count the rare dinosaur species he finds!"</p>
-
-                            <div className="flex flex-col md:flex-row gap-6">
-                                <button onClick={() => startPlaying('add')} className="flex-1 bg-green-500 hover:bg-green-600 text-white font-black py-8 px-6 rounded-3xl text-2xl shadow-lg transform transition active:scale-95 border-b-8 border-green-700">
-                                    🦴 ADDITION
-                                </button>
-                                <button onClick={() => startPlaying('subtract')} className="flex-1 bg-orange-500 hover:bg-orange-600 text-white font-black py-8 px-6 rounded-3xl text-2xl shadow-lg transform transition active:scale-95 border-b-8 border-orange-700">
-                                    🦖 SUBTRACTION
-                                </button>
-                            </div>
+                    <div className="card" style={{marginTop:'5rem'}}>
+                        <div style={{fontSize:'8rem', marginBottom:'2rem'}}>🦕🧭</div>
+                        <h2 style={{fontSize:'2.5rem', fontWeight:900, color:'#854d0e', marginBottom:'1.5rem'}}>DINO ADVENTURE</h2>
+                        <p style={{fontSize:'1.2rem', fontWeight:700, color:'#a16207', marginBottom:'3rem'}}>Help Angus track down the rarest dinosaurs!</p>
+                        <div style={{display:'flex', gap:'2rem', justifyContent:'center'}}>
+                            <button className="select-btn" onClick={() => startPlaying('add')}>🦴 ADD</button>
+                            <button className="select-btn" onClick={() => startPlaying('subtract')}>🦖 SUB</button>
                         </div>
                     </div>
                 );
             }
 
-            const n1s = String(num1).padStart(3, '0');
-            const n2s = String(num2).padStart(3, '0');
-
             return (
-                <div className="flex flex-col items-center py-4 px-4 max-w-4xl mx-auto">
-                    <StickerHeader collection={collection} color="#854d0e" borderColor="#fef08a" />
+                <div style={{width:'100%', maxWidth:'800px', display:'flex', flexDirection:'column', alignItems:'center'}}>
+                    <header>
+                        <h1>Dino Adventure 🦕</h1>
+                        <div className="stats">
+                            <div className="header-stickers">
+                                {[...collection.slice(-3), ...rareOwned.slice(-2)].slice(-5).map((s,i) => <span key={i}>{s}</span>)}
+                            </div>
+                            <div className="stat-pill">⭐ {score}</div>
+                            <div className="stat-pill">🔥 {streak}</div>
+                        </div>
+                    </header>
+
+                    <div className="progress-wrap">
+                        <div className="progress-label">
+                            <span>Collecting: {currentTheme.name} {currentTheme.emoji}</span>
+                            <span>{progress} / 5</span>
+                        </div>
+                        <div className="progress-bar">
+                            <div className="progress-fill" style={{width: `${(progress/5)*100}%`}}></div>
+                        </div>
+                    </div>
+
+                    {collection.length > 0 && (
+                        <div className="stickers visible">
+                            <div className="stickers-label">Knowledge Collection:</div>
+                            <div className="sticker-row">
+                                {collection.map((s,i) => <span key={i}>{s}</span>)}
+                                {rareOwned.map((s,i) => <span key={'r'+i}>{s}</span>)}
+                            </div>
+                        </div>
+                    )}
+
+                    <div className="card">
+                        {status === 'reward' ? (
+                            <div className="celebration show" style={{position:'static', background:'none', color:'inherit', backdropFilter:'none', padding:0}}>
+                                <div className="celebration-emoji">{currentTheme.emoji}</div>
+                                <h2 style={{fontSize:'2.5rem', fontWeight:900, color:'#854d0e'}}>Amazing Explorer! 🎉</h2>
+                                <p style={{fontSize:'1.2rem', fontWeight:700}}>You found all the {currentTheme.name} stickers!</p>
+                                <div className="sticker-reward">{currentTheme.stickers[0]}</div>
+                                <button className="check-btn" onClick={nextLevel}>Next Mission! 🚀</button>
+                            </div>
+                        ) : (
+                            <div>
+                                <div className="badge">{operation.toUpperCase()} Challenge</div>
+                                <div className="problem-bubble">{problemText}</div>
+                                
+                                <div className="badge" style={{background: isRarePending ? '#fbbf24' : '#854d0e', marginBottom:'2rem'}}>
+                                    {isRarePending ? '⭐ RARE FIND AHEAD!' : `Sticker: ${nextSticker}`}
+                                </div>
+
+                                <div style={{display:'flex', justifyContent:'center', width:'100%'}}>
+                                    <div className="column-math">
+                                        <div className="carry-row">
+                                            <div className="carry-box" style={{visibility:'hidden'}}></div>
+                                            <div className={`carry-box ${carries.h?'active':''}`} onClick={() => setCarries(p=>({...p,h:p.h?'':'1'}))}>{carries.h}</div>
+                                            <div className={`carry-box ${carries.t?'active':''}`} onClick={() => setCarries(p=>({...p,t:p.t?'':'1'}))}>{carries.t}</div>
+                                            <div className="carry-box" style={{visibility:'hidden'}}></div>
+                                        </div>
+                                        <div className="math-row">
+                                            <span>{n1s[0]}</span><span>{n1s[1]}</span><span>{n1s[2]}</span>
+                                        </div>
+                                        <div className="math-row">
+                                            <span className="op-sign">{operation==='add'?'+':'-'}</span>
+                                            <span>{n2s[0]}</span><span>{n2s[1]}</span><span>{n2s[2]}</span>
+                                        </div>
+                                        <div className="math-line"></div>
+                                        <div className="answer-row">
+                                            <input ref={hRef} type="number" className="column-input" value={answer.h} onChange={e=>{const v=e.target.value.slice(-1);setAnswer(p=>({...p,h:v})); if(v && !answer.t) tRef.current?.focus();}} onKeyDown={e=>e.key==='Enter'&&checkAnswer()} />
+                                            <input ref={tRef} type="number" className="column-input" value={answer.t} onChange={e=>{const v=e.target.value.slice(-1);setAnswer(p=>({...p,t:v})); if(v && !answer.h) hRef.current?.focus();}} onKeyDown={e=>e.key==='Enter'&&checkAnswer()} />
+                                            <input ref={uRef} type="number" className="column-input" value={answer.u} onChange={e=>{const v=e.target.value.slice(-1);setAnswer(p=>({...p,u:v})); if(v && !answer.t) tRef.current?.focus();}} onKeyDown={e=>e.key==='Enter'&&checkAnswer()} />
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div className="feedback-area">
+                                    {status === 'correct' && (
+                                        <div className="feedback show correct">
+                                            <div className="feedback-emoji">{nextSticker}</div>
+                                            <div className="feedback-msg">Brilliant calculation! 🦖</div>
+                                            <button className="next-btn" onClick={nextQuestion}>Next Adventure →</button>
+                                        </div>
+                                    )}
+                                    {status === 'incorrect' && (
+                                        <div className="feedback show wrong">
+                                            <div className="feedback-emoji">🤔</div>
+                                            <div className="feedback-msg">Help Angus check the columns again!</div>
+                                        </div>
+                                    )}
+                                </div>
+
+                                {status === 'playing' && <button className="check-btn" onClick={checkAnswer}>Report Total 📜</button>}
+                            </div>
+                        )}
+                    </div>
+
+                    {showRare && rareInfo && (
+                        <div className="rare-banner show">
+                            <div className="rare-inner">
+                                <span style={{fontSize:'7rem', display:'block'}}>{rareInfo.emoji}</span>
+                                <h2 style={{fontSize:'2rem', fontWeight:900, margin:'1rem 0'}}>RARE FIND!</h2>
+                                <p style={{fontSize:'1.5rem', fontWeight:800, opacity:0.9}}>{rareInfo.name}</p>
+                                <button className="check-btn" onClick={() => setShowRare(false)} style={{background:'#92400e'}}>Amazing! 🎉</button>
+                            </div>
+                        </div>
+                    )}
+
                     {flashEmoji && (
                         <div id="sticker-flash-overlay" className="animate-sticker-pop">
                             {flashEmoji}
                         </div>
                     )}
-                    {/* Header Stats */}
-                    <div className="w-full flex justify-between items-center bg-white p-4 rounded-3xl shadow-lg mb-8 border-4 border-yellow-400">
-                        <h2 className="text-2xl font-black text-amber-900 uppercase">EXPLORER ANGUS 🧭</h2>
-                        <div className="flex gap-4">
-                            <div className="bg-yellow-100 px-4 py-2 rounded-xl text-yellow-700 font-bold text-xl">⭐️ {score}</div>
-                            <div className="bg-orange-100 px-4 py-2 rounded-xl text-orange-700 font-bold text-xl">🔥 {streak}</div>
-                        </div>
-                    </div>
-
-                    {/* Sticker Bar */}
-                    {collection.length > 0 && (
-                        <div className="w-full bg-white/50 p-4 rounded-3xl mb-8 flex flex-wrap gap-2 text-3xl">
-                            {collection.map((s, i) => <span key={i}>{s}</span>)}
-                        </div>
-                    )}
-
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-8 w-full items-start">
-                        {/* Angus & Question */}
-                        <div className="flex flex-col items-center md:items-start">
-                            <div className="relative mb-6">
-                                <div className="bg-white p-6 rounded-3xl shadow-xl border-4 border-amber-200 text-lg font-bold text-amber-900 relative">
-                                    {problemText}
-                                    <div className="absolute -bottom-4 left-10 w-8 h-8 bg-white rotate-45 border-r-4 border-b-4 border-amber-200"></div>
-                                </div>
-                            </div>
-                            <div className="text-[120px] md:text-[160px] animate-float">🧭🦖</div>
-                        </div>
-
-                        {/* Arithmetic Grid */}
-                        <div className="bg-white p-10 rounded-[3rem] shadow-2xl border-4 border-amber-200 flex flex-col items-center">
-                            <div className={`mb-6 py-2 px-6 rounded-full font-black text-center ${isRarePending ? 'bg-yellow-400 text-yellow-900' : 'bg-amber-100 text-amber-800'}`}>
-                                {isRarePending ? '⭐ RARE STICKER CHALLENGE! ⭐' : `${nextTheme ? nextTheme.name + ' ' + nextTheme.emoji : '🎁'} STICKER:`} {nextSticker}
-                            </div>
-
-                            <div className="relative font-mono">
-                                {/* Column Labels */}
-                                <div className="flex gap-4 mb-2 justify-end pr-1 text-amber-400 font-black text-xl">
-                                    <div className="w-[4.5rem] text-center">C</div>
-                                    <div className="w-[4.5rem] text-center">D</div>
-                                    <div className="w-[4.5rem] text-center">U</div>
-                                </div>
-
-                                {/* Carries/Borrowing */}
-                                <div className="flex gap-4 mb-2 justify-end pr-1">
-                                    <div className="w-[4.5rem] flex justify-center">
-                                        <button onClick={() => toggleCarry('h')} className="carry-box">{carries.h}</button>
-                                    </div>
-                                    <div className="w-[4.5rem] flex justify-center">
-                                        <button onClick={() => toggleCarry('t')} className="carry-box">{carries.t}</button>
-                                    </div>
-                                    <div className="w-[4.5rem]"></div>
-                                </div>
-
-                                {/* Numbers */}
-                                <div className="flex flex-col items-end gap-2 mb-2">
-                                    <div className="flex gap-4 text-5xl font-black text-slate-700">
-                                        <div className="w-[4.5rem] text-center">{n1s[0]}</div>
-                                        <div className="w-[4.5rem] text-center">{n1s[1]}</div>
-                                        <div className="w-[4.5rem] text-center">{n1s[2]}</div>
-                                    </div>
-                                    <div className="flex gap-4 text-5xl font-black text-slate-700 relative">
-                                        <div className="absolute -left-12 top-0 text-slate-400">{operation === 'add' ? '+' : '-'}</div>
-                                        <div className="w-[4.5rem] text-center">{n2s[0]}</div>
-                                        <div className="w-[4.5rem] text-center">{n2s[1]}</div>
-                                        <div className="w-[4.5rem] text-center">{n2s[2]}</div>
-                                    </div>
-                                </div>
-
-                                {/* Equals Line */}
-                                <div className="h-2 bg-slate-800 w-full mb-4 rounded-full"></div>
-
-                                {/* Answer Inputs */}
-                                <div className="flex gap-4 justify-end">
-                                    <input
-                                        ref={hRef}
-                                        type="number"
-                                        value={answer.h}
-                                        onChange={(e) => handleInput(e.target.value, 'h')}
-                                        className="column-input w-[4.5rem] h-[5.5rem] text-5xl bg-amber-50 border-4 border-amber-200 rounded-2xl focus:border-amber-500 outline-none"
-                                    />
-                                    <input
-                                        ref={tRef}
-                                        type="number"
-                                        value={answer.t}
-                                        onChange={(e) => handleInput(e.target.value, 't')}
-                                        className="column-input w-[4.5rem] h-[5.5rem] text-5xl bg-amber-50 border-4 border-amber-200 rounded-2xl focus:border-amber-500 outline-none"
-                                    />
-                                    <input
-                                        ref={uRef}
-                                        type="number"
-                                        value={answer.u}
-                                        onChange={(e) => handleInput(e.target.value, 'u')}
-                                        className="column-input w-[4.5rem] h-[5.5rem] text-5xl bg-amber-50 border-4 border-amber-200 rounded-2xl focus:border-amber-500 outline-none"
-                                    />
-                                </div>
-                            </div>
-
-                            {status === 'correct' ? (
-                                <div className="mt-8 text-center animate-bounce">
-                                    <h3 className="text-3xl font-black text-green-600 mb-4 uppercase">Amazing work, Angus! 🦖🌟</h3>
-                                    <button onClick={() => generateProblem(operation)} className="bg-amber-800 text-white font-black py-4 px-10 rounded-full text-xl shadow-lg">
-                                        NEXT MISSION 🧭
-                                    </button>
-                                </div>
-                            ) : status === 'incorrect' ? (
-                                <div className="mt-8 text-center">
-                                    <h3 className="text-xl font-bold text-red-500 mb-4">"Help Angus check those columns again! He can do it!"</h3>
-                                    <button onClick={() => setStatus('waiting')} className="bg-slate-200 text-slate-700 font-bold py-3 px-8 rounded-full">
-                                        TRY AGAIN 🦴
-                                    </button>
-                                </div>
-                            ) : (
-                                <button onClick={checkAnswer} className="mt-12 bg-amber-800 hover:bg-amber-900 text-white font-black py-6 px-16 rounded-full text-3xl shadow-xl border-b-8 border-amber-950 transform active:scale-95 transition">
-                                    REPORT TOTAL 📜
-                                </button>
-                            )}
-                        </div>
-                    </div>
-
-                    {showRare && rareInfo && (
-                        <RareBanner emoji={rareInfo.emoji} name={rareInfo.name} onClose={() => setShowRare(false)} />
-                    )}
-                </div>
-            );
-        }
-
-        function RareBanner({ emoji, name, onClose }) {
-            const canvasRef = useRef(null);
-            useEffect(() => {
-                const canvas = canvasRef.current;
-                if (!canvas) return;
-                canvas.width = window.innerWidth;
-                canvas.height = window.innerHeight;
-                const ctx = canvas.getContext('2d');
-                let particles = [];
-                const colors = ['#fbbf24', '#ec4899', '#3b82f6', '#10b981', '#f97316', '#8b5cf6', '#ef4444', '#fff', '#a3e635', '#f0abfc'];
-                function burst() {
-                    for (let i = 0; i < 8; i++) {
-                        const cx = Math.random() * canvas.width, cy = Math.random() * canvas.height * 0.7;
-                        for (let j = 0; j < 55; j++) {
-                            const angle = (j / 55) * Math.PI * 2, spd = 2 + Math.random() * 7;
-                            particles.push({ x: cx, y: cy, vx: Math.cos(angle) * spd, vy: Math.sin(angle) * spd, alpha: 1, color: colors[Math.floor(Math.random() * colors.length)], r: 2 + Math.random() * 4 });
-                        }
-                    }
-                }
-                burst();
-                const interval = setInterval(burst, 800);
-                let anim;
-                function tick() {
-                    ctx.clearRect(0, 0, canvas.width, canvas.height);
-                    particles.forEach(p => {
-                        p.x += p.vx; p.y += p.vy; p.vy += 0.1; p.alpha -= 0.005;
-                        ctx.globalAlpha = Math.max(0, p.alpha); ctx.fillStyle = p.color;
-                        ctx.beginPath(); ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2); ctx.fill();
-                    });
-                    ctx.globalAlpha = 1;
-                    particles = particles.filter(p => p.alpha > 0);
-                    anim = requestAnimationFrame(tick);
-                }
-                anim = requestAnimationFrame(tick);
-                return () => { clearInterval(interval); cancelAnimationFrame(anim); };
-            }, []);
-
-            return (
-                <div className="fixed inset-0 z-[9999] bg-black/80 flex items-center justify-center flex-col">
-                    <canvas ref={canvasRef} className="fixed inset-0 pointer-events-none" />
-                    <div className="relative z-10 bg-gradient-to-br from-yellow-400 via-amber-500 to-yellow-400 p-12 rounded-[3rem] text-center border-8 border-white shadow-[0_0_80px_rgba(251,191,36,0.5)] animate-bounce-in">
-                        <span className="text-9xl mb-4 block drop-shadow-2xl">{emoji}</span>
-                        <h2 className="text-4xl font-black text-white uppercase italic tracking-tighter">⭐ RARE FIND! ⭐</h2>
-                        <p className="text-2xl font-bold text-amber-100 mt-2 mb-8">{name}</p>
-                        <button onClick={onClose} className="bg-amber-900 text-white font-black py-4 px-10 rounded-full text-xl shadow-lg">AMAZING! 🎉</button>
-                    </div>
-                    <style>{`
-                        @keyframes bounce-in {
-                            0% { transform: scale(0.5); opacity: 0; }
-                            70% { transform: scale(1.05); }
-                            100% { transform: scale(1); opacity: 1; }
-                        }
-                        .animate-bounce-in { animation: bounce-in 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
-                    `}</style>
                 </div>
             );
         }

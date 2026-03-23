@@ -5,180 +5,374 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Wild Rounding 🐾 Expedition</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700;800;900&display=swap"
+        rel="stylesheet" />
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@700;800;900&display=swap');
-
-        :root {
-            --khaki: #f0e68c;
-            --jungle: #2d5a27;
-            --accent: #ff6b6b;
-            --earth: #8b4513;
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
         }
 
         body {
             font-family: 'Montserrat', sans-serif;
             background-color: #f7fee7;
-            /* very light lime */
-            margin: 0;
+            background-image: radial-gradient(#d9f99d 2px, transparent 2px);
+            background-size: 40px 40px;
+            min-height: 100vh;
             display: flex;
             flex-direction: column;
             align-items: center;
-            min-height: 100vh;
-            padding: 20px;
+            padding: 1.5rem 1rem 4rem;
             color: #1a2e05;
-            background-image:
-                radial-gradient(circle at 10% 10%, rgba(45, 90, 39, 0.05) 0%, transparent 20%),
-                radial-gradient(circle at 90% 90%, rgba(45, 90, 39, 0.05) 0%, transparent 20%);
+        }
+
+        header {
+            width: 100%;
+            max-width: 800px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: white;
+            border-radius: 2rem;
+            padding: 1rem 1.5rem;
+            margin-bottom: 1.5rem;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
+            border: 4px solid #d9f99d;
+        }
+
+        header h1 {
+            font-size: 1.8rem;
+            font-weight: 900;
+            color: #365314;
+            text-transform: uppercase;
+        }
+
+        .stats {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+        }
+
+        .stat-pill {
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+            background: #f7fee7;
+            border-radius: 9999px;
+            padding: 0.4rem 1rem;
+            font-size: 1.3rem;
+            font-weight: 800;
+            color: #1a2e05;
+            border: 2px solid #d9f99d;
+        }
+
+        .header-stickers {
+            display: flex;
+            gap: 0.3rem;
+            font-size: 1.5rem;
         }
 
         .back-btn {
-            position: absolute;
-            top: 20px;
-            left: 20px;
-            padding: 10px 20px;
-            background: white;
-            border-radius: 99px;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
             text-decoration: none;
-            color: var(--jungle);
-            font-weight: 800;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-            transition: all 0.2s;
-            border: 2px solid var(--jungle);
+            color: #365314;
+            font-size: 0.9rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            width: 100%;
+            max-width: 800px;
         }
 
         .back-btn:hover {
-            transform: scale(1.05);
-            background: var(--jungle);
-            color: white;
+            color: #1a2e05;
         }
 
-        .game-container {
-            max-width: 600px;
+        /* Progress */
+        .progress-wrap {
             width: 100%;
-            background: white;
-            padding: 40px;
-            border-radius: 30px;
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
-            border: 8px solid var(--khaki);
-            margin-top: 60px;
-            text-align: center;
-            position: relative;
+            max-width: 800px;
+            margin-bottom: 1.5rem;
         }
 
+        .progress-label {
+            display: flex;
+            justify-content: space-between;
+            font-weight: 800;
+            font-size: 0.9rem;
+            color: #365314;
+            margin-bottom: 0.5rem;
+            text-transform: uppercase;
+        }
+
+        .progress-bar {
+            background: white;
+            border: 4px solid #d9f99d;
+            border-radius: 9999px;
+            height: 1.5rem;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            background: linear-gradient(90deg, #65a30d, #a3e635);
+            height: 100%;
+            border-radius: 9999px;
+            transition: width 0.6s ease;
+        }
+
+        /* Stickers */
+        .stickers {
+            width: 100%;
+            max-width: 800px;
+            background: white;
+            border-radius: 2rem;
+            padding: 1rem 1.5rem;
+            margin-bottom: 1.5rem;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.06);
+            border: 4px solid #f7fee7;
+            display: none;
+        }
+
+        .stickers.visible {
+            display: block;
+        }
+
+        .stickers-label {
+            font-size: 0.75rem;
+            font-weight: 800;
+            color: #4d7c0f;
+            text-transform: uppercase;
+            margin-bottom: 0.5rem;
+        }
+
+        .sticker-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            font-size: 2rem;
+        }
+
+        /* Card */
+        .card {
+            width: 100%;
+            max-width: 800px;
+            background: white;
+            border-radius: 2.5rem;
+            padding: 2.5rem;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            border: 8px solid white;
+            outline: 4px solid #d9f99d;
+            text-align: center;
+        }
+
+        .badge {
+            display: inline-block;
+            background: #365314;
+            color: white;
+            border-radius: 9999px;
+            padding: 0.2rem 0.9rem;
+            font-size: 0.8rem;
+            font-weight: 900;
+            text-transform: uppercase;
+            margin-bottom: 1rem;
+        }
+
+        /* Steve Box */
         .steve-box {
             background: #fefce8;
-            border-left: 10px solid var(--earth);
-            padding: 20px;
-            margin-bottom: 30px;
-            border-radius: 0 20px 20px 0;
-            font-style: italic;
-            position: relative;
+            border-left: 10px solid #8b4513;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+            border-radius: 0 1.5rem 1.5rem 0;
+            text-align: left;
         }
 
         .steve-name {
             font-weight: 900;
-            color: var(--earth);
+            color: #8b4513;
             text-transform: uppercase;
             font-size: 0.8rem;
             margin-bottom: 5px;
             display: block;
         }
 
-        h1 {
-            color: var(--jungle);
-            font-size: 2.2rem;
-            margin-bottom: 10px;
-            text-transform: uppercase;
-            letter-spacing: -1px;
+        .steve-text {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: #1a2e05;
+            line-height: 1.4;
+            font-style: italic;
         }
 
         .number-display {
-            font-size: 5rem;
+            font-size: clamp(4rem, 15vw, 6rem);
             font-weight: 900;
-            color: var(--accent);
-            margin: 20px 0;
+            color: #ef4444;
+            margin: 1rem 0;
             text-shadow: 4px 4px 0 rgba(0, 0, 0, 0.05);
         }
 
         .instruction {
-            font-size: 1.5rem;
+            font-size: 1.3rem;
             font-weight: 800;
-            color: var(--earth);
-            margin-bottom: 30px;
+            color: #365314;
+            margin-bottom: 2rem;
         }
 
         .input-group {
             display: flex;
             flex-direction: column;
             align-items: center;
-            gap: 15px;
+            gap: 1rem;
         }
 
-        input {
-            font-family: inherit;
-            font-size: 2.5rem;
-            width: 200px;
+        .massive-input {
+            width: 250px;
+            height: 6rem;
+            font-size: 3rem;
+            font-weight: 900;
             text-align: center;
-            padding: 15px;
-            border: 4px solid var(--khaki);
-            border-radius: 20px;
+            border: 4px solid #d9f99d;
+            border-radius: 1.5rem;
+            color: #1a2e05;
             outline: none;
-            transition: border-color 0.2s;
+            transition: all 0.2s;
         }
 
-        input:focus {
-            border-color: var(--jungle);
+        .massive-input:focus {
+            border-color: #365314;
+            background: white;
+            box-shadow: 0 0 0 4px rgba(54, 83, 20, 0.1);
         }
 
-        .btn-check {
-            background: var(--jungle);
-            color: white;
-            border: none;
-            padding: 15px 40px;
+        /* Buttons & Feedback */
+        .check-btn {
+            font-family: inherit;
             font-size: 1.5rem;
             font-weight: 900;
-            border-radius: 20px;
+            background: #365314;
+            color: white;
+            border: none;
             cursor: pointer;
-            transition: all 0.2s;
-            box-shadow: 0 6px 0 #1a3a16;
+            border-radius: 9999px;
+            padding: 1rem 3.5rem;
+            box-shadow: 0 6px 0 #1a2e05;
+            text-transform: uppercase;
+            margin-top: 1.5rem;
+            transition: all 0.1s;
         }
 
-        .btn-check:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 0 #1a3a16;
-        }
-
-        .btn-check:active {
+        .check-btn:active {
             transform: translateY(4px);
-            box-shadow: 0 2px 0 #1a3a16;
+            box-shadow: 0 2px 0 #1a2e05;
+        }
+
+        .next-btn {
+            font-family: inherit;
+            font-size: 1.1rem;
+            font-weight: 900;
+            background: #365314;
+            color: white;
+            border: none;
+            cursor: pointer;
+            border-radius: 9999px;
+            padding: 0.8rem 2.5rem;
+            box-shadow: 0 4px 0 #1a2e05;
+            margin-top: 1.5rem;
+            text-transform: uppercase;
         }
 
         #feedback {
-            margin-top: 30px;
-            font-size: 1.5rem;
+            font-size: 1.4rem;
             font-weight: 800;
-            min-height: 2em;
+            min-height: 1.5em;
+            margin-top: 1.5rem;
         }
 
-        .success {
-            color: #059669;
-        }
-
-        .error {
-            color: #dc2626;
-        }
-
-        /* Sticker Flash */
-        #sticker-flash {
+        /* Celebration & Rare */
+        #sticker-flash-overlay {
             position: fixed;
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
             font-size: 15rem;
             pointer-events: none;
-            z-index: 1000;
+            z-index: 10000;
             opacity: 0;
             display: none;
+        }
+
+        #fw-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            pointer-events: none;
+            z-index: 2500;
+        }
+
+        .celebration {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(54, 83, 20, 0.95);
+            z-index: 2000;
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            backdrop-filter: blur(15px);
+            color: white;
+            text-align: center;
+            padding: 2rem;
+        }
+
+        .celebration.show {
+            display: flex;
+        }
+
+        .celebration-emoji {
+            font-size: 8rem;
+            margin-bottom: 1rem;
+        }
+
+        .sticker-reward {
+            font-size: 6rem;
+            margin: 1.5rem 0;
+        }
+
+        .rare-banner {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.85);
+            z-index: 3000;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            backdrop-filter: blur(10px);
+        }
+
+        .rare-banner.show {
+            display: flex;
+        }
+
+        .rare-inner {
+            background: linear-gradient(135deg, #fbbf24, #f59e0b);
+            border: 8px solid white;
+            border-radius: 3rem;
+            padding: 3rem;
+            max-width: 500px;
+            width: 90%;
+            text-align: center;
+            color: white;
+            box-shadow: 0 0 60px rgba(251, 191, 36, 0.6);
         }
 
         @keyframes sticker-pop {
@@ -202,242 +396,266 @@
             display: block !important;
             animation: sticker-pop 1.5s ease-out forwards;
         }
-
-        .stats {
-            display: flex;
-            justify-content: center;
-            gap: 30px;
-            margin-top: 40px;
-        }
-
-        .stat-card {
-            background: #f1f5f9;
-            padding: 10px 20px;
-            border-radius: 15px;
-            font-weight: 800;
-        }
-
-        .stat-label {
-            font-size: 0.8rem;
-            color: #64748b;
-            display: block;
-        }
-
-        #steve-commentary {
-            font-size: 1.1rem;
-            line-height: 1.4;
-        }
     </style>
 </head>
 
 <body>
-    <div id="game-stickers"
-        style="position:fixed;top:15px;right:20px;display:flex;align-items:center;gap:10px;background:rgba(255,255,255,0.9);padding:8px 15px;border-radius:99px;backdrop-filter:blur(10px);border:2px solid #f0e68c;z-index:1000;box-shadow: 0 4px 15px rgba(139, 69, 19, 0.1);">
-        <span
-            style="font-size:0.7rem;font-weight:900;color:#8b4513;text-transform:uppercase;letter-spacing:1px;">Stickers:</span>
-        <div id="header-sticker-list" style="display:flex;gap:5px;font-size:1.4rem;"></div>
+    <a href="../index.html" class="back-btn">← Back to All Games</a>
+    <header>
+        <h1>Wild Rounding 🐾</h1>
+        <div class="stats">
+            <div id="header-stickers" class="header-stickers"></div>
+            <div class="stat-pill">⭐ <span id="score">0</span></div>
+            <div class="stat-pill">🔥 <span id="streak">0</span></div>
+        </div>
+    </header>
+
+    <div class="progress-wrap">
+        <div class="progress-label">
+            <span id="progress-text">Expedition: Savanna 🦁</span>
+            <span id="progress-count">0 / 5</span>
+        </div>
+        <div class="progress-bar">
+            <div class="progress-fill" id="progress-fill" style="width: 0%"></div>
+        </div>
     </div>
 
-    <a href="../index.html" class="back-btn">← Home</a>
+    <div class="stickers" id="sticker-book">
+        <div class="stickers-label">Expedition Badges:</div>
+        <div class="sticker-row" id="sticker-row"></div>
+    </div>
 
-    <div class="game-container">
-        <h1>🐾 Wild Rounding</h1>
+    <div class="card">
+        <div class="badge" id="q-number">Mission #01</div>
 
         <div class="steve-box">
             <span class="steve-name">Steve Backshall says:</span>
-            <div id="steve-commentary">"Ready for a deadly expedition, boys? Let's track some wildlife!"</div>
+            <span id="steve-fact" class="steve-text">Welcome to the expedition! Let's track some wildlife!</span>
         </div>
 
         <div class="number-display" id="number">0</div>
-        <div class="instruction" id="instruction">Round to the nearest 10</div>
+        <div class="instruction">Round this to the nearest <span id="target"
+                style="text-decoration: underline;">10</span></div>
 
         <div class="input-group">
-            <input type="number" id="answer-input" placeholder="???" autocomplete="off">
-            <button class="btn-check" onclick="checkAnswer()">CHECK!</button>
-        </div>
-
-        <div id="feedback"></div>
-
-        <div class="stats">
-            <div class="stat-card">
-                <span class="stat-label">STREAK</span>
-                <span id="streak">0</span>
-            </div>
-            <div class="stat-card">
-                <span class="stat-label">SCORE</span>
-                <span id="score">0</span>
-            </div>
+            <input type="number" id="answer-input" class="massive-input" placeholder="?" autocomplete="off">
+            <div id="feedback"></div>
+            <button class="check-btn" id="check-btn" onclick="checkAnswer()">Verify Sigthing 🐾</button>
         </div>
     </div>
 
-    <div id="sticker-flash"></div>
+    <canvas id="fw-canvas"></canvas>
+    <div id="sticker-flash-overlay"></div>
+
+    <div class="celebration" id="celebration">
+        <div class="celebration-emoji" id="cel-emoji">🏆</div>
+        <h2 style="font-size:3rem; font-weight:900; margin-bottom:0.5rem;">Expedition Complete! 🎉</h2>
+        <div id="cel-sub" style="font-size:1.5rem; font-weight:700; opacity:0.9;">You earned a master tracker badge!
+        </div>
+        <div class="sticker-reward" id="cel-sticker">⭐</div>
+        <button class="check-btn" onClick="afterCelebration()"
+            style="box-shadow:none; background:white; color:#365314;">Next Expedition! 🚀</button>
+    </div>
+
+    <div class="rare-banner" id="rare-banner">
+        <div class="rare-inner">
+            <span id="rare-emoji" style="font-size:7rem; display:block;">💎</span>
+            <h2 style="font-size:2.2rem; font-weight:900; margin:1rem 0;">RARE DISCOVERY!</h2>
+            <div id="rare-name" style="font-size:1.5rem; font-weight:800; opacity:0.9;">Diamond</div>
+            <button class="check-btn" onClick="closeRare()"
+                style="margin-top:2rem; background:#92400e; box-shadow:0 6px 0 #451a03;">Amazing! 🎉</button>
+        </div>
+    </div>
 
     <script>
-        let currentNumber = 0;
-        let currentTargetType = 10; // 10 or 100
-        let score = 0;
-        let streak = 0;
-
-        const ANIMALS = [
-            "Scorpions 🦂", "Sharks 🦈", "King Cobras 🐍", "Desert Locusts 🦟",
-            "Crocodiles 🐊", "Lions 🦁", "Tarantulas 🕷️", "Box Jellyfish 🎐",
-            "Komodo Dragons 🦎", "Honey Badgers 🦡", "Killer Whales 🐋"
+        const THEMES = [
+            { name: 'Savanna', emoji: '🦁', stickers: ['🦁', '🐘', '🦒', '🦓', '🦏', '🐆', '🦩', '🦛', '🦙', '🛖'] },
+            { name: 'Jungle', emoji: '🌿', stickers: ['🐒', '🐯', '🐍', '🦜', '🦍', '🐊', '🎋', '🌴', '🍍', '🗿'] }, // Replaced Butterfly with Gorilla
+            { name: 'Ocean', emoji: '🌊', stickers: ['🐬', '🦈', '🐙', '🐢', '🦀', '🐳', '🐠', '🐚', '🏝️', '🌋'] }, // Replaced Mermaid with Volcano
         ];
-
         const RARE_STICKERS = [
-            { emoji: '💎', name: 'Diamond' }, { emoji: '👑', name: 'Crown' }, { emoji: '🦄', name: 'Unicorn' },
+            { emoji: '💎', name: 'Diamond' }, { emoji: '👑', name: 'Crown' },
             { emoji: '🐉', name: 'Dragon' }, { emoji: '🌈', name: 'Rainbow' }, { emoji: '🔮', name: 'Crystal Ball' },
             { emoji: '🍀', name: 'Lucky Clover' }, { emoji: '🦅', name: 'Eagle' }, { emoji: '🎆', name: 'Fireworks' },
             { emoji: '⚡', name: 'Lightning Bolt' }, { emoji: '🌙', name: 'Golden Moon' }, { emoji: '🎭', name: 'Magic Mask' },
-            { emoji: '🦋', name: 'Butterfly' }, { emoji: '🐋', name: 'Blue Whale' }, { emoji: '🌋', name: 'Volcano' },
+            { emoji: '🐋', name: 'Blue Whale' }, { emoji: '🌋', name: 'Volcano' },
         ];
+        const ANIMALS = ["Scorpions 🦂", "Sharks 🦈", "King Cobras 🐍", "Desert Locusts 🦟", "Crocodiles 🐊", "Lions 🦁", "Tarantulas 🕷️", "Box Jellyfish 🎐", "Komodo Dragons 🦎", "Honey Badgers 🦡", "Killer Whales 🐋"];
+        const STEVE_SUCCESS = ["Deadly! That's a triple-A round, Archie!", "Crikey! Spot on, Angus! You've got the survival skills!", "Unbelievable! You rounded those beasts perfectly!", "Look at the size of that! Oh, and the rounding is perfect too!", "Absolute apex rounding! Steve is impressed!", "You two are natural explorers! Keep it up!", "Massive! That's how we do it on Deadly 60!"];
+        const SCENARIOS = ["Archie and Steve found {n} {a} under a rock!", "Angus spotted {n} {a} swimming near the boat!", "Archie and Angus are tracking {n} {a} in the tall grass!", "A giant pack of {n} {a} is heading our way!", "Steve just found the world's largest group of {n} {a}!"];
         const RARE_CHANCE = 0.2;
 
-        function updateStickerHeader() {
-            const list = document.getElementById('header-sticker-list');
-            if (!list) return;
-            list.innerHTML = "";
-            const rare = JSON.parse(sessionStorage.getItem('stickers_rare') || '[]');
-            const normal = JSON.parse(sessionStorage.getItem('stickers_wild-rounding') || '[]');
-            [...normal, ...rare].forEach(s => {
-                const span = document.createElement('span');
-                span.textContent = s;
-                list.appendChild(span);
-            });
+        let currentNumber = 0, currentTarget = 10, score = 0, streak = 0, progress = 0, level = 0, qCount = 0;
+        let stickers = JSON.parse(sessionStorage.getItem('stickers_wild-rounding') || '[]');
+
+        function pickSticker() {
+            if (Math.random() < RARE_CHANCE) {
+                const rareOwned = JSON.parse(sessionStorage.getItem('stickers_rare') || '[]');
+                const available = RARE_STICKERS.filter(s => !rareOwned.includes(s.emoji));
+                const pool = available.length > 0 ? available : RARE_STICKERS;
+                const r = pool[Math.floor(Math.random() * pool.length)];
+                if (!rareOwned.includes(r.emoji)) {
+                    rareOwned.push(r.emoji);
+                    sessionStorage.setItem('stickers_rare', JSON.stringify(rareOwned));
+                }
+                setTimeout(() => showRareBanner(r), 500);
+                return r.emoji;
+            }
+            const theme = THEMES[level % THEMES.length];
+            return theme.stickers[Math.floor(Math.random() * theme.stickers.length)];
         }
 
-        const STEVE_SUCCESS = [
-            "Deadly! That's a triple-A round, Archie!",
-            "Crikey! Spot on, Angus! You've got the survival skills!",
-            "Unbelievable! You rounded those beasts perfectly!",
-            "Look at the size of that! Oh, and the rounding is perfect too!",
-            "Absolute apex rounding! Steve is impressed!",
-            "You two are natural explorers! Keep it up!",
-            "Massive! That's how we do it on Deadly 60!"
-        ];
+        function updateUI() {
+            document.getElementById('score').textContent = score;
+            document.getElementById('streak').textContent = streak;
+            const theme = THEMES[level % THEMES.length];
+            document.getElementById('progress-text').textContent = `Expedition: ${theme.name} ${theme.emoji}`;
+            document.getElementById('progress-count').textContent = `${progress} / 5`;
+            document.getElementById('progress-fill').style.width = `${(progress / 5) * 100}%`;
 
-        const SCENARIOS = [
-            "Archie and Steve found {n} {a} under a rock!",
-            "Angus spotted {n} {a} swimming near the boat!",
-            "Archie and Angus are tracking {n} {a} in the tall grass!",
-            "A giant pack of {n} {a} is heading our way!",
-            "Steve just found the world's largest group of {n} {a}!"
-        ];
+            const row = document.getElementById('sticker-row');
+            row.innerHTML = stickers.map(s => `<span>${s}</span>`).join('');
+            if (stickers.length > 0) document.getElementById('sticker-book').classList.add('visible');
+
+            const rareOwned = JSON.parse(sessionStorage.getItem('stickers_rare') || '[]');
+            document.getElementById('header-stickers').innerHTML = [...stickers.slice(-3), ...rareOwned.slice(-2)].slice(-5).map(s => `<span>${s}</span>`).join('');
+        }
 
         function nextQuestion() {
             currentNumber = Math.floor(Math.random() * 950) + 15;
-            currentTargetType = Math.random() > 0.5 ? 10 : 100;
+            currentTarget = Math.random() > 0.5 ? 10 : 100;
+            if (currentTarget === 100 && currentNumber < 100) currentNumber += 100;
 
-            // If rounding to 100, make sure number is large enough to be interesting
-            if (currentTargetType === 100 && currentNumber < 100) {
-                currentNumber += 100;
-            }
+            const a = ANIMALS[Math.floor(Math.random() * ANIMALS.length)];
+            const s = SCENARIOS[Math.floor(Math.random() * SCENARIOS.length)].replace('{n}', currentNumber).replace('{a}', a);
 
-            const animal = ANIMALS[Math.floor(Math.random() * ANIMALS.length)];
-            const scenarioBase = SCENARIOS[Math.floor(Math.random() * SCENARIOS.length)];
-            const scenario = scenarioBase.replace('{n}', currentNumber).replace('{a}', animal);
-
-            document.getElementById('steve-commentary').textContent = `"${scenario}"`;
+            document.getElementById('steve-fact').textContent = s;
             document.getElementById('number').textContent = currentNumber;
-            document.getElementById('instruction').textContent = `Round to the nearest ${currentTargetType}`;
+            document.getElementById('target').textContent = currentTarget;
             document.getElementById('answer-input').value = "";
             document.getElementById('answer-input').focus();
             document.getElementById('feedback').textContent = "";
+            document.getElementById('check-btn').style.display = 'inline-block';
+            document.getElementById('q-number').textContent = `Mission #${String(++qCount).padStart(2, '0')}`;
         }
 
         function checkAnswer() {
-            const userAnswer = parseInt(document.getElementById('answer-input').value);
-            const correctAnswer = Math.round(currentNumber / currentTargetType) * currentTargetType;
+            const val = parseInt(document.getElementById('answer-input').value);
+            if (isNaN(val)) return;
+            const correct = Math.round(currentNumber / currentTarget) * currentTarget;
 
-            const feedback = document.getElementById('feedback');
+            if (val === correct) {
+                score += 100; streak++; progress++;
+                const s = pickSticker();
+                stickers.push(s);
+                sessionStorage.setItem('stickers_wild-rounding', JSON.stringify(stickers));
+                showStickerFlash(s);
+                updateUI();
 
-            if (userAnswer === correctAnswer) {
-                score += 10;
-                streak++;
-                feedback.innerHTML = `<span class="success">DEADLY! Correct! ✨</span><br>${STEVE_SUCCESS[Math.floor(Math.random() * STEVE_SUCCESS.length)]}`;
-
-                showStickerFlash('🐾');
-                updateStats();
-                saveSticker('🐾');
-
-                // Extra chance for rare wildlife sticker
-                if (Math.random() < RARE_CHANCE) {
-                    const rareOwned = JSON.parse(sessionStorage.getItem('stickers_rare') || '[]');
-                    const available = RARE_STICKERS.filter(s => !rareOwned.includes(s.emoji));
-                    const pool = available.length > 0 ? available : RARE_STICKERS;
-                    const r = pool[Math.floor(Math.random() * pool.length)];
-
-                    setTimeout(() => {
-                        showStickerFlash(r.emoji);
-                        saveRareSticker(r.emoji);
-                    }, 1000);
+                if (progress >= 5) {
+                    setTimeout(showCelebration, 600);
+                } else {
+                    document.getElementById('feedback').innerHTML = `<div style="color:#65a30d; font-weight:900;">${STEVE_SUCCESS[Math.floor(Math.random() * STEVE_SUCCESS.length)]}</div>`;
+                    document.getElementById('check-btn').style.display = 'none';
+                    setTimeout(nextQuestion, 2000);
                 }
-
-                setTimeout(nextQuestion, 3000);
             } else {
-                streak = 0;
-                feedback.innerHTML = `<span class="error">Not quite! Steve says: 'Watch out! The correct answer was ${correctAnswer}!'</span>`;
-                updateStats();
+                streak = 0; updateUI();
+                document.getElementById('feedback').innerHTML = `<div style="color:#ef4444; font-weight:900;">Crikey! Not quite. It was ${correct}!</div>`;
             }
         }
 
-        function updateStats() {
-            document.getElementById('score').textContent = score;
-            document.getElementById('streak').textContent = streak;
+        function showCelebration() {
+            const t = THEMES[level % THEMES.length];
+            document.getElementById('cel-emoji').textContent = t.emoji;
+            document.getElementById('cel-sub').textContent = `You collected all ${t.name} expedition badges!`;
+            document.getElementById('cel-sticker').textContent = t.stickers[0];
+            document.getElementById('celebration').classList.add('show');
+            launchFireworks();
+            level++; progress = 0; updateUI();
         }
 
-        function showStickerFlash(emoji) {
-            const flash = document.getElementById('sticker-flash');
-            flash.textContent = emoji;
-            flash.classList.remove('animate-sticker-pop');
-            void flash.offsetWidth;
-            flash.classList.add('animate-sticker-pop');
-            playFanfare();
+        function afterCelebration() {
+            document.getElementById('celebration').classList.remove('show');
+            stopFireworks();
+            nextQuestion();
         }
 
-        function playFanfare() {
+        function showRareBanner(r) {
+            document.getElementById('rare-emoji').textContent = r.emoji;
+            document.getElementById('rare-name').textContent = r.name;
+            document.getElementById('rare-banner').classList.add('show');
+            launchFireworks();
             try {
                 const ctx = new (window.AudioContext || window.webkitAudioContext)();
-                if (!ctx) return;
                 const now = ctx.currentTime;
-                const notes = [440, 554.37, 659.25, 880]; // A4, C#5, E5, A5
-                notes.forEach((freq, i) => {
-                    const osc = ctx.createOscillator();
-                    const gain = ctx.createGain();
-                    osc.type = 'triangle';
-                    osc.frequency.setValueAtTime(freq, now + i * 0.1);
-                    gain.gain.setValueAtTime(0.1, now + i * 0.1);
-                    gain.gain.exponentialRampToValueAtTime(0.01, now + i * 0.1 + 0.4);
-                    osc.connect(gain); gain.connect(ctx.destination);
-                    osc.start(now + i * 0.1); osc.stop(now + i * 0.1 + 0.4);
+                [523.25, 659.25, 783.99, 1046.50].forEach((f, i) => {
+                    const o = ctx.createOscillator(); const g = ctx.createGain();
+                    o.type = 'sine'; o.frequency.setValueAtTime(f, now + i * 0.1);
+                    g.gain.setValueAtTime(0.2, now + i * 0.1); g.gain.exponentialRampToValueAtTime(0.01, now + i * 0.1 + 0.3);
+                    o.connect(g); g.connect(ctx.destination);
+                    o.start(now + i * 0.1); o.stop(now + i * 0.1 + 0.3);
                 });
             } catch (e) { }
         }
 
-        function saveSticker(emoji) {
-            const stickers = JSON.parse(sessionStorage.getItem('stickers_wild-rounding') || '[]');
-            if (!stickers.includes(emoji)) {
-                stickers.push(emoji);
-                sessionStorage.setItem('stickers_wild-rounding', JSON.stringify(stickers));
-            }
-            updateStickerHeader();
+        function closeRare() {
+            document.getElementById('rare-banner').classList.remove('show');
+            stopFireworks();
         }
 
-        function saveRareSticker(emoji) {
-            const rare = JSON.parse(sessionStorage.getItem('stickers_rare') || '[]');
-            if (!rare.includes(emoji)) {
-                rare.push(emoji);
-                sessionStorage.setItem('stickers_rare', JSON.stringify(rare));
-            }
-            updateStickerHeader();
+        function showStickerFlash(emoji) {
+            const overlay = document.getElementById('sticker-flash-overlay');
+            overlay.textContent = emoji;
+            overlay.style.display = 'block';
+            overlay.style.animation = 'none';
+            void overlay.offsetWidth;
+            overlay.style.animation = 'sticker-pop 1.5s ease-out forwards';
         }
 
-        // Listen for Enter key
-        document.getElementById('answer-input').addEventListener('keypress', function (e) {
-            if (e.key === 'Enter') checkAnswer();
+        function launchFireworks() {
+            const canvas = document.getElementById('fw-canvas');
+            canvas.width = window.innerWidth; canvas.height = window.innerHeight;
+            const ctx = canvas.getContext('2d');
+            let particles = [];
+            function burst() {
+                for (let i = 0; i < 5; i++) {
+                    const cx = Math.random() * canvas.width, cy = Math.random() * canvas.height * 0.4;
+                    for (let j = 0; j < 30; j++) {
+                        const a = (j / 30) * Math.PI * 2, s = 2 + Math.random() * 4;
+                        particles.push({ x: cx, y: cy, vx: Math.cos(a) * s, vy: Math.sin(a) * s, a: 1, c: `hsl(${Math.random() * 360}, 100%, 50%)` });
+                    }
+                }
+            }
+            burst();
+            const int = setInterval(burst, 800);
+            function tick() {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                particles.forEach(p => {
+                    p.x += p.vx; p.y += p.vy; p.vy += 0.1; p.a -= 0.01;
+                    ctx.globalAlpha = Math.max(0, p.a); ctx.fillStyle = p.c;
+                    ctx.beginPath(); ctx.arc(p.x, p.y, 2, 0, Math.PI * 2); ctx.fill();
+                });
+                particles = particles.filter(p => p.a > 0);
+                window._fwAnim = requestAnimationFrame(tick);
+            }
+            tick();
+            window._fwInt = int;
+        }
+
+        function stopFireworks() {
+            clearInterval(window._fwInt); cancelAnimationFrame(window._fwAnim);
+        }
+
+        document.addEventListener('keydown', e => {
+            if (e.key === 'Enter') {
+                if (document.getElementById('celebration').classList.contains('show')) afterCelebration();
+                else if (document.getElementById('rare-banner').classList.contains('show')) closeRare();
+                else checkAnswer();
+            }
         });
 
-        updateStickerHeader();
+        updateUI();
         nextQuestion();
     </script>
 </body>

@@ -4,55 +4,21 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Fraction Spotter 🍕</title>
+    <title>🍕 Fraction Spotter: Maths Challenge</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700;800;900&display=swap"
+        rel="stylesheet" />
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700;800;900&display=swap');
-
         * {
             box-sizing: border-box;
             margin: 0;
             padding: 0;
         }
 
-        /* Sticker Flash */
-        #sticker-flash-overlay {
-            position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            font-size: 15rem;
-            pointer-events: none;
-            z-index: 10000;
-            opacity: 0;
-            display: none;
-        }
-
-        @keyframes sticker-pop {
-            0% {
-                transform: translate(-50%, -50%) scale(0.5);
-                opacity: 0;
-            }
-
-            50% {
-                transform: translate(-50%, -50%) scale(1.2);
-                opacity: 1;
-            }
-
-            100% {
-                transform: translate(-50%, -50%) scale(1);
-                opacity: 0;
-            }
-        }
-
-        .animate-sticker-pop {
-            display: block !important;
-            animation: sticker-pop 1.5s ease-out forwards;
-        }
-
         body {
             font-family: 'Montserrat', sans-serif;
             background-color: #fdf2f8;
-            background-image: radial-gradient(#f9a8d4 2px, transparent 2px);
+            background-image: radial-gradient(#fbcfe8 2px, transparent 2px);
             background-size: 40px 40px;
             min-height: 100vh;
             display: flex;
@@ -86,6 +52,7 @@
         .stats {
             display: flex;
             gap: 1rem;
+            align-items: center;
         }
 
         .stat-pill {
@@ -98,6 +65,13 @@
             font-size: 1.3rem;
             font-weight: 800;
             color: #9d174d;
+            border: 2px solid #fbcfe8;
+        }
+
+        .header-stickers {
+            display: flex;
+            gap: 0.3rem;
+            font-size: 1.5rem;
         }
 
         .back-btn {
@@ -111,10 +85,6 @@
             margin-bottom: 1rem;
             width: 100%;
             max-width: 800px;
-        }
-
-        .back-btn:hover {
-            color: #be185d;
         }
 
         .progress-wrap {
@@ -131,7 +101,6 @@
             color: #9d174d;
             margin-bottom: 0.5rem;
             text-transform: uppercase;
-            letter-spacing: 0.05em;
         }
 
         .progress-bar {
@@ -170,7 +139,6 @@
             font-weight: 800;
             color: #ec4899;
             text-transform: uppercase;
-            letter-spacing: 0.08em;
             margin-bottom: 0.5rem;
         }
 
@@ -186,13 +154,13 @@
             max-width: 800px;
             background: white;
             border-radius: 2.5rem;
-            padding: 2rem;
+            padding: 2.5rem;
             box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
             border: 8px solid white;
             outline: 4px solid #fbcfe8;
+            text-align: center;
         }
 
-        /* Vocab strip */
         .vocab-strip {
             display: flex;
             gap: 1rem;
@@ -208,7 +176,6 @@
             padding: 0.5rem 1rem;
             font-size: 0.85rem;
             font-weight: 800;
-            text-align: center;
         }
 
         .vocab-pill .fr {
@@ -221,20 +188,6 @@
             font-size: 0.75rem;
         }
 
-        /* Shape display */
-        .shape-wrap {
-            display: flex;
-            justify-content: center;
-            margin-bottom: 1rem;
-        }
-
-        #shape-canvas {
-            border-radius: 1.5rem;
-            background: #fdf2f8;
-            border: 4px solid #fce7f3;
-        }
-
-        /* Question */
         .badge {
             display: inline-block;
             background: #be185d;
@@ -244,23 +197,20 @@
             font-size: 0.8rem;
             font-weight: 900;
             text-transform: uppercase;
-            letter-spacing: 0.06em;
             margin-bottom: 1rem;
         }
 
         .question-text {
-            font-size: 1.2rem;
+            font-size: 1.3rem;
             font-weight: 800;
-            text-align: center;
             margin-bottom: 0.5rem;
             color: #1f2937;
         }
 
         .question-sub {
-            font-size: 0.9rem;
-            text-align: center;
-            color: #6b7280;
+            font-size: 0.95rem;
             font-weight: 700;
+            color: #6b7280;
             margin-bottom: 1.5rem;
         }
 
@@ -269,13 +219,26 @@
             font-style: italic;
         }
 
-        /* Fraction choices */
+        .shape-wrap {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 1.5rem;
+        }
+
+        #shape-canvas {
+            border-radius: 1.5rem;
+            background: #fdf2f8;
+            border: 4px solid #fce7f3;
+            max-width: 100%;
+            height: auto;
+        }
+
         .choices {
             display: flex;
             gap: 1rem;
             justify-content: center;
             flex-wrap: wrap;
-            margin-bottom: 1rem;
+            margin-bottom: 1.5rem;
         }
 
         .fraction-btn {
@@ -285,69 +248,63 @@
             align-items: center;
             justify-content: center;
             border: 4px solid #fbcfe8;
-            background: #fdf2f8;
+            background: white;
             border-radius: 1.5rem;
             padding: 0.8rem 1.5rem;
             cursor: pointer;
-            transition: all 0.15s;
+            transition: all 0.2s;
             min-width: 90px;
         }
 
         .fraction-btn:hover {
-            background: #fce7f3;
-            border-color: #f9a8d4;
+            background: #fdf2f8;
             transform: translateY(-3px);
-            box-shadow: 0 6px 0 #fbcfe8;
+            box-shadow: 0 5px 0 #fbcfe8;
         }
 
         .fraction-btn .num {
-            font-size: 2rem;
+            font-size: 2.2rem;
             font-weight: 900;
             color: #be185d;
             line-height: 1;
         }
 
         .fraction-btn .frac-line {
-            width: 2rem;
-            height: 3px;
+            width: 2.2rem;
+            height: 4px;
             background: #be185d;
             border-radius: 2px;
             margin: 0.2rem 0;
         }
 
         .fraction-btn .den {
-            font-size: 2rem;
+            font-size: 2.2rem;
             font-weight: 900;
             color: #be185d;
             line-height: 1;
         }
 
         .fraction-btn.correct {
+            border-color: #16a34a;
             background: #f0fdf4;
-            border-color: #86efac;
-            box-shadow: 0 0 0 3px rgba(22, 163, 74, 0.2);
+            box-shadow: 0 0 0 4px #16a34a;
         }
 
-        .fraction-btn.correct .num,
-        .fraction-btn.correct .den,
-        .fraction-btn.correct .frac-line {
-            color: #16a34a;
-            background: #16a34a;
+        .fraction-btn.correct * {
+            color: #16a34a !important;
+            background-color: #16a34a !important;
         }
 
         .fraction-btn.wrong {
-            background: #fef2f2;
-            border-color: #fca5a5;
             opacity: 0.5;
+            filter: grayscale(1);
         }
 
-        /* Feedback */
         .feedback {
             display: none;
             border-radius: 1.5rem;
             padding: 1.2rem;
             margin-top: 0.5rem;
-            animation: bounceIn 0.4s;
             text-align: center;
         }
 
@@ -365,360 +322,283 @@
 
         .feedback-emoji {
             font-size: 2.5rem;
-            display: block;
             margin-bottom: 0.3rem;
         }
 
         .feedback-msg {
             font-size: 1.1rem;
-            font-weight: 800;
+            font-weight: 900;
+            margin-bottom: 0.4rem;
         }
 
         .feedback-explain {
-            font-size: 0.9rem;
+            font-size: 0.95rem;
             font-weight: 700;
             color: #374151;
-            margin-top: 0.3rem;
-        }
-
-        .feedback-msg.correct-text {
-            color: #16a34a;
-        }
-
-        .feedback-msg.wrong-text {
-            color: #dc2626;
         }
 
         .next-btn {
-            font-family: 'Montserrat', sans-serif;
-            font-size: 1rem;
+            font-family: inherit;
+            font-size: 1.1rem;
             font-weight: 900;
             background: #be185d;
             color: white;
             border: none;
             cursor: pointer;
             border-radius: 9999px;
-            padding: 0.6rem 1.8rem;
+            padding: 0.7rem 2.2rem;
             box-shadow: 0 4px 0 #831843;
-            margin-top: 0.8rem;
+            margin-top: 1rem;
             text-transform: uppercase;
         }
 
-        /* Check answer button (paint mode) */
         #check-btn {
             display: none;
-            font-family: 'Montserrat', sans-serif;
-            font-size: 1rem;
-            font-weight: 900;
-            background: linear-gradient(180deg, #10b981, #059669);
-            color: white;
-            border: none;
-            cursor: pointer;
-            border-radius: 9999px;
-            padding: 0.7rem 2rem;
-            box-shadow: 0 4px 0 #065f46;
-            margin-bottom: 1rem;
-            transition: transform 0.1s;
-        }
-
-        #check-btn:hover {
-            transform: translateY(-2px);
-        }
-
-        /* Celebration */
-        .celebration {
-            display: none;
-            flex-direction: column;
-            align-items: center;
-            text-align: center;
-            padding: 1rem;
-        }
-
-        .celebration.show {
-            display: flex;
-        }
-
-        .celebration-emoji {
-            font-size: 5rem;
-            margin-bottom: 0.8rem;
-            animation: spin 0.8s ease;
-        }
-
-        .celebration-title {
-            font-size: 2.2rem;
-            font-weight: 900;
-            color: #be185d;
-            margin-bottom: 0.4rem;
-        }
-
-        .celebration-sub {
+            font-family: inherit;
             font-size: 1.1rem;
-            font-weight: 700;
-            color: #6b7280;
-            margin-bottom: 1.5rem;
-        }
-
-        .sticker-reward {
-            font-size: 5rem;
-            animation: bounceIn 0.5s 0.3s backwards;
-        }
-
-        .sticker-label {
-            font-size: 0.85rem;
-            font-weight: 800;
-            color: #be185d;
-            text-transform: uppercase;
-            letter-spacing: 0.06em;
-            margin-bottom: 1.2rem;
-        }
-
-        .check-btn {
-            font-family: 'Montserrat', sans-serif;
-            font-size: 1.2rem;
             font-weight: 900;
-            background: linear-gradient(180deg, #ec4899, #be185d);
+            background: #10b981;
             color: white;
             border: none;
             cursor: pointer;
             border-radius: 9999px;
-            padding: 0.8rem 2rem;
-            box-shadow: 0 5px 0 #831843;
+            padding: 0.8rem 2.5rem;
+            box-shadow: 0 5px 0 #065f46;
+            margin-bottom: 1rem;
             text-transform: uppercase;
-            letter-spacing: 0.05em;
         }
 
-        /* Rare sticker overlay */
-        .rare-banner {
-            display: none;
+        #sticker-flash-overlay {
             position: fixed;
-            inset: 0;
-            z-index: 9999;
-            background: rgba(0, 0, 0, 0.75);
-            align-items: center;
-            justify-content: center;
-            flex-direction: column;
-        }
-
-        .rare-banner.show {
-            display: flex;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 15rem;
+            pointer-events: none;
+            z-index: 10000;
+            opacity: 0;
+            display: none;
         }
 
         #fw-canvas {
             position: fixed;
-            inset: 0;
+            top: 0;
+            left: 0;
             pointer-events: none;
-            z-index: 9998;
+            z-index: 2500;
+        }
+
+        .celebration {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(190, 24, 93, 0.95);
+            z-index: 2000;
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            backdrop-filter: blur(15px);
+            color: white;
+            text-align: center;
+            padding: 2rem;
+        }
+
+        .celebration.show {
+            display: flex;
+            animation: fadeIn 0.5s forwards;
+        }
+
+        .celebration-emoji {
+            font-size: 8rem;
+            margin-bottom: 1rem;
+        }
+
+        .celebration-title {
+            font-size: 3rem;
+            font-weight: 900;
+            margin-bottom: 0.5rem;
+            color: #fdf2f8;
+        }
+
+        .sticker-reward {
+            font-size: 6rem;
+            margin: 1.5rem 0;
+            animation: bounceIn 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        .rare-banner {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.85);
+            z-index: 3000;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            backdrop-filter: blur(10px);
+        }
+
+        .rare-banner.show {
+            display: flex;
+            animation: fadeIn 0.4s forwards;
         }
 
         .rare-inner {
-            background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 50%, #fbbf24 100%);
-            background-size: 200% auto;
-            animation: shimmer 2s linear infinite, bounceIn 0.5s;
+            background: linear-gradient(135deg, #fbbf24, #f59e0b);
+            border: 6px solid #fbbf24;
             border-radius: 3rem;
-            padding: 2.5rem 3rem;
+            padding: 3rem;
+            max-width: 500px;
+            width: 90%;
             text-align: center;
-            max-width: 380px;
-            box-shadow: 0 0 80px rgba(251, 191, 36, 0.8), 0 25px 50px rgba(0, 0, 0, 0.4);
-            position: relative;
-            z-index: 10000;
+            color: white;
         }
 
         .rare-emoji-big {
             font-size: 7rem;
             display: block;
-            animation: spin 1s ease;
+            margin-bottom: 1rem;
         }
 
-        .rare-title {
-            font-size: 2rem;
-            font-weight: 900;
-            color: white;
-            text-shadow: 2px 3px 0 #92400e;
-            margin: 0.5rem 0 0.2rem;
-            letter-spacing: 0.05em;
-        }
-
-        .rare-subtitle {
-            font-size: 1.1rem;
-            font-weight: 800;
-            color: #fef3c7;
-        }
-
-        .rare-hint {
-            font-size: 0.85rem;
-            color: #fde68a;
-            font-weight: 700;
-            margin-top: 0.4rem;
-        }
-
-        .rare-close-btn {
-            font-family: 'Montserrat', sans-serif;
-            margin-top: 1.2rem;
-            font-size: 1rem;
-            font-weight: 900;
-            background: #92400e;
-            color: white;
-            border: none;
-            cursor: pointer;
-            border-radius: 9999px;
-            padding: 0.6rem 2rem;
-            box-shadow: 0 4px 0 #451a03;
-        }
-
-        @keyframes shimmer {
-            0% {
-                background-position: 200% center;
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
             }
 
-            100% {
-                background-position: -200% center;
+            to {
+                opacity: 1;
             }
         }
 
         @keyframes bounceIn {
             0% {
-                transform: scale(0.5);
-                opacity: 0
+                transform: scale(0.3);
+                opacity: 0;
             }
 
-            70% {
-                transform: scale(1.05)
+            50% {
+                transform: scale(1.1);
+                opacity: 1;
             }
 
             100% {
                 transform: scale(1);
-                opacity: 1
             }
         }
 
-        @keyframes spin {
+        @keyframes sticker-pop {
             0% {
-                transform: rotate(-15deg) scale(0.5)
+                transform: translate(-50%, -50%) scale(0.5);
+                opacity: 0;
             }
 
-            70% {
-                transform: rotate(10deg) scale(1.1)
+            50% {
+                transform: translate(-50%, -50%) scale(1.2);
+                opacity: 1;
             }
 
             100% {
-                transform: rotate(0) scale(1)
+                transform: translate(-50%, -50%) scale(1);
+                opacity: 0;
             }
         }
 
-        @media(max-width:600px) {
-            header h1 {
-                font-size: 1.2rem;
-            }
-
-            .fraction-btn .num,
-            .fraction-btn .den {
-                font-size: 1.5rem;
-            }
+        .animate-sticker-pop {
+            display: block !important;
+            animation: sticker-pop 1.5s ease-out forwards;
         }
     </style>
 </head>
 
 <body>
-
-    <div id="game-stickers"
-        style="position:fixed;top:15px;right:20px;display:flex;align-items:center;gap:10px;background:rgba(255,255,255,0.9);padding:8px 15px;border-radius:99px;backdrop-filter:blur(10px);border:2px solid #fbcfe8;z-index:1000;box-shadow: 0 4px 15px rgba(190, 24, 93, 0.1);">
-        <span
-            style="font-size:0.7rem;font-weight:900;color:#be185d;text-transform:uppercase;letter-spacing:1px;">Stickers:</span>
-        <div id="header-sticker-list" style="display:flex;gap:5px;font-size:1.4rem;"></div>
-    </div>
-
-    <a href="../index.html" class="back-btn">← Back to All Games</a>
-
     <header>
         <h1>🍕 Fraction Spotter</h1>
         <div class="stats">
+            <div class="header-stickers" id="header-sticker-list"></div>
             <div class="stat-pill">⭐ <span id="score">0</span></div>
             <div class="stat-pill">🔥 <span id="streak">0</span></div>
         </div>
     </header>
-
+    <a href="../index.html" class="back-btn">← Home</a>
     <div class="progress-wrap">
-        <div class="progress-label">
-            <span id="progress-text">Collecting: Real Madrid 🏆</span>
-            <span id="progress-count">0 / 5</span>
-        </div>
+        <div class="progress-label"><span id="progress-text">Collecting: Stars ⭐</span><span id="progress-count">0 /
+                5</span></div>
         <div class="progress-bar">
             <div class="progress-fill" id="progress-fill" style="width:0%"></div>
         </div>
     </div>
-
     <div class="stickers" id="sticker-book">
-        <div class="stickers-label">Archie's Sticker Collection</div>
+        <div class="stickers-label">Knowledge Collection:</div>
         <div class="sticker-row" id="sticker-row"></div>
     </div>
-
-    <div class="card" id="main-card">
-
-        <!-- Vocab reference -->
+    <div class="card" id="game-area">
         <div class="vocab-strip">
             <div class="vocab-pill">
                 <div class="fr">numérateur</div>
-                <div class="en">↑ numerator (parts coloured)</div>
+                <div class="en">numerator (top)</div>
             </div>
-            <div class="vocab-pill" style="background:#fff7f0;border-color:#fed7aa">
-                <span style="font-size:1.5rem;font-weight:900;color:#ea580c">¾</span>
-                <div class="en" style="font-size:0.7rem">← example fraction</div>
-            </div>
+            <div class="vocab-pill" style="min-width:60px; font-size:1.4rem; font-weight:900; color:#ea580c">½</div>
             <div class="vocab-pill">
                 <div class="fr">dénominateur</div>
-                <div class="en">↓ denominator (total parts)</div>
+                <div class="en">denominator (bottom)</div>
             </div>
         </div>
-
-        <div id="game-area">
-            <div class="badge" id="q-badge">Question 1</div>
-            <p class="question-text" id="question-text">What fraction of the shape is coloured? 🎨</p>
-            <p class="question-sub" id="question-sub">Quelle fraction est coloriée ? — <span>numérateur /
-                    dénominateur</span></p>
-
-            <div class="shape-wrap">
-                <canvas id="shape-canvas" width="260" height="220"></canvas>
-            </div>
-
-            <div class="choices" id="choices"></div>
-
-            <button id="check-btn" onclick="checkPaint()">Check (0 coloured) ✓</button>
-
-            <div class="feedback" id="feedback">
-                <span class="feedback-emoji" id="feedback-emoji">🎉</span>
-                <p class="feedback-msg" id="feedback-msg">Amazing!</p>
-                <p class="feedback-explain" id="feedback-explain"></p>
-                <button class="next-btn" onclick="nextQuestion()">Next Shape →</button>
-            </div>
+        <div class="badge" id="q-badge">Question 1</div>
+        <p class="question-text" id="question-text">Identify the fraction!</p>
+        <p class="question-sub" id="question-sub">Target fraction: <span>? / ?</span></p>
+        <div class="shape-wrap"><canvas id="shape-canvas" width="260" height="220"></canvas></div>
+        <div class="choices" id="choices"></div>
+        <button id="check-btn" onclick="checkPaint()">Check Answer ✓</button>
+        <div class="feedback" id="feedback">
+            <span class="feedback-emoji" id="feedback-emoji">🎉</span>
+            <p class="feedback-msg" id="feedback-msg">Amazing!</p>
+            <p class="feedback-explain" id="feedback-explain"></p>
+            <button class="next-btn" onclick="nextQuestion()">Next Fraction →</button>
         </div>
-
-        <div class="celebration" id="celebration">
-            <div class="celebration-emoji" id="cel-emoji">🏆</div>
-            <div class="celebration-title">Level Up! 🎉</div>
-            <div class="celebration-sub" id="cel-sub">You got all 5 right!</div>
-            <div class="sticker-reward" id="cel-sticker">⭐</div>
-            <div class="sticker-label">NEW STICKER UNLOCKED!</div>
-            <button class="check-btn" onclick="afterCelebration()" style="margin-top:1rem;">Keep Going! 🚀</button>
-        </div>
-
     </div>
+    <div class="celebration" id="celebration">
+        <div class="celebration-emoji" id="cel-emoji">🏆</div>
+        <div class="celebration-title">Fraction Master! 🎉</div>
+        <div class="celebration-sub" id="cel-sub">You earned a new brain badge!</div>
+        <div class="sticker-reward" id="cel-sticker">⭐</div>
+        <button class="next-btn" onclick="afterCelebration()"
+            style="box-shadow:none; background:white; color:#be185d;">Keep Going! 🚀</button>
+    </div>
+    <div class="rare-banner" id="rare-banner">
+        <div class="rare-inner">
+            <span class="rare-emoji-big" id="rare-emoji">💎</span>
+            <div class="rare-title" style="color:white; text-shadow:2px 3px 0 #92400e;">RARE STICKER!</div>
+            <div class="rare-subtitle" id="rare-name" style="font-size:1.5rem; font-weight:800; margin:1rem 0;">Diamond
+            </div>
+            <p style="font-size:1rem; font-weight:700; opacity:0.9; margin-bottom:2rem;">This one doesn't show up often
+                — you're lucky! 🍀</p>
+            <button class="check-btn" onclick="closeRare()" style="box-shadow:none; background:#92400e;">Amazing!
+                🎉</button>
+        </div>
+    </div>
+    <canvas id="fw-canvas"></canvas>
+    <div id="sticker-flash-overlay"></div>
 
     <script>
         const THEMES = [
             { name: 'Real Madrid', emoji: '🏆', stickers: ['⚽', '🏟️', '🥅', '👟', '🏆', '🧤', '🥇', '📣', '🎽', '🧣', '🎖️', '🔵', '⬜', '🌟', '🎯'] },
             { name: 'Beyblade', emoji: '🌪️', stickers: ['🌪️', '💥', '🌀', '⚙️', '🔧', '🔥', '⚡', '💫', '🛸', '🎯', '💿', '🔩', '🎪', '🎰', '🌀'] },
-            { name: 'Bruno', emoji: '🐶', stickers: ['🐶', '🦴', '🎾', '🐾', '🐕', '🥩', '🦮', '🥎', '🛋️', '🚿', '🐕‍🦺', '🌿', '🏡', '🎀', '🐩'] },
-            { name: 'Judo Master', emoji: '🥋', stickers: ['🥋', '💪', '🥇', '🤸', '⛩️', '🇯🇵', '🧘', '🏆', '💯', '🎖️', '🏯', '🎌', '🌸', '🥁', '🎍'] },
+            { name: 'Bruno', emoji: '🐶', stickers: ['🐶', '🦴', '🎾', '🐾', '🐕', '🥩', '🦮', '🥎', '🚿', '🐕‍🦺', '🌿', '🏡', '🎀'] },
+            { name: 'Judo Master', emoji: '🥋', stickers: ['🥋', '💪', '🥇', '🤸', '⛩️', '🇯🇵', '🧘', '🏆', '💯', '🎖️', '🏯', '🌸', '🥁'] },
             { name: 'Agent P', emoji: '🦆', stickers: ['🦆', '🎩', '🎸', '🛠️', '🧪', '🎢', '📻', '🗺️', '⚙️', '🔩', '🔬', '🧲', '📡', '🎬', '🛩️'] },
-            { name: 'Space', emoji: '🚀', stickers: ['🚀', '🌍', '🌙', '⭐', '🛸', '☄️', '🪐', '👨‍🚀', '🌠', '🔭', '🛰️', '💫', '🌌', '🌟', '🌛'] },
+            { name: 'Space', emoji: '🚀', stickers: ['🚀', '🌍', '🌙', '⭐', '🛸', '☄️', '🪐', '👨‍🚀', '🌠', '🔭', '🛰️', '💫', '🌌', '🌟'] },
         ];
-
         const RARE_STICKERS = [
-            { emoji: '💎', name: 'Diamond' }, { emoji: '👑', name: 'Crown' }, { emoji: '🦄', name: 'Unicorn' },
+            { emoji: '💎', name: 'Diamond' }, { emoji: '👑', name: 'Crown' },
             { emoji: '🐉', name: 'Dragon' }, { emoji: '🌈', name: 'Rainbow' }, { emoji: '🔮', name: 'Crystal Ball' },
             { emoji: '🍀', name: 'Lucky Clover' }, { emoji: '🦅', name: 'Eagle' }, { emoji: '🎆', name: 'Fireworks' },
             { emoji: '⚡', name: 'Lightning Bolt' }, { emoji: '🌙', name: 'Golden Moon' }, { emoji: '🎭', name: 'Magic Mask' },
-            { emoji: '🦋', name: 'Butterfly' }, { emoji: '🐋', name: 'Blue Whale' }, { emoji: '🌋', name: 'Volcano' },
+            { emoji: '🐋', name: 'Blue Whale' }, { emoji: '🌋', name: 'Volcano' },
         ];
         const RARE_CHANCE = 0.2;
 
@@ -728,12 +608,9 @@
                 const available = RARE_STICKERS.filter(s => !rareOwned.includes(s.emoji));
                 const pool = available.length > 0 ? available : RARE_STICKERS;
                 const r = pool[Math.floor(Math.random() * pool.length)];
-
                 if (!rareOwned.includes(r.emoji)) {
-                    rareOwned.push(r.emoji);
-                    sessionStorage.setItem('stickers_rare', JSON.stringify(rareOwned));
+                    rareOwned.push(r.emoji); sessionStorage.setItem('stickers_rare', JSON.stringify(rareOwned));
                 }
-
                 setTimeout(() => showRareBanner(r), 500);
                 return r.emoji;
             }
@@ -744,91 +621,64 @@
             const list = document.getElementById('header-sticker-list');
             if (!list) return;
             list.innerHTML = "";
-            const rare = JSON.parse(sessionStorage.getItem('stickers_rare') || '[]');
-            // Fractions stickers + ANY rare stickers
-            [...stickers, ...rare].forEach(s => {
-                const span = document.createElement('span');
-                span.textContent = s;
-                list.appendChild(span);
-            });
+            const rareBound = JSON.parse(sessionStorage.getItem('stickers_rare') || '[]');
+            const all = [...stickers.slice(-5), ...rareBound.slice(-5)].slice(-5);
+            all.forEach(s => { const span = document.createElement('span'); span.textContent = s; list.appendChild(span); });
         }
-
         function showRareBanner(r) {
             document.getElementById('rare-emoji').textContent = r.emoji;
             document.getElementById('rare-name').textContent = r.name;
             document.getElementById('rare-banner').classList.add('show');
-            launchFireworks();
-            playRareFanfare();
+            launchFireworks(); playRareFanfare();
         }
         function playRareFanfare() {
             try {
                 const ctx = new (window.AudioContext || window.webkitAudioContext)();
                 const now = ctx.currentTime;
-                const notes = [523.25, 659.25, 783.99, 1046.50]; // C5, E5, G5, C6
+                const notes = [523.25, 659.25, 783.99, 1046.50];
                 notes.forEach((freq, i) => {
-                    const osc = ctx.createOscillator();
-                    const gain = ctx.createGain();
-                    osc.type = 'sine';
-                    osc.frequency.setValueAtTime(freq, now + i * 0.1);
+                    const osc = ctx.createOscillator(); const gain = ctx.createGain();
+                    osc.type = 'sine'; osc.frequency.setValueAtTime(freq, now + i * 0.1);
                     gain.gain.setValueAtTime(0.2, now + i * 0.1);
                     gain.gain.exponentialRampToValueAtTime(0.01, now + (i * 0.1) + 0.3);
-                    osc.connect(gain);
-                    gain.connect(ctx.destination);
-                    osc.start(now + i * 0.1);
-                    osc.stop(now + i * 0.1 + 0.3);
+                    osc.connect(gain); gain.connect(ctx.destination);
+                    osc.start(now + i * 0.1); osc.stop(now + i * 0.1 + 0.3);
                 });
-            } catch (e) { console.log('Audio failed:', e); }
+            } catch (e) { }
         }
         function showStickerFlash(emoji) {
             const overlay = document.getElementById('sticker-flash-overlay');
-            overlay.textContent = emoji;
-            overlay.classList.remove('animate-sticker-pop');
-            void overlay.offsetWidth; // Trigger reflow
-            overlay.classList.add('animate-sticker-pop');
+            overlay.textContent = emoji; overlay.classList.remove('animate-sticker-pop');
+            void overlay.offsetWidth; overlay.classList.add('animate-sticker-pop');
         }
-        function closeRare() {
-            document.getElementById('rare-banner').classList.remove('show');
-            stopFireworks();
-        }
+        function closeRare() { document.getElementById('rare-banner').classList.remove('show'); stopFireworks(); }
         let fwAnim = null, fwParticles = [], fwInterval = null;
         function fwBurst(canvas) {
-            const colors = ['#fbbf24', '#ec4899', '#3b82f6', '#10b981', '#f97316', '#8b5cf6', '#ef4444', '#fff', '#a3e635', '#f0abfc'];
+            const colors = ['#fbbf24', '#ec4899', '#3b82f6', '#10b981', '#f97316', '#8b5cf6', '#ef4444', '#fff'];
             for (let i = 0; i < 8; i++) {
-                const cx = Math.random() * canvas.width;
-                const cy = Math.random() * canvas.height * 0.7;
+                const cx = Math.random() * canvas.width, cy = Math.random() * canvas.height * 0.7;
                 for (let j = 0; j < 55; j++) {
-                    const angle = (j / 55) * Math.PI * 2;
-                    const spd = 2 + Math.random() * 7;
-                    fwParticles.push({
-                        x: cx, y: cy, vx: Math.cos(angle) * spd, vy: Math.sin(angle) * spd,
-                        alpha: 1, color: colors[Math.floor(Math.random() * colors.length)], r: 2 + Math.random() * 4
-                    });
+                    const angle = (j / 55) * Math.PI * 2, spd = 2 + Math.random() * 7;
+                    fwParticles.push({ x: cx, y: cy, vx: Math.cos(angle) * spd, vy: Math.sin(angle) * spd, alpha: 1, color: colors[Math.floor(Math.random() * colors.length)], r: 2 + Math.random() * 4 });
                 }
             }
         }
         function launchFireworks() {
             const canvas = document.getElementById('fw-canvas');
             canvas.width = window.innerWidth; canvas.height = window.innerHeight;
-            const ctx = canvas.getContext('2d');
-            fwParticles = [];
-            fwBurst(canvas);
-
+            const ctx = canvas.getContext('2d'); fwParticles = []; fwBurst(canvas);
             function tick() {
-                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                if (!ctx) return; ctx.clearRect(0, 0, canvas.width, canvas.height);
                 fwParticles.forEach(p => {
                     p.x += p.vx; p.y += p.vy; p.vy += 0.1; p.alpha -= 0.005;
-                    ctx.globalAlpha = Math.max(0, p.alpha);
-                    ctx.fillStyle = p.color;
+                    ctx.globalAlpha = Math.max(0, p.alpha); ctx.fillStyle = p.color;
                     ctx.beginPath(); ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2); ctx.fill();
                 });
-                ctx.globalAlpha = 1;
-                fwParticles = fwParticles.filter(p => p.alpha > 0);
+                ctx.globalAlpha = 1; fwParticles = fwParticles.filter(p => p.alpha > 0);
                 fwAnim = requestAnimationFrame(tick);
             }
             if (fwAnim) cancelAnimationFrame(fwAnim);
             fwAnim = requestAnimationFrame(tick);
-
-            // Keep firing new bursts every 800ms while banner is open
             if (fwInterval) clearInterval(fwInterval);
             fwInterval = setInterval(() => fwBurst(canvas), 800);
         }
@@ -836,529 +686,186 @@
             if (fwInterval) { clearInterval(fwInterval); fwInterval = null; }
             if (fwAnim) { cancelAnimationFrame(fwAnim); fwAnim = null; }
             const c = document.getElementById('fw-canvas');
-            c.getContext('2d').clearRect(0, 0, c.width, c.height);
+            if (c) c.getContext('2d').clearRect(0, 0, c.width, c.height);
             fwParticles = [];
         }
 
-        // All possible fractions (numerator, denominator)
-        const ALL_FRACTIONS = [
-            [1, 2], [1, 3], [2, 3], [1, 4], [2, 4], [3, 4],
-            [1, 5], [2, 5], [3, 5], [4, 5],
-            [1, 6], [2, 6], [3, 6], [4, 6], [5, 6],
-            [1, 8], [2, 8], [3, 8], [5, 8], [6, 8], [7, 8],
-            [2, 10], [3, 10], [4, 10], [5, 10], [7, 10], [9, 10],
-        ];
-
-        // Shape palettes
+        const ALL_FRACTIONS = [[1, 2], [1, 3], [2, 3], [1, 4], [2, 4], [3, 4], [1, 5], [2, 5], [3, 5], [4, 5], [1, 6], [2, 6], [3, 6], [4, 6], [5, 6], [1, 8], [2, 8], [3, 8], [5, 8], [6, 8], [7, 8], [2, 10], [3, 10], [4, 10], [5, 10], [7, 10], [9, 10]];
         const FILL_COLORS = ['#ec4899', '#f97316', '#3b82f6', '#10b981', '#8b5cf6', '#f59e0b', '#14b8a6'];
-        const BG_COLOR = '#fce7f3';
         const SHAPE_TYPES = ['circle', 'rectangle', 'rectangle-tall'];
 
-        // ─── State ────────────────────────────────────────────────────
-        let score = 0, streak = 0, progress = 0, level = 0, qNum = 0;
+        let score = 0, streak = 0, progress = 0, level = 0, qNum = 0, answered = false, correctNumerator, correctDenominator, qMode = 'identify', paintCells = [], paintMeta = [], paintColor = '#ec4899';
         let stickers = JSON.parse(sessionStorage.getItem('stickers_fractions') || '[]');
-        let answered = false;
-        let correctNumerator, correctDenominator;
-        let qMode = 'identify'; // 'identify' or 'paint'
 
-        // Paint-mode cell state
-        let paintCells = [];    // array of booleans — is cell i coloured?
-        let paintMeta = [];     // array of hit-test regions {type,data} per cell
-        let paintColor = '#ec4899';
+        function saveStickers() { sessionStorage.setItem('stickers_fractions', JSON.stringify(stickers)); updateStickerHeader(); }
 
-        function saveStickers() {
-            sessionStorage.setItem('stickers_fractions', JSON.stringify(stickers));
-            updateStickerHeader();
-        }
-
-        // ─── Drawing ───────────────────────────────────────────────────
         function drawCircle(canvas, numerator, denominator, fillColor) {
-            const ctx = canvas.getContext('2d');
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-            const cx = canvas.width / 2, cy = canvas.height / 2;
-            const r = Math.min(canvas.width, canvas.height) * 0.4;
-            const sliceAngle = (2 * Math.PI) / denominator;
-            const startOffset = -Math.PI / 2; // start from top
-
+            const ctx = canvas.getContext('2d'); ctx.clearRect(0, 0, canvas.width, canvas.height);
+            const cx = canvas.width / 2, cy = canvas.height / 2, r = 85, sliceAngle = (2 * Math.PI) / denominator, startOffset = -Math.PI / 2;
             for (let i = 0; i < denominator; i++) {
-                const startA = startOffset + i * sliceAngle;
-                const endA = startA + sliceAngle;
-                ctx.beginPath();
-                ctx.moveTo(cx, cy);
-                ctx.arc(cx, cy, r, startA, endA);
-                ctx.closePath();
-                ctx.fillStyle = i < numerator ? fillColor : '#fff';
-                ctx.fill();
-                ctx.strokeStyle = '#374151';
-                ctx.lineWidth = 2;
-                ctx.stroke();
+                const s = startOffset + i * sliceAngle, e = s + sliceAngle;
+                ctx.beginPath(); ctx.moveTo(cx, cy); ctx.arc(cx, cy, r, s, e); ctx.closePath();
+                ctx.fillStyle = i < numerator ? fillColor : '#fff'; ctx.fill();
+                ctx.strokeStyle = '#374151'; ctx.lineWidth = 2; ctx.stroke();
             }
-
-            // outer ring
-            ctx.beginPath();
-            ctx.arc(cx, cy, r, 0, 2 * Math.PI);
-            ctx.strokeStyle = '#374151';
-            ctx.lineWidth = 3;
-            ctx.stroke();
         }
 
         function drawRectangle(canvas, numerator, denominator, fillColor, tall) {
-            const ctx = canvas.getContext('2d');
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-            const margin = 20;
-            const totalW = canvas.width - margin * 2;
-            const totalH = canvas.height - margin * 2;
-
-            // Fixed unambiguous layouts — never any phantom empty cells
-            const LAYOUTS = {
-                2: [1, 2],   // 1 row × 2 cols
-                3: [1, 3],
-                4: [1, 4],
-                5: [1, 5],
-                6: [2, 3],
-                8: [2, 4],   // Always 2×4 — never 3×3!
-                10: [2, 5],
-            };
-            let [rows, cols] = LAYOUTS[denominator] || [1, denominator];
-            // For the "tall" variant, swap rows and cols
-            if (tall) { [rows, cols] = [cols, rows]; }
-
-            const cellW = totalW / cols;
-            const cellH = totalH / rows;
-            let count = 0;
-
-            outer:
-            for (let r = 0; r < rows; r++) {
-                for (let c = 0; c < cols; c++) {
-                    if (count >= denominator) break outer; // break BOTH loops
-                    const x = margin + c * cellW;
-                    const y = margin + r * cellH;
-                    ctx.fillStyle = count < numerator ? fillColor : '#fff';
-                    ctx.fillRect(x, y, cellW, cellH);
-                    ctx.strokeStyle = '#374151';
-                    ctx.lineWidth = 2;
-                    ctx.strokeRect(x, y, cellW, cellH);
-                    count++;
-                }
-            }
-
-            // Outer border
-            ctx.strokeStyle = '#374151';
-            ctx.lineWidth = 3;
-            ctx.strokeRect(margin, margin, totalW, totalH);
-        }
-
-        function drawShape(numerator, denominator, forPaint) {
-            const canvas = document.getElementById('shape-canvas');
-            const color = forPaint ? null : FILL_COLORS[qNum % FILL_COLORS.length];
-
-            if (denominator > 6) {
-                if (forPaint) drawCirclePaint(canvas, denominator);
-                else drawCircle(canvas, numerator, denominator, color);
-                return;
-            }
-
-            const shapeType = SHAPE_TYPES[qNum % SHAPE_TYPES.length];
-            if (forPaint) {
-                drawRectanglePaint(canvas, denominator, shapeType === 'rectangle-tall');
-            } else if (shapeType === 'circle') {
-                drawCircle(canvas, numerator, denominator, color);
-            } else {
-                drawRectangle(canvas, numerator, denominator, color, shapeType === 'rectangle-tall');
+            const ctx = canvas.getContext('2d'); ctx.clearRect(0, 0, canvas.width, canvas.height);
+            const margin = 20, totalW = canvas.width - margin * 2, totalH = canvas.height - margin * 2;
+            const LAYOUTS = { 2: [1, 2], 3: [1, 3], 4: [1, 4], 5: [1, 5], 6: [2, 3], 8: [2, 4], 10: [2, 5] };
+            let [rows, cols] = LAYOUTS[denominator] || [1, denominator]; if (tall) [rows, cols] = [cols, rows];
+            const cellW = totalW / cols, cellH = totalH / rows; let count = 0;
+            for (let r = 0; r < rows; r++) for (let c = 0; c < cols; c++) {
+                if (count >= denominator) break; const x = margin + c * cellW, y = margin + r * cellH;
+                ctx.fillStyle = count < numerator ? fillColor : '#fff'; ctx.fillRect(x, y, cellW, cellH);
+                ctx.strokeStyle = '#374151'; ctx.lineWidth = 2; ctx.strokeRect(x, y, cellW, cellH);
+                count++;
             }
         }
 
-        // Paint-mode circle: draw empty slices, store arc metadata for hit-testing
         function drawCirclePaint(canvas, denominator) {
-            const ctx = canvas.getContext('2d');
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-            const cx = canvas.width / 2, cy = canvas.height / 2;
-            const r = Math.min(canvas.width, canvas.height) * 0.4;
-            const sliceAngle = (2 * Math.PI) / denominator;
-            const startOffset = -Math.PI / 2;
+            const ctx = canvas.getContext('2d'); ctx.clearRect(0, 0, canvas.width, canvas.height);
+            const cx = canvas.width / 2, cy = canvas.height / 2, r = 85, sliceAngle = (2 * Math.PI) / denominator, startA = -Math.PI / 2;
             paintMeta = [];
-            // paintCells already set to all-false in newQuestion
-
             for (let i = 0; i < denominator; i++) {
-                const startA = startOffset + i * sliceAngle;
-                const endA = startA + sliceAngle;
-                paintMeta.push({ type: 'slice', cx, cy, r, startA, endA });
-                ctx.beginPath();
-                ctx.moveTo(cx, cy);
-                ctx.arc(cx, cy, r, startA, endA);
-                ctx.closePath();
-                ctx.fillStyle = paintCells[i] ? paintColor : '#fff';
-                ctx.fill();
+                const s = startA + i * sliceAngle, e = s + sliceAngle;
+                paintMeta.push({ type: 'slice', cx, cy, r, startA: s, endA: e });
+                ctx.beginPath(); ctx.moveTo(cx, cy); ctx.arc(cx, cy, r, s, e); ctx.closePath();
+                ctx.fillStyle = paintCells[i] ? paintColor : '#fff'; ctx.fill();
                 ctx.strokeStyle = '#374151'; ctx.lineWidth = 2; ctx.stroke();
             }
-            ctx.beginPath(); ctx.arc(cx, cy, r, 0, Math.PI * 2);
-            ctx.strokeStyle = '#374151'; ctx.lineWidth = 3; ctx.stroke();
         }
 
-        // Paint-mode rectangle: draw empty cells, store rect metadata
         function drawRectanglePaint(canvas, denominator, tall) {
-            const ctx = canvas.getContext('2d');
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-            const margin = 20;
+            const ctx = canvas.getContext('2d'); ctx.clearRect(0, 0, canvas.width, canvas.height);
+            const margin = 20, totalW = canvas.width - margin * 2, totalH = canvas.height - margin * 2;
             const LAYOUTS = { 2: [1, 2], 3: [1, 3], 4: [1, 4], 5: [1, 5], 6: [2, 3], 8: [2, 4], 10: [2, 5] };
-            let [rows, cols] = LAYOUTS[denominator] || [1, denominator];
-            if (tall) [rows, cols] = [cols, rows];
-            const totalW = canvas.width - margin * 2;
-            const totalH = canvas.height - margin * 2;
-            const cellW = totalW / cols, cellH = totalH / rows;
-            paintMeta = [];
-            let count = 0;
-            outer: for (let r = 0; r < rows; r++) {
-                for (let c = 0; c < cols; c++) {
-                    if (count >= denominator) break outer;
-                    const x = margin + c * cellW, y = margin + r * cellH;
-                    paintMeta.push({ type: 'rect', x, y, w: cellW, h: cellH });
-                    ctx.fillStyle = paintCells[count] ? paintColor : '#fff';
-                    ctx.fillRect(x, y, cellW, cellH);
-                    ctx.strokeStyle = '#374151'; ctx.lineWidth = 2;
-                    ctx.strokeRect(x, y, cellW, cellH);
-                    count++;
-                }
+            let [rows, cols] = LAYOUTS[denominator] || [1, denominator]; if (tall) [rows, cols] = [cols, rows];
+            const cellW = totalW / cols, cellH = totalH / rows; paintMeta = [];
+            let count = 0; for (let r = 0; r < rows; r++) for (let c = 0; c < cols; c++) {
+                if (count >= denominator) break; const x = margin + c * cellW, y = margin + r * cellH;
+                paintMeta.push({ type: 'rect', x, y, w: cellW, h: cellH });
+                ctx.fillStyle = paintCells[count] ? paintColor : '#fff'; ctx.fillRect(x, y, cellW, cellH);
+                ctx.strokeStyle = '#374151'; ctx.lineWidth = 2; ctx.strokeRect(x, y, cellW, cellH);
+                count++;
             }
-            ctx.strokeStyle = '#374151'; ctx.lineWidth = 3;
-            ctx.strokeRect(margin, margin, totalW, totalH);
         }
 
-        // Hit-test a canvas click in paint mode and toggle the cell
         function handlePaintClick(evt) {
-            if (answered) return;
-            const canvas = document.getElementById('shape-canvas');
-            const rect = canvas.getBoundingClientRect();
-            const scaleX = canvas.width / rect.width;
-            const scaleY = canvas.height / rect.height;
-            const mx = (evt.clientX - rect.left) * scaleX;
-            const my = (evt.clientY - rect.top) * scaleY;
-
+            if (answered) return; const canvas = document.getElementById('shape-canvas');
+            const rect = canvas.getBoundingClientRect(); const mx = (evt.clientX - rect.left) * (canvas.width / rect.width), my = (evt.clientY - rect.top) * (canvas.height / rect.height);
             for (let i = 0; i < paintMeta.length; i++) {
-                const m = paintMeta[i];
-                let hit = false;
+                const m = paintMeta[i]; let hit = false;
                 if (m.type === 'slice') {
-                    const dx = mx - m.cx, dy = my - m.cy;
-                    const dist = Math.sqrt(dx * dx + dy * dy);
-                    if (dist <= m.r) {
-                        let angle = Math.atan2(dy, dx);
-                        // normalise to same [startA, endA] range
-                        while (angle < m.startA) angle += Math.PI * 2;
-                        hit = angle >= m.startA && angle < m.endA;
+                    const dx = mx - m.cx, dy = my - m.cy; if (Math.sqrt(dx * dx + dy * dy) <= m.r) {
+                        let a = Math.atan2(dy, dx); while (a < m.startA) a += Math.PI * 2; hit = a >= m.startA && a < m.endA;
                     }
-                } else {
-                    hit = mx >= m.x && mx < m.x + m.w && my >= m.y && my < m.y + m.h;
-                }
-                if (hit) {
-                    paintCells[i] = !paintCells[i];
-                    // Redraw
-                    if (m.type === 'slice') drawCirclePaint(canvas, correctDenominator);
-                    else drawRectanglePaint(canvas, correctDenominator, SHAPE_TYPES[qNum % SHAPE_TYPES.length] === 'rectangle-tall');
-                    updateCheckBtn();
-                    break;
-                }
+                } else hit = mx >= m.x && mx < m.x + m.w && my >= m.y && my < m.y + m.h;
+                if (hit) { paintCells[i] = !paintCells[i]; if (m.type === 'slice') drawCirclePaint(canvas, correctDenominator); else drawRectanglePaint(canvas, correctDenominator, SHAPE_TYPES[qNum % SHAPE_TYPES.length] === 'rectangle-tall'); updateCheckBtn(); break; }
             }
         }
-
-        function updateCheckBtn() {
-            const count = paintCells.filter(Boolean).length;
-            document.getElementById('check-btn').textContent =
-                `Check (${count}/${correctDenominator} coloured) ✓`;
-        }
-
-        // ─── Distractors ──────────────────────────────────────────────────────
-        function generateChoices(num, den) {
-            const correctKey = `${num}/${den}`;
-            const used = new Set([correctKey]);
-            const pool = ALL_FRACTIONS.filter(([n2, d2]) => `${n2}/${d2}` !== correctKey);
-
-            // Shuffle helper
-            const shuffle = arr => arr.sort(() => Math.random() - 0.5);
-
-            // Split pool into same-denominator and different-denominator distractors
-            const sameDen = shuffle(pool.filter(([, d2]) => d2 === den));
-            const diffDen = shuffle(pool.filter(([, d2]) => d2 !== den));
-
-            const distractors = [];
-
-            // Always include at least one different-denominator option
-            // (so the child can't just ignore the bottom number)
-            const pick = (arr) => {
-                for (const [n2, d2] of arr) {
-                    const k = `${n2}/${d2}`;
-                    if (!used.has(k)) { used.add(k); distractors.push({ n: n2, d: d2 }); return true; }
-                }
-                return false;
-            };
-
-            pick(diffDen);   // 1 different-denominator distractor
-            pick(sameDen);   // 1 same-denominator distractor (if available)
-
-            // Fill remaining slot from whatever's left
-            if (distractors.length < 2) pick(diffDen) || pick(sameDen);
-
-            return shuffle([{ n: num, d: den }, ...distractors]);
-        }
-
-        // ─── Render choices ───────────────────────────────────────────
-        function renderChoices(choices, correctNum, correctDen) {
-            const container = document.getElementById('choices');
-            container.innerHTML = '';
-            choices.forEach(({ n, d }) => {
-                const btn = document.createElement('button');
-                btn.className = 'fraction-btn';
-                btn.innerHTML = `<span class="num">${n}</span><span class="frac-line"></span><span class="den">${d}</span>`;
-                btn.onclick = () => guess(n, d, btn);
-                container.appendChild(btn);
-            });
-        }
-
-        // ─── Game logic ───────────────────────────────────────────────
-        const CORRECT_MSGS = [
-            '🎉 PERFECT! You spotted it!',
-            '🍕 Slice of genius!',
-            '🔥 ON FIRE! Great fraction skills!',
-            '⭐ Superstar answer!',
-            '💯 Absolutely correct!',
-            '🥇 Gold medal fractions!',
-            '🌟 You know your fractions!',
-        ];
-        const WRONG_MSGS = [
-            'Nearly! Count the coloured parts for the top number, total parts for the bottom.',
-            'Not quite — remember: top = parts coloured, bottom = total parts!',
-            'Give it another look — use the vocab strip above! 🔍',
-        ];
+        function updateCheckBtn() { const count = paintCells.filter(Boolean).length; document.getElementById('check-btn').textContent = `Check (${count}/${correctNumerator} coloured) ✓`; }
 
         function newQuestion() {
-            answered = false;
-            const frac = ALL_FRACTIONS[Math.floor(Math.random() * ALL_FRACTIONS.length)];
-            correctNumerator = frac[0]; correctDenominator = frac[1];
-            qNum++;
-
+            answered = false; const frac = ALL_FRACTIONS[Math.floor(Math.random() * ALL_FRACTIONS.length)];
+            correctNumerator = frac[0]; correctDenominator = frac[1]; qNum++;
             document.getElementById('q-badge').textContent = `Question ${qNum}`;
-            document.getElementById('feedback').className = 'feedback';
-
-            // Randomly pick mode: 40% paint, 60% identify
+            document.getElementById('feedback').style.display = 'none';
             qMode = Math.random() < 0.4 ? 'paint' : 'identify';
-
-            if (qMode === 'paint') {
-                // Reset paint state
-                paintCells = Array(correctDenominator).fill(false);
-                paintColor = FILL_COLORS[qNum % FILL_COLORS.length];
-
-                document.getElementById('question-text').textContent =
-                    `Colour ${correctNumerator}/${correctDenominator} of the shape! 🖨️`;
-                document.getElementById('question-sub').innerHTML =
-                    `Colorie <strong>${correctNumerator}/${correctDenominator}</strong> de la forme — tap the sections!`;
-
-                document.getElementById('choices').style.display = 'none';
-                document.getElementById('check-btn').style.display = 'inline-block';
-                updateCheckBtn();
-
-                const canvas = document.getElementById('shape-canvas');
-                canvas.style.cursor = 'pointer';
-                canvas.onclick = handlePaintClick;
-
-                drawShape(0, correctDenominator, true); // draw empty
-            } else {
-                document.getElementById('question-text').textContent =
-                    'What fraction of the shape is coloured? 🎨';
-                document.getElementById('question-sub').innerHTML =
-                    'Quelle fraction est coloriée ? — <span>numérateur / dénominateur</span>';
-
-                document.getElementById('choices').style.display = '';
-                document.getElementById('check-btn').style.display = 'none';
-
-                const canvas = document.getElementById('shape-canvas');
-                canvas.style.cursor = '';
-                canvas.onclick = null;
-
-                drawShape(correctNumerator, correctDenominator, false);
-
-                const choices = generateChoices(correctNumerator, correctDenominator);
-                renderChoices(choices, correctNumerator, correctDenominator);
-            }
-        }
-
-        // ─── Paint mode: check answer ─────────────────────────────────
-        function checkPaint() {
-            if (answered) return;
-            answered = true;
-            document.getElementById('shape-canvas').onclick = null;
-            document.getElementById('check-btn').style.display = 'none';
-
-            const coloured = paintCells.filter(Boolean).length;
-            const feedback = document.getElementById('feedback');
-            const fbEmoji = document.getElementById('feedback-emoji');
-            const fbMsg = document.getElementById('feedback-msg');
-            const fbExpl = document.getElementById('feedback-explain');
-
-            // Reveal correct colouring on canvas
             const canvas = document.getElementById('shape-canvas');
-            paintCells = paintCells.map((_, i) => i < correctNumerator);
-            if (correctDenominator > 6) drawCirclePaint(canvas, correctDenominator);
-            else drawRectanglePaint(canvas, correctDenominator, SHAPE_TYPES[qNum % SHAPE_TYPES.length] === 'rectangle-tall');
-
-            if (coloured === correctNumerator) {
-                score += 100; streak++;
-                document.getElementById('score').textContent = score;
-                document.getElementById('streak').textContent = streak;
-                progress++; updateProgressUI();
-
-                const s = pickSticker();
-                stickers.push(s); saveStickers();
-                showStickerFlash(s);
-                const sp = document.createElement('span'); sp.textContent = s;
-                sp.style.animation = 'bounceIn 0.4s cubic-bezier(0.175,0.885,0.32,1.275)';
-                document.getElementById('sticker-row').appendChild(sp);
-                document.getElementById('sticker-book').className = 'stickers visible';
-
-                if (progress >= 5) {
-                    progress = 0;
-                    const oldLevel = level; level++;
-                    const celTheme = THEMES[oldLevel % THEMES.length];
-                    document.getElementById('cel-emoji').textContent = celTheme.emoji;
-                    document.getElementById('cel-sub').textContent = `You collected all ${celTheme.name} stickers!`;
-                    document.getElementById('cel-sticker').textContent = celTheme.stickers[Math.floor(Math.random() * celTheme.stickers.length)];
-                    updateProgressUI();
-                    feedback.className = 'feedback correct-fb';
-                    fbEmoji.textContent = s;
-                    fbMsg.className = 'feedback-msg correct-text';
-                    fbMsg.textContent = CORRECT_MSGS[Math.floor(Math.random() * CORRECT_MSGS.length)];
-                    fbExpl.textContent = `${correctNumerator}/${correctDenominator} coloured perfectly!`;
-                    setTimeout(() => {
-                        document.getElementById('game-area').style.display = 'none';
-                        document.getElementById('celebration').className = 'celebration show';
-                    }, 800);
-                    return;
-                }
-
-                feedback.className = 'feedback correct-fb';
-                fbEmoji.textContent = s;
-                fbMsg.className = 'feedback-msg correct-text';
-                fbMsg.textContent = CORRECT_MSGS[Math.floor(Math.random() * CORRECT_MSGS.length)];
-                fbExpl.textContent = `You coloured exactly ${correctNumerator}/${correctDenominator} — parfait! 🎉`;
+            if (qMode === 'paint') {
+                paintCells = Array(correctDenominator).fill(false); paintColor = FILL_COLORS[qNum % FILL_COLORS.length];
+                document.getElementById('question-text').textContent = `Colour ${correctNumerator}/${correctDenominator} of the shape! 🎨`;
+                document.getElementById('question-sub').innerHTML = `Slide <span>numerator / denominator</span> to win!`;
+                document.getElementById('choices').style.display = 'none'; document.getElementById('check-btn').style.display = 'inline-block';
+                canvas.onclick = handlePaintClick; updateCheckBtn();
+                if (correctDenominator > 6) drawCirclePaint(canvas, correctDenominator);
+                else drawRectanglePaint(canvas, correctDenominator, SHAPE_TYPES[qNum % SHAPE_TYPES.length] === 'rectangle-tall');
             } else {
-                streak = 0;
-                document.getElementById('streak').textContent = streak;
-                feedback.className = 'feedback wrong-fb';
-                fbEmoji.textContent = '🤔';
-                fbMsg.className = 'feedback-msg wrong-text';
-                const needed = correctNumerator, got = coloured;
-                fbMsg.textContent = got < needed
-                    ? `You coloured ${got} — you needed ${needed} more section${needed - got > 1 ? 's' : ''}!`
-                    : `You coloured ${got} — that's ${got - needed} too many!`;
-                fbExpl.textContent = `${correctNumerator}/${correctDenominator} means colour ${correctNumerator} out of ${correctDenominator} equal parts. The shape now shows the correct answer.`;
-            }
-        }
-
-        function guess(n, d, btn) {
-            if (answered) return;
-            answered = true;
-            document.querySelectorAll('.fraction-btn').forEach(b => b.onclick = null);
-
-            const feedback = document.getElementById('feedback');
-            const fbEmoji = document.getElementById('feedback-emoji');
-            const fbMsg = document.getElementById('feedback-msg');
-            const fbExpl = document.getElementById('feedback-explain');
-
-            if (n === correctNumerator && d === correctDenominator) {
-                score += 100; streak++;
-                document.getElementById('score').textContent = score;
-                document.getElementById('streak').textContent = streak;
-                btn.className = 'fraction-btn correct';
-                progress++; updateProgressUI();
-
-                const s = pickSticker();
-                stickers.push(s); saveStickers();
-                showStickerFlash(s);
-                const sp = document.createElement('span'); sp.textContent = s;
-                sp.style.animation = 'bounceIn 0.4s cubic-bezier(0.175,0.885,0.32,1.275)';
-                document.getElementById('sticker-row').appendChild(sp);
-                document.getElementById('sticker-book').className = 'stickers visible';
-
-                if (progress >= 5) {
-                    progress = 0;
-                    const oldLevel = level; level++;
-                    const celTheme = THEMES[oldLevel % THEMES.length];
-                    document.getElementById('cel-emoji').textContent = celTheme.emoji;
-                    document.getElementById('cel-sub').textContent = `You collected all ${celTheme.name} stickers!`;
-                    document.getElementById('cel-sticker').textContent = celTheme.stickers[Math.floor(Math.random() * celTheme.stickers.length)];
-                    updateProgressUI();
-                    feedback.className = 'feedback correct-fb';
-                    fbEmoji.textContent = s;
-                    fbMsg.className = 'feedback-msg correct-text';
-                    fbMsg.textContent = CORRECT_MSGS[Math.floor(Math.random() * CORRECT_MSGS.length)];
-                    fbExpl.textContent = `${correctNumerator}/${correctDenominator} — numérateur: ${correctNumerator}, dénominateur: ${correctDenominator}`;
-                    setTimeout(() => {
-                        document.getElementById('game-area').style.display = 'none';
-                        document.getElementById('celebration').className = 'celebration show';
-                    }, 800);
-                    return;
-                }
-
-                feedback.className = 'feedback correct-fb';
-                fbEmoji.textContent = s;
-                fbMsg.className = 'feedback-msg correct-text';
-                fbMsg.textContent = CORRECT_MSGS[Math.floor(Math.random() * CORRECT_MSGS.length)];
-                fbExpl.textContent = `${correctNumerator}/${correctDenominator} — numérateur: ${correctNumerator} (coloured parts), dénominateur: ${correctDenominator} (total parts)`;
-            } else {
-                streak = 0;
-                document.getElementById('streak').textContent = streak;
-                btn.className = 'fraction-btn wrong';
-                // Reveal correct
-                document.querySelectorAll('.fraction-btn').forEach(b => {
-                    const num = parseInt(b.querySelector('.num').textContent);
-                    const den = parseInt(b.querySelector('.den').textContent);
-                    if (num === correctNumerator && den === correctDenominator) b.className = 'fraction-btn correct';
+                document.getElementById('question-text').textContent = 'What fraction is coloured? 🍕';
+                document.getElementById('question-sub').innerHTML = 'Target: <span>numérateur / dénominateur</span>';
+                document.getElementById('choices').style.display = 'flex'; document.getElementById('check-btn').style.display = 'none';
+                canvas.onclick = null;
+                const col = FILL_COLORS[qNum % FILL_COLORS.length];
+                if (correctDenominator > 6) drawCircle(canvas, correctNumerator, correctDenominator, col);
+                else drawRectangle(canvas, correctNumerator, correctDenominator, col, SHAPE_TYPES[qNum % SHAPE_TYPES.length] === 'rectangle-tall');
+                const pool = ALL_FRACTIONS.filter(f => f[0] / f[1] !== correctNumerator / correctDenominator);
+                const distract = []; while (distract.length < 2) { const r = pool[Math.floor(Math.random() * pool.length)]; if (!distract.includes(r)) distract.push(r); }
+                const ch = [{ n: correctNumerator, d: correctDenominator }, { n: distract[0][0], d: distract[0][1] }, { n: distract[1][0], d: distract[1][1] }].sort(() => Math.random() - 0.5);
+                const container = document.getElementById('choices'); container.innerHTML = '';
+                ch.forEach(c => {
+                    const b = document.createElement('button'); b.className = 'fraction-btn';
+                    b.innerHTML = `<span class="num">${c.n}</span><span class="frac-line"></span><span class="den">${c.d}</span>`;
+                    b.onclick = () => guess(c.n, c.d, b); container.appendChild(b);
                 });
-                feedback.className = 'feedback wrong-fb';
-                fbEmoji.textContent = '🤔';
-                fbMsg.className = 'feedback-msg wrong-text';
-                fbMsg.textContent = WRONG_MSGS[Math.floor(Math.random() * WRONG_MSGS.length)];
-                fbExpl.textContent = `The answer was ${correctNumerator}/${correctDenominator}. ${correctNumerator} part${correctNumerator > 1 ? 's' : ''} coloured out of ${correctDenominator} equal parts.`;
             }
         }
 
-        function nextQuestion() {
-            document.getElementById('game-area').style.display = '';
-            newQuestion();
+        function checkPaint() {
+            if (answered) return; answered = true; document.getElementById('check-btn').style.display = 'none';
+            const got = paintCells.filter(Boolean).length;
+            if (got === correctNumerator) win();
+            else fail(`You coloured ${got}. Needed ${correctNumerator}!`);
         }
-        function afterCelebration() {
-            document.getElementById('celebration').className = 'celebration';
-            document.getElementById('game-area').style.display = '';
-            newQuestion();
+
+        function guess(n, d, b) {
+            if (answered) return; answered = true;
+            if (n === correctNumerator && d === correctDenominator) { b.classList.add('correct'); win(); }
+            else { b.classList.add('wrong'); document.querySelectorAll('.fraction-btn').forEach(btn => { if (parseInt(btn.querySelector('.num').textContent) === correctNumerator && parseInt(btn.querySelector('.den').textContent) === correctDenominator) btn.classList.add('correct'); }); fail(`It was ${correctNumerator}/${correctDenominator}.`); }
         }
+
+        function win() {
+            score += 100; streak++; document.getElementById('score').textContent = score; document.getElementById('streak').textContent = streak;
+            progress++; updateProgressUI(); const s = pickSticker(); stickers.push(s); saveStickers(); showStickerFlash(s);
+            const sp = document.createElement('span'); sp.textContent = s; document.getElementById('sticker-row').appendChild(sp);
+            document.getElementById('sticker-book').classList.add('visible');
+            if (progress >= 5) {
+                setTimeout(() => {
+                    progress = 0; const oldLevel = level; level++;
+                    const celTheme = THEMES[oldLevel % THEMES.length];
+                    document.getElementById('cel-emoji').textContent = celTheme.emoji;
+                    document.getElementById('cel-sub').textContent = `You collected all ${celTheme.name} stickers!`;
+                    document.getElementById('cel-sticker').textContent = celTheme.stickers[Math.floor(Math.random() * celTheme.stickers.length)];
+                    updateProgressUI(); document.getElementById('game-area').style.display = 'none';
+                    document.getElementById('celebration').classList.add('show');
+                }, 800);
+            } else {
+                const fb = document.getElementById('feedback'); fb.className = 'feedback correct-fb';
+                document.getElementById('feedback-emoji').textContent = s;
+                document.getElementById('feedback-msg').textContent = '🎉 PERFECT!';
+                document.getElementById('feedback-explain').textContent = `${correctNumerator}/${correctDenominator} — Parfait!`;
+                fb.style.display = 'block';
+            }
+        }
+
+        function fail(txt) {
+            streak = 0; document.getElementById('streak').textContent = streak;
+            const fb = document.getElementById('feedback'); fb.className = 'feedback wrong-fb';
+            document.getElementById('feedback-emoji').textContent = '🤔';
+            document.getElementById('feedback-msg').textContent = 'Not quite!';
+            document.getElementById('feedback-explain').textContent = txt;
+            fb.style.display = 'block';
+        }
+
+        function nextQuestion() { newQuestion(); }
+        function afterCelebration() { document.getElementById('celebration').classList.remove('show'); document.getElementById('game-area').style.display = 'block'; newQuestion(); }
         function updateProgressUI() {
             const theme = THEMES[level % THEMES.length];
             document.getElementById('progress-text').textContent = `Collecting: ${theme.name} ${theme.emoji}`;
             document.getElementById('progress-count').textContent = `${progress} / 5`;
             document.getElementById('progress-fill').style.width = `${(progress / 5) * 100}%`;
         }
-
-        // Init
         (function restoreStickers() {
             if (stickers.length > 0) {
                 const row = document.getElementById('sticker-row');
                 stickers.forEach(s => { const sp = document.createElement('span'); sp.textContent = s; row.appendChild(sp); });
-                document.getElementById('sticker-book').className = 'stickers visible';
+                document.getElementById('sticker-book').classList.add('visible');
             }
             updateStickerHeader();
         })();
-        updateProgressUI();
-        newQuestion();
+        updateProgressUI(); newQuestion();
     </script>
-    <canvas id="fw-canvas"></canvas>
-    <div id="sticker-flash-overlay"></div>
-    <div class="rare-banner" id="rare-banner">
-        <div class="rare-inner">
-            <span class="rare-emoji-big" id="rare-emoji">💎</span>
-            <div class="rare-title">✨ RARE STICKER! ✨</div>
-            <div class="rare-subtitle" id="rare-name">Diamond</div>
-            <div class="rare-hint">This one doesn't show up often — you're lucky! 🍀</div>
-            <button class="rare-close-btn" onclick="closeRare()">Amazing! Keep it! 🎉</button>
-        </div>
-    </div>
 </body>
 
 </html>

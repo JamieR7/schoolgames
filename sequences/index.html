@@ -5,219 +5,363 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Circuit Sequences ⚡ Logic</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700;800;900&display=swap"
+        rel="stylesheet" />
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@700;800;900&display=swap');
-
-        :root {
-            --bg: #0f172a;
-            --logic-plate: #1e293b;
-            --neon-cyan: #22d3ee;
-            --neon-lime: #a3e635;
-            --neon-pink: #f472b6;
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
         }
 
         body {
             font-family: 'Montserrat', sans-serif;
-            background-color: var(--bg);
-            margin: 0;
+            background-color: #f0fdfa;
+            background-image: radial-gradient(#99f6e4 2px, transparent 2px);
+            background-size: 40px 40px;
+            min-height: 100vh;
             display: flex;
             flex-direction: column;
             align-items: center;
-            min-height: 100vh;
-            padding: 20px;
-            color: white;
-            overflow-x: hidden;
+            padding: 1.5rem 1rem 4rem;
+            color: #1f2937;
         }
 
-        .circuit-bg {
-            position: fixed;
-            top: 0;
-            left: 0;
+        header {
             width: 100%;
-            height: 100%;
-            background-image:
-                linear-gradient(rgba(34, 211, 238, 0.05) 1px, transparent 1px),
-                linear-gradient(90(34, 211, 238, 0.05) 1px, transparent 1px);
-            background-size: 50px 50px;
-            z-index: -1;
+            max-width: 800px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: white;
+            border-radius: 2rem;
+            padding: 1rem 1.5rem;
+            margin-bottom: 1.5rem;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
+            border: 4px solid #99f6e4;
+        }
+
+        header h1 {
+            font-size: 1.8rem;
+            font-weight: 900;
+            color: #0d9488;
+            text-transform: uppercase;
+        }
+
+        .stats {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+        }
+
+        .stat-pill {
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+            background: #f0fdfa;
+            border-radius: 9999px;
+            padding: 0.4rem 1rem;
+            font-size: 1.3rem;
+            font-weight: 800;
+            color: #0f766e;
+            border: 2px solid #99f6e4;
+        }
+
+        .header-stickers {
+            display: flex;
+            gap: 0.3rem;
+            font-size: 1.5rem;
         }
 
         .back-btn {
-            position: absolute;
-            top: 20px;
-            left: 20px;
-            padding: 10px 20px;
-            background: rgba(255, 255, 255, 0.1);
-            border-radius: 99px;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
             text-decoration: none;
-            color: var(--neon-cyan);
-            font-weight: 800;
-            backdrop-filter: blur(5px);
-            transition: all 0.2s;
-            border: 1px solid var(--neon-cyan);
+            color: #0d9488;
+            font-size: 0.9rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            width: 100%;
+            max-width: 800px;
         }
 
         .back-btn:hover {
-            background: var(--neon-cyan);
-            color: var(--bg);
+            color: #0f766e;
         }
 
-        h1 {
-            font-size: 2.5rem;
+        /* Progress */
+        .progress-wrap {
+            width: 100%;
+            max-width: 800px;
+            margin-bottom: 1.5rem;
+        }
+
+        .progress-label {
+            display: flex;
+            justify-content: space-between;
+            font-weight: 800;
+            font-size: 0.9rem;
+            color: #0d9488;
+            margin-bottom: 0.5rem;
+            text-transform: uppercase;
+        }
+
+        .progress-bar {
+            background: white;
+            border: 4px solid #99f6e4;
+            border-radius: 9999px;
+            height: 1.5rem;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            background: linear-gradient(90deg, #14b8a6, #5eead4);
+            height: 100%;
+            border-radius: 9999px;
+            transition: width 0.6s ease;
+        }
+
+        /* Stickers */
+        .stickers {
+            width: 100%;
+            max-width: 800px;
+            background: white;
+            border-radius: 2rem;
+            padding: 1rem 1.5rem;
+            margin-bottom: 1.5rem;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.06);
+            border: 4px solid #f0fdfa;
+            display: none;
+        }
+
+        .stickers.visible {
+            display: block;
+        }
+
+        .stickers-label {
+            font-size: 0.75rem;
+            font-weight: 800;
+            color: #0d9488;
+            text-transform: uppercase;
+            margin-bottom: 0.5rem;
+        }
+
+        .sticker-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            font-size: 2rem;
+        }
+
+        /* Card */
+        .card {
+            width: 100%;
+            max-width: 800px;
+            background: white;
+            border-radius: 2.5rem;
+            padding: 2.5rem;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            border: 8px solid white;
+            outline: 4px solid #99f6e4;
+            text-align: center;
+        }
+
+        .badge {
+            display: inline-block;
+            background: #0d9488;
+            color: white;
+            border-radius: 9999px;
+            padding: 0.2rem 0.9rem;
+            font-size: 0.8rem;
             font-weight: 900;
             text-transform: uppercase;
-            letter-spacing: 2px;
-            color: var(--neon-cyan);
-            text-shadow: 0 0 10px rgba(34, 211, 238, 0.5);
-            margin-bottom: 5px;
+            margin-bottom: 1rem;
         }
 
-        .subtitle {
-            font-size: 1rem;
-            color: #94a3b8;
-            margin-bottom: 40px;
-            font-weight: 600;
-        }
-
+        /* Sequence Display */
         .logic-plate {
-            background: var(--logic-plate);
-            padding: 40px;
-            border-radius: 30px;
-            border: 4px solid #334155;
-            box-shadow: 0 0 40px rgba(0, 0, 0, 0.5), inset 0 0 20px rgba(255, 255, 255, 0.05);
             display: flex;
-            gap: 15px;
-            align-items: center;
-            justify-content: center;
             flex-wrap: wrap;
-            margin-bottom: 40px;
-            position: relative;
-        }
-
-        .logic-plate::before {
-            content: "";
-            position: absolute;
-            top: -10px;
-            left: -10px;
-            right: -10px;
-            bottom: -10px;
-            border: 2px solid rgba(34, 211, 238, 0.2);
-            border-radius: 38px;
-            pointer-events: none;
+            gap: 15px;
+            justify-content: center;
+            margin: 2rem 0;
+            padding: 20px;
+            background: #f0fdfa;
+            border-radius: 20px;
+            border: 4px dashed #99f6e4;
         }
 
         .node {
             width: 90px;
             height: 90px;
-            background: #0f172a;
-            border: 3px solid #334155;
-            border-radius: 15px;
+            background: white;
+            border: 4px solid #99f6e4;
+            border-radius: 1.5rem;
             display: flex;
             align-items: center;
             justify-content: center;
             font-size: 1.8rem;
             font-weight: 900;
-            color: var(--neon-lime);
-            text-shadow: 0 0 5px rgba(163, 230, 53, 0.3);
+            color: #0f766e;
             transition: all 0.3s;
         }
 
         .node.missing {
-            background: rgba(34, 211, 238, 0.05);
-            border: 3px dashed var(--neon-cyan);
+            border-style: dashed;
+            border-color: #f472b6;
         }
 
-        .node.correct {
-            border-color: var(--neon-lime);
-            box-shadow: 0 0 20px rgba(163, 230, 53, 0.4);
-            transform: scale(1.05);
-        }
-
-        input {
-            width: 80px;
-            height: 80px;
+        .node input {
+            width: 100%;
+            height: 100%;
             background: transparent;
             border: none;
-            color: var(--neon-cyan);
             font-family: inherit;
             font-size: 1.8rem;
             font-weight: 900;
             text-align: center;
+            color: #f472b6;
             outline: none;
         }
 
-        .controls {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 20px;
+        .node.correct {
+            border-color: #10b981;
+            background: #f0fdf4;
+            color: #059669;
+            box-shadow: 0 0 20px rgba(16, 185, 129, 0.2);
         }
 
-        .btn-repair {
-            padding: 15px 40px;
+        .node.correct input {
+            color: #059669;
+        }
+
+        /* Buttons & Feedback */
+        .check-btn {
+            font-family: inherit;
             font-size: 1.5rem;
             font-weight: 900;
-            background: var(--neon-cyan);
-            color: var(--bg);
+            background: #0d9488;
+            color: white;
             border: none;
-            border-radius: 20px;
             cursor: pointer;
+            border-radius: 9999px;
+            padding: 1rem 3rem;
+            box-shadow: 0 6px 0 #065f46;
             text-transform: uppercase;
-            box-shadow: 0 0 20px rgba(34, 211, 238, 0.3);
-            transition: all 0.2s;
+            margin-top: 1.5rem;
+            transition: all 0.1s;
         }
 
-        .btn-repair:hover {
-            transform: scale(1.05);
-            box-shadow: 0 0 30px rgba(34, 211, 238, 0.5);
+        .check-btn:active {
+            transform: translateY(4px);
+            box-shadow: 0 2px 0 #065f46;
         }
 
-        .btn-repair:active {
-            transform: scale(0.95);
+        .next-btn {
+            font-family: inherit;
+            font-size: 1.1rem;
+            font-weight: 900;
+            background: #0d9488;
+            color: white;
+            border: none;
+            cursor: pointer;
+            border-radius: 9999px;
+            padding: 0.8rem 2.5rem;
+            box-shadow: 0 4px 0 #065f46;
+            margin-top: 1.5rem;
+            text-transform: uppercase;
         }
 
         #feedback {
             font-size: 1.4rem;
             font-weight: 800;
-            height: 1.5em;
-            text-align: center;
+            min-height: 1.5em;
+            margin-top: 1.5rem;
         }
 
-        .stats {
-            display: flex;
-            gap: 40px;
-            margin-top: 40px;
-        }
-
-        .stat-item {
-            text-align: center;
-        }
-
-        .stat-value {
-            font-size: 2.5rem;
-            color: var(--neon-pink);
-            display: block;
-            font-weight: 900;
-        }
-
-        .stat-label {
-            font-size: 0.8rem;
-            color: #64748b;
-            text-transform: uppercase;
-            font-weight: 800;
-        }
-
-        /* Sticker Flash */
-        #sticker-flash {
+        /* Celebration & Rare */
+        #sticker-flash-overlay {
             position: fixed;
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
             font-size: 15rem;
             pointer-events: none;
-            z-index: 1000;
+            z-index: 10000;
             opacity: 0;
             display: none;
+        }
+
+        #fw-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            pointer-events: none;
+            z-index: 2500;
+        }
+
+        .celebration {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(13, 148, 136, 0.95);
+            z-index: 2000;
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            backdrop-filter: blur(15px);
+            color: white;
+            text-align: center;
+            padding: 2rem;
+        }
+
+        .celebration.show {
+            display: flex;
+        }
+
+        .celebration-emoji {
+            font-size: 8rem;
+            margin-bottom: 1rem;
+        }
+
+        .sticker-reward {
+            font-size: 6rem;
+            margin: 1.5rem 0;
+        }
+
+        .rare-banner {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.85);
+            z-index: 3000;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            backdrop-filter: blur(10px);
+        }
+
+        .rare-banner.show {
+            display: flex;
+        }
+
+        .rare-inner {
+            background: linear-gradient(135deg, #fbbf24, #f59e0b);
+            border: 8px solid white;
+            border-radius: 3rem;
+            padding: 3rem;
+            max-width: 500px;
+            width: 90%;
+            text-align: center;
+            color: white;
+            box-shadow: 0 0 60px rgba(251, 191, 36, 0.6);
         }
 
         @keyframes sticker-pop {
@@ -241,234 +385,266 @@
             display: block !important;
             animation: sticker-pop 1.5s ease-out forwards;
         }
-
-        @media (max-width: 600px) {
-            .node {
-                width: 60px;
-                height: 60px;
-                font-size: 1.2rem;
-            }
-
-            input {
-                width: 50px;
-                height: 50px;
-                font-size: 1.2rem;
-            }
-
-            .logic-plate {
-                gap: 10px;
-                padding: 20px;
-            }
-        }
     </style>
 </head>
 
 <body>
-    <div class="circuit-bg"></div>
-    <a href="../index.html" class="back-btn">← Home</a>
+    <a href="../index.html" class="back-btn">← Back to All Games</a>
+    <header>
+        <h1>Logic Circuit ⚡</h1>
+        <div class="stats">
+            <div id="header-stickers" class="header-stickers"></div>
+            <div class="stat-pill">⭐ <span id="score">0</span></div>
+            <div class="stat-pill">🔥 <span id="streak">0</span></div>
+        </div>
+    </header>
 
-    <div id="game-stickers"
-        style="position:fixed;top:15px;right:20px;display:flex;align-items:center;gap:10px;background:rgba(15,23,42,0.8);padding:8px 15px;border-radius:99px;backdrop-filter:blur(10px);border:1px solid var(--neon-cyan);z-index:1000;box-shadow: 0 0 15px rgba(34, 211, 238, 0.2);">
-        <span
-            style="font-size:0.7rem;font-weight:900;color:var(--neon-cyan);text-transform:uppercase;letter-spacing:1px;">Stickers:</span>
-        <div id="sticker-list" style="display:flex;gap:5px;font-size:1.4rem;"></div>
+    <div class="progress-wrap">
+        <div class="progress-label">
+            <span id="progress-text">Fixing: Robot Core 🤖</span>
+            <span id="progress-count">0 / 5</span>
+        </div>
+        <div class="progress-bar">
+            <div class="progress-fill" id="progress-fill" style="width: 0%"></div>
+        </div>
     </div>
 
-    <h1>⚡ Circuit Sequences</h1>
-    <div class="subtitle">Complete the logic pattern to fix the robot!</div>
-
-    <div class="logic-plate" id="logic-plate">
-        <!-- Nodes will be injected here -->
+    <div class="stickers" id="sticker-book">
+        <div class="stickers-label">Knowledge Collection:</div>
+        <div class="sticker-row" id="sticker-row"></div>
     </div>
 
-    <div class="controls">
+    <div class="card">
+        <div class="badge" id="q-number">Module Check 01</div>
+        <p style="font-size:1.2rem; font-weight:800; color:#475569; margin-bottom:1.5rem;">
+            Complete the logic pattern to fix the component!
+        </p>
+
+        <div class="logic-plate" id="logic-plate"></div>
+
         <div id="feedback"></div>
-        <button class="btn-repair" onclick="checkRepair()">REPAIR CIRCUIT</button>
+        <button class="check-btn" id="check-btn" onclick="checkRepair()">Repair Circuit ⚡</button>
     </div>
 
-    <div class="stats">
-        <div class="stat-item">
-            <span class="stat-label">Logic Streak</span>
-            <span class="stat-value" id="streak">0</span>
-        </div>
-        <div class="stat-item">
-            <span class="stat-label">Cores Fixed</span>
-            <span class="stat-value" id="score">0</span>
-        </div>
+    <canvas id="fw-canvas"></canvas>
+    <div id="sticker-flash-overlay"></div>
+
+    <div class="celebration" id="celebration">
+        <div class="celebration-emoji" id="cel-emoji">🏆</div>
+        <h2 style="font-size:3rem; font-weight:900; margin-bottom:0.5rem;">System Restored! 🎉</h2>
+        <div id="cel-sub" style="font-size:1.5rem; font-weight:700; opacity:0.9;">You earned a new badge!</div>
+        <div class="sticker-reward" id="cel-sticker">⭐</div>
+        <button class="check-btn" onClick="afterCelebration()"
+            style="box-shadow:none; background:white; color:#0d9488;">Continue Mission! 🚀</button>
     </div>
 
-    <div id="sticker-flash"></div>
+    <div class="rare-banner" id="rare-banner">
+        <div class="rare-inner">
+            <span id="rare-emoji" style="font-size:7rem; display:block;">💎</span>
+            <h2 style="font-size:2.2rem; font-weight:900; margin:1rem 0;">RARE COMPONENT!</h2>
+            <div id="rare-name" style="font-size:1.5rem; font-weight:800; opacity:0.9;">Diamond</div>
+            <button class="check-btn" onClick="closeRare()"
+                style="margin-top:2rem; background:#92400e; box-shadow:0 6px 0 #451a03;">Amazing! 🎉</button>
+        </div>
+    </div>
 
     <script>
-        let sequence = [];
-        let missingIndex = -1;
-        let score = 0;
-        let streak = 0;
-
-        const STEPS = [1, 2, 3, 4, 5, 10, 50, 100];
-        const CONGRATS = [
-            "Logic Core Restored! 🤖",
-            "Circuit Connected! ⚡",
-            "Archie and Angus did it! 🛠️",
-            "Optimal Performance Reached! 🚀",
-            "Data Stream Stabilized! 💎",
-            "Precision Engineering! 🎩"
+        const THEMES = [
+            { name: 'Robot Core', emoji: '🤖', stickers: ['🧩', '⚙️', '🔧', '🔩', '📡', '🔋', '🔌', '🕹️', '💾', '💿'] },
+            { name: 'Cyber Space', emoji: '🚀', stickers: ['🛸', '🛰️', '👾', '☄️', '🪐', '🌠', '🌌', '🔭', '🛰️', '💫'] },
+            { name: 'Logic Gates', emoji: '⚡', stickers: ['🔌', '⚡', '💡', '🔋', '📟', '📠', '🖥️', '🖨️', '🖱️', '⌨️'] },
         ];
+        const RARE_STICKERS = [
+            { emoji: '💎', name: 'Diamond' }, { emoji: '👑', name: 'Crown' },
+            { emoji: '🐉', name: 'Dragon' }, { emoji: '🌈', name: 'Rainbow' }, { emoji: '🔮', name: 'Crystal Ball' },
+            { emoji: '🍀', name: 'Lucky Clover' }, { emoji: '🦅', name: 'Eagle' }, { emoji: '🎆', name: 'Fireworks' },
+            { emoji: '⚡', name: 'Lightning Bolt' }, { emoji: '🌙', name: 'Golden Moon' }, { emoji: '🎭', name: 'Magic Mask' },
+            { emoji: '🐋', name: 'Blue Whale' }, { emoji: '🌋', name: 'Volcano' },
+        ];
+        const RARE_CHANCE = 0.2;
+
+        let sequence = [], missingIndex = -1, score = 0, streak = 0, progress = 0, level = 0, gameMode = 'play';
+        let stickers = JSON.parse(sessionStorage.getItem('stickers_circuit-sequences') || '[]');
+        let qCount = 0;
+
+        function pickSticker() {
+            if (Math.random() < RARE_CHANCE) {
+                const rareOwned = JSON.parse(sessionStorage.getItem('stickers_rare') || '[]');
+                const available = RARE_STICKERS.filter(s => !rareOwned.includes(s.emoji));
+                const pool = available.length > 0 ? available : RARE_STICKERS;
+                const r = pool[Math.floor(Math.random() * pool.length)];
+                if (!rareOwned.includes(r.emoji)) {
+                    rareOwned.push(r.emoji);
+                    sessionStorage.setItem('stickers_rare', JSON.stringify(rareOwned));
+                }
+                setTimeout(() => showRareBanner(r), 500);
+                return r.emoji;
+            }
+            const theme = THEMES[level % THEMES.length];
+            return theme.stickers[Math.floor(Math.random() * theme.stickers.length)];
+        }
+
+        function updateUI() {
+            document.getElementById('score').textContent = score;
+            document.getElementById('streak').textContent = streak;
+            const theme = THEMES[level % THEMES.length];
+            document.getElementById('progress-text').textContent = `Fixing: ${theme.name} ${theme.emoji}`;
+            document.getElementById('progress-count').textContent = `${progress} / 5`;
+            document.getElementById('progress-fill').style.width = `${(progress / 5) * 100}%`;
+
+            const row = document.getElementById('sticker-row');
+            row.innerHTML = stickers.map(s => `<span>${s}</span>`).join('');
+            if (stickers.length > 0) document.getElementById('sticker-book').classList.add('visible');
+
+            const rareOwned = JSON.parse(sessionStorage.getItem('stickers_rare') || '[]');
+            document.getElementById('header-stickers').innerHTML = [...stickers.slice(-3), ...rareOwned.slice(-2)].slice(-5).map(s => `<span>${s}</span>`).join('');
+        }
 
         function generateSequence() {
-            const step = STEPS[Math.floor(Math.random() * STEPS.length)];
-            const direction = Math.random() > 0.3 ? 1 : -1;
-            const start = Math.floor(Math.random() * (direction === 1 ? (1000 - (5 * step)) : 1000)) + (direction === -1 ? (5 * step) : 1);
-
+            const steps = [1, 2, 3, 4, 5, 10, 50, 100];
+            const step = steps[Math.floor(Math.random() * steps.length)];
+            const dir = Math.random() > 0.3 ? 1 : -1;
+            const start = Math.floor(Math.random() * 500) + (dir === -1 ? 500 : 1);
             sequence = [];
-            for (let i = 0; i < 5; i++) {
-                sequence.push(start + (i * step * direction));
-            }
-
-            missingIndex = Math.floor(Math.random() * 4) + 1; // Don't hide the first one
+            for (let i = 0; i < 5; i++) sequence.push(start + (i * step * dir));
+            missingIndex = Math.floor(Math.random() * 4) + 1;
             renderCircuit();
         }
 
         function renderCircuit() {
             const plate = document.getElementById('logic-plate');
-            plate.innerHTML = "";
-            document.getElementById('feedback').textContent = "";
-
-            sequence.forEach((num, i) => {
-                const node = document.createElement('div');
-                node.className = 'node';
+            plate.innerHTML = sequence.map((num, i) => {
                 if (i === missingIndex) {
-                    node.classList.add('missing');
-                    const input = document.createElement('input');
-                    input.type = 'number';
-                    input.id = 'answer-input';
-                    input.placeholder = "?";
-                    input.autocomplete = "off";
-                    node.appendChild(input);
-                } else {
-                    node.textContent = num;
+                    return `<div class="node missing"><input type="number" id="answer-input" placeholder="?" autocomplete="off"></div>`;
                 }
-                plate.appendChild(node);
-            });
-
+                return `<div class="node">${num}</div>`;
+            }).join('');
             document.getElementById('answer-input').focus();
+            document.getElementById('q-number').textContent = `Module Check ${String(++qCount).padStart(2, '0')}`;
+            document.getElementById('feedback').textContent = "";
+            document.getElementById('check-btn').style.display = 'inline-block';
         }
 
         function checkRepair() {
             const input = document.getElementById('answer-input');
-            const userAnswer = parseInt(input.value);
-            const correctAnswer = sequence[missingIndex];
+            const val = parseInt(input.value);
+            if (isNaN(val)) return;
 
-            const fb = document.getElementById('feedback');
-
-            if (userAnswer === correctAnswer) {
-                score++;
-                streak++;
-                fb.style.color = "var(--neon-lime)";
-                fb.textContent = CONGRATS[Math.floor(Math.random() * CONGRATS.length)];
-
+            if (val === sequence[missingIndex]) {
+                score += 100; streak++; progress++;
                 document.querySelector('.node.missing').classList.add('correct');
                 input.readOnly = true;
+                const s = pickSticker();
+                stickers.push(s);
+                sessionStorage.setItem('stickers_circuit-sequences', JSON.stringify(stickers));
+                showStickerFlash(s);
+                updateUI();
 
-                showStickerFlash('🧩');
-                saveSticker('🧩');
-                updateStats();
-
-                // 20% chance for rare
-                if (Math.random() < 0.2) {
-                    const rare = ['⚡', '🤖', '🛰️', '🛸', '👾'][Math.floor(Math.random() * 5)];
-                    setTimeout(() => {
-                        showStickerFlash(rare);
-                        saveRareSticker(rare);
-                    }, 1000);
+                if (progress >= 5) {
+                    setTimeout(showCelebration, 600);
+                } else {
+                    document.getElementById('feedback').innerHTML = `<div style="color:#10b981; font-weight:900;">⚡ LOGIC CORE SECURED!</div>`;
+                    document.getElementById('check-btn').style.display = 'none';
+                    setTimeout(generateSequence, 1500);
                 }
-
-                setTimeout(generateSequence, 2500);
             } else {
-                streak = 0;
-                fb.style.color = "var(--neon-pink)";
-                fb.textContent = "Logic Error! Recalculating...";
-                input.style.color = "var(--neon-pink)";
-                setTimeout(() => {
-                    input.style.color = "var(--neon-cyan)";
-                    input.value = "";
-                }, 800);
-                updateStats();
+                streak = 0; updateUI();
+                document.getElementById('feedback').innerHTML = `<div style="color:#f472b6; font-weight:900;">❌ CALCULATION ERROR!</div>`;
+                input.value = ""; input.focus();
             }
         }
 
-        function updateStats() {
-            document.getElementById('score').textContent = score;
-            document.getElementById('streak').textContent = streak;
+        function showCelebration() {
+            const t = THEMES[level % THEMES.length];
+            document.getElementById('cel-emoji').textContent = t.emoji;
+            document.getElementById('cel-sub').textContent = `All ${t.name} components restored!`;
+            document.getElementById('cel-sticker').textContent = t.stickers[0];
+            document.getElementById('celebration').classList.add('show');
+            launchFireworks();
+            level++; progress = 0; updateUI();
         }
 
-        function showStickerFlash(emoji) {
-            const flash = document.getElementById('sticker-flash');
-            flash.textContent = emoji;
-            flash.classList.remove('animate-sticker-pop');
-            void flash.offsetWidth;
-            flash.classList.add('animate-sticker-pop');
-            playCircuitSound();
+        function afterCelebration() {
+            document.getElementById('celebration').classList.remove('show');
+            stopFireworks();
+            generateSequence();
         }
 
-        function playCircuitSound() {
+        function showRareBanner(r) {
+            document.getElementById('rare-emoji').textContent = r.emoji;
+            document.getElementById('rare-name').textContent = r.name;
+            document.getElementById('rare-banner').classList.add('show');
+            launchFireworks();
             try {
                 const ctx = new (window.AudioContext || window.webkitAudioContext)();
-                if (!ctx) return;
                 const now = ctx.currentTime;
-                // High tech "boop"
-                const osc = ctx.createOscillator();
-                const gain = ctx.createGain();
-                osc.type = 'square';
-                osc.frequency.setValueAtTime(880, now);
-                osc.frequency.exponentialRampToValueAtTime(1760, now + 0.1);
-                gain.gain.setValueAtTime(0.05, now);
-                gain.gain.exponentialRampToValueAtTime(0.01, now + 0.1);
-                osc.connect(gain); gain.connect(ctx.destination);
-                osc.start(now); osc.stop(now + 0.1);
+                [523.25, 659.25, 783.99, 1046.50].forEach((f, i) => {
+                    const o = ctx.createOscillator(); const g = ctx.createGain();
+                    o.type = 'sine'; o.frequency.setValueAtTime(f, now + i * 0.1);
+                    g.gain.setValueAtTime(0.2, now + i * 0.1); g.gain.exponentialRampToValueAtTime(0.01, now + i * 0.1 + 0.3);
+                    o.connect(g); g.connect(ctx.destination);
+                    o.start(now + i * 0.1); o.stop(now + i * 0.1 + 0.3);
+                });
             } catch (e) { }
         }
 
-        function updateStickerHeader() {
-            const list = document.getElementById('sticker-list');
-            if (!list) return;
-            list.innerHTML = "";
-            const gameId = 'circuit-sequences';
-            const stickers = JSON.parse(sessionStorage.getItem('stickers_' + gameId) || '[]');
-            const rare = JSON.parse(sessionStorage.getItem('stickers_rare') || '[]');
-
-            // Logic: Show any normal stickers plus ANY rare stickers owned
-            // (even if rare were earned in other games, Archie loves seeing them!)
-            [...stickers, ...rare].forEach(s => {
-                const span = document.createElement('span');
-                span.textContent = s;
-                list.appendChild(span);
-            });
+        function closeRare() {
+            document.getElementById('rare-banner').classList.remove('show');
+            stopFireworks();
         }
 
-        function saveSticker(emoji) {
-            const stickers = JSON.parse(sessionStorage.getItem('stickers_circuit-sequences') || '[]');
-            if (!stickers.includes(emoji)) {
-                stickers.push(emoji);
-                sessionStorage.setItem('stickers_circuit-sequences', JSON.stringify(stickers));
+        function showStickerFlash(emoji) {
+            const overlay = document.getElementById('sticker-flash-overlay');
+            overlay.textContent = emoji;
+            overlay.style.display = 'block';
+            overlay.style.animation = 'none';
+            void overlay.offsetWidth;
+            overlay.style.animation = 'sticker-pop 1.5s ease-out forwards';
+        }
+
+        function launchFireworks() {
+            const canvas = document.getElementById('fw-canvas');
+            canvas.width = window.innerWidth; canvas.height = window.innerHeight;
+            const ctx = canvas.getContext('2d');
+            let particles = [];
+            function burst() {
+                for (let i = 0; i < 5; i++) {
+                    const cx = Math.random() * canvas.width, cy = Math.random() * canvas.height * 0.4;
+                    for (let j = 0; j < 30; j++) {
+                        const a = (j / 30) * Math.PI * 2, s = 2 + Math.random() * 4;
+                        particles.push({ x: cx, y: cy, vx: Math.cos(a) * s, vy: Math.sin(a) * s, a: 1, c: `hsl(${Math.random() * 360}, 100%, 50%)` });
+                    }
+                }
             }
-            updateStickerHeader();
-        }
-
-        function saveRareSticker(emoji) {
-            const rare = JSON.parse(sessionStorage.getItem('stickers_rare') || '[]');
-            if (!rare.includes(emoji)) {
-                rare.push(emoji);
-                sessionStorage.setItem('stickers_rare', JSON.stringify(rare));
+            burst();
+            const int = setInterval(burst, 800);
+            function tick() {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                particles.forEach(p => {
+                    p.x += p.vx; p.y += p.vy; p.vy += 0.1; p.a -= 0.01;
+                    ctx.globalAlpha = Math.max(0, p.a); ctx.fillStyle = p.c;
+                    ctx.beginPath(); ctx.arc(p.x, p.y, 2, 0, Math.PI * 2); ctx.fill();
+                });
+                particles = particles.filter(p => p.a > 0);
+                window._fwAnim = requestAnimationFrame(tick);
             }
-            updateStickerHeader();
+            tick();
+            window._fwInt = int;
         }
 
-        document.addEventListener('keypress', (e) => {
-            if (e.key === 'Enter') checkRepair();
+        function stopFireworks() {
+            clearInterval(window._fwInt); cancelAnimationFrame(window._fwAnim);
+        }
+
+        document.addEventListener('keydown', e => {
+            if (e.key === 'Enter') {
+                if (document.getElementById('celebration').classList.contains('show')) afterCelebration();
+                else if (document.getElementById('rare-banner').classList.contains('show')) closeRare();
+                else checkRepair();
+            }
         });
 
-        updateStickerHeader();
+        updateUI();
         generateSequence();
     </script>
 </body>

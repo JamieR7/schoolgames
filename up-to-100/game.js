@@ -1,182 +1,97 @@
 const { useState, useEffect, useRef } = React;
 
-// Modern, trendy font injection
-const fontStyles = `
-  @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@700;800;900&display=swap');
-  
-  body {
-    font-family: 'Montserrat', sans-serif;
-    background-color: #f0fdf4;
-    background-image: radial-gradient(#bbf7d0 2px, transparent 2px);
-    background-size: 40px 40px;
-  }
-
-  .huge-text {
-    font-size: clamp(40px, 7vw, 100px);
-    line-height: 1.1;
-  }
-  
-  .massive-input {
-    font-size: clamp(50px, 8vw, 100px);
-    text-align: center;
-  }
-
-  /* Hide number input arrows */
-  input[type=number]::-webkit-inner-spin-button, 
-  input[type=number]::-webkit-outer-spin-button { 
-    -webkit-appearance: none; 
-    margin: 0; 
-  }
-  input[type=number] {
-    -moz-appearance: textfield;
-  }
-  
-  .bounce-animation {
-    animation: bounce 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-  }
-  
-  @keyframes bounce {
-    0% { transform: scale(0.8); opacity: 0; }
-    100% { transform: scale(1); opacity: 1; }
-  }
-
-  /* Sticker Flash */
-  #sticker-flash-overlay {
-    position: fixed;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    font-size: 15rem;
-    pointer-events: none;
-    z-index: 10000;
-    opacity: 0;
-    display: none;
-  }
-
-  @keyframes sticker-pop {
-    0% { transform: translate(-50%, -50%) scale(0.5); opacity: 0; }
-    50% { transform: translate(-50%, -50%) scale(1.2); opacity: 1; }
-    100% { transform: translate(-50%, -50%) scale(1); opacity: 0; }
-  }
-
-  .animate-sticker-pop {
-    display: block !important;
-    animation: sticker-pop 1.5s ease-out forwards;
-  }
-`;
-
 const THEMES = [
-  { id: 'madrid', title: 'Real Madrid', emoji: '🏆', color: 'from-blue-100 to-blue-300', text: 'text-blue-900', border: 'border-blue-400', label: 'Football', stickers: ['⚽', '🏟️', '🥅', '👟', '🏆', '🥇', '🧤', '🧣', '📣', '🎽'], congrats: ["GOOOAL! Top bins, Archie! ⚽", "BUUUT! En pleine lucarne, Archie! ⚽", "Hala Madrid! What a strike! 🥅", "Hala Madrid! Quelle frappe! 🥅", "Bellingham would be proud! 🏆", "Bellingham serait super fier! 🏆", "You scored a hat-trick with that math! 🎩", "Le stade est en folie pour Archie! 🏟️"] },
-  { id: 'beyblade', title: 'Beyblade Burst', emoji: '🌪️', color: 'from-orange-100 to-orange-300', text: 'text-orange-900', border: 'border-orange-400', label: 'Beyblade', stickers: ['🌪️', '💥', '🌀', '⚙️', '🔧', '🔥', '⚡', '💫', '🪀', '🛸', '🎯', '🛞'], congrats: ["Let it RIP! Perfect answer! 🌪️", "Hypervitesse! Réponse parfaite! 🌪️", "That math was spinning out of control! 🌀", "Ton cerveau tourne à toute vitesse! 🌀", "Burst finish! You crushed it! 💥", "Finition explosive! Tu as tout déchiré! 💥", "Maximum velocity reached! ⚡", "Vitesse maximale atteinte! ⚡"] },
-  { id: 'phineas', title: 'Agent P', emoji: '🦆', color: 'from-teal-100 to-teal-300', text: 'text-teal-900', border: 'border-teal-400', label: 'Phineas & Ferb', stickers: ['🦆', '🎩', '🎸', '🛠️', '🧪', '🎢', '📻', '🗺️', '⚙️', '🔩'], congrats: ["Ferb, I know what we're going to do today! MATH! 🎸", "Ferb, je sais ce qu'on va faire aujourd'hui! DES MATHS! 🎸", "Curse you, tricky math problem! 🦆", "Malédiction, problème de maths difficile! 🦆", "Perry the Platypus approves this answer! 🎩", "Perry l'ornithorynque approuve! 🎩", "Dr. Doofenshmirtz is defeated! 💥", "L'Inator est vaincu! 💥"] },
-  { id: 'egypt', title: 'Ancient Egypt', emoji: '🐪', color: 'from-yellow-100 to-yellow-300', text: 'text-yellow-900', border: 'border-yellow-400', label: 'Egypt', stickers: ['🐪', '🏜️', '🔺', '👁️', '📜', '🏺', '👑', '☀️', '🐈', '🪲'], congrats: ["You unlocked the secret of the Sphinx! 🐪", "Tu as percé le secret du Sphinx! 🐪", "Building the pyramid, one perfect answer at a time! 🔺", "Le Pharaon est impressionné! 👑", "That answer belongs in a museum! 🏺", "Une réponse digne d'un musée! 🏺", "Ra shines his sun on your math skills! ☀️", "Tu as déchiffré les hiéroglyphes! 📜"] },
-  { id: 'bruno', title: 'Good Boy Bruno', emoji: '🐶', color: 'from-amber-100 to-amber-300', text: 'text-amber-900', border: 'border-amber-400', label: 'Bruno', stickers: ['🐶', '🦴', '🎾', '🐾', '🐕', '🥩', '🥎', '🦮', '🚿', '🛋️'], congrats: ["Woof! Bruno gives you a high paw! 🐾", "Ouaf! Bruno te donne la patte! 🐾", "Bruno is fetching you a gold star! 🎾", "Un bon nonos pour cette réponse! 🦴", "Bark bark! That means 'Great Job!' 🐶", "C'est l'heure des gratouilles! 🐶", "You dug up the right answer! 🕳️", "Tu as déterré la bonne réponse! 🕳️"] },
-  { id: 'judo', title: 'Judo Master', emoji: '🥋', color: 'from-red-100 to-red-300', text: 'text-red-900', border: 'border-red-400', label: 'Judo', stickers: ['🥋', '💪', '🥇', '🤸', '🥊', '⛩️', '🇯🇵', '🧘‍♂️', '🏆', '💯'], congrats: ["Ippon! Perfect throw on that math problem! 🥋", "Ippon! Prise parfaite sur ce problème! 🥋", "You pinned that question down! 💪", "Tu as cloué ce problème au sol! 💪", "Black belt level math skills! 🥋", "Un judoka des maths de niveau ceinture noire! 🥋", "A flawless victory on the tatami! 🇯🇵", "Une victoire sans faille sur le tatami! 🇯🇵"] },
-  { id: 'tennis', title: 'Tennis Ace', emoji: '🎾', color: 'from-green-100 to-green-300', text: 'text-green-900', border: 'border-green-400', label: 'Tennis', stickers: ['🎾', '🏸', '👟', '🏆', '🧢', '☀️', '🏟️', '💦', '🍓', '🥛'], congrats: ["Ace! Right down the T line! 🎾", "Ace! Exactement sur la ligne! 🎾", "Game, set, match on that equation! 🏆", "Jeu, set et match! 🏆", "What a forehand smash of an answer! 💪", "Un coup droit magnifique! 💪", "Wimbledon champion in the making! 🍓", "Balle de match sauvée! 🎾"] },
-  { id: 'piano', title: 'Piano Virtuoso', emoji: '🎹', color: 'from-slate-100 to-slate-300', text: 'text-slate-900', border: 'border-slate-400', label: 'Piano', stickers: ['🎹', '🎵', '🎼', '🎶', '🖤', '🤍', '🎧', '📻', '🎙️', '🎻'], congrats: ["Mozart would be proud of those keys! 🎹", "Mozart serait fier de toi! 🎹", "You hit the perfect note with that answer! 🎵", "Tu as joué la note parfaite! 🎵", "A beautiful symphony of numbers! 🎼", "Une mélodie de nombres! 🎼", "Rocking the math keyboard! 🎶", "Tu joues un vrai chef-d'œuvre! 🎻"] }
+  { name: 'Real Madrid', emoji: '🏆', stickers: ['⚽', '🏟️', '🥅', '👟', '🏆', '🧤', '🥇', '📣', '🎽', '🧣', '🎖️', '🔵', '⬜', '🌟', '🎯'], congrats: ["GOOOAL! Top bins, Archie! ⚽", "Hala Madrid! What a strike! 🥅", "Bellingham would be proud! 🏆", "You scored a hat-trick with that math! 🎩"] },
+  { name: 'Beyblade', emoji: '🌪️', stickers: ['🌪️', '💥', '🌀', '⚙️', '🔧', '🔥', '⚡', '💫', '🛸', '🎯', '💿', '🔩', '🎪', '🎰', '🌀'], congrats: ["Let it RIP! Perfect answer! 🌪️", "Hypervitesse! Réponse parfaite! 🌪️", "That math was spinning out of control! 🌀", "Burst finish! You crushed it! 💥"] },
+  { name: 'Bruno', emoji: '🐶', stickers: ['🐶', '🦴', '🎾', '🐾', '🐕', '🥩', '🦮', '🥎', '🚿', '🐕‍🦺', '🌿', '🏡', '🎀'], congrats: ["Woof! Bruno gives you a high paw! 🐾", "Ouaf! Bruno te donne la patte! 🐾", "Bruno is fetching you a gold star! 🎾", "Bark bark! That means 'Great Job!' 🐶"] },
+  { name: 'Judo Master', emoji: '🥋', stickers: ['🥋', '💪', '🥇', '🤸', '⛩️', '🇯🇵', '🧘', '🏆', '💯', '🎖️', '🏯', '🌸', '🥁'], congrats: ["Ippon! Perfect throw! 🥋", "Ippon! Prise parfaite! 🥋", "You pinned that question down! 💪", "Black belt level math skills! 🥋"] },
+  { name: 'Agent P', emoji: '🦆', stickers: ['🦆', '🎩', '🎸', '🛠️', '🧪', '🎢', '📻', '🗺️', '⚙️', '🔩', '🔬', '🧲', '📡', '🎬', '🛩️'], congrats: ["Ferb, I know what we're going to do today! MATH! 🎸", "Curse you, tricky math problem! 🦆", "Perry the Platypus approves! 🎩", "Dr. Doofenshmirtz is defeated! 💥"] },
+  { name: 'Space', emoji: '🚀', stickers: ['🚀', '🌍', '🌙', '⭐', '🛸', '☄️', '🪐', '👨‍🚀', '🌠', '🔭', '🛰️', '💫', '🌌', '🌟'], congrats: ["You unlocked the secret of the universe! 🌍", "Space explorer Archie strikes again! 🚀", "Man on the moon math! 🌙", "Star-studded answer! ⭐"] },
 ];
 
 const RARE_STICKERS = [
-  { emoji: '💎', name: 'Diamond' }, { emoji: '👑', name: 'Crown' }, { emoji: '🦄', name: 'Unicorn' },
+  { emoji: '💎', name: 'Diamond' }, { emoji: '👑', name: 'Crown' },
   { emoji: '🐉', name: 'Dragon' }, { emoji: '🌈', name: 'Rainbow' }, { emoji: '🔮', name: 'Crystal Ball' },
   { emoji: '🍀', name: 'Lucky Clover' }, { emoji: '🦅', name: 'Eagle' }, { emoji: '🎆', name: 'Fireworks' },
   { emoji: '⚡', name: 'Lightning Bolt' }, { emoji: '🌙', name: 'Golden Moon' }, { emoji: '🎭', name: 'Magic Mask' },
-  { emoji: '🦋', name: 'Butterfly' }, { emoji: '🐋', name: 'Blue Whale' }, { emoji: '🌋', name: 'Volcano' },
+  { emoji: '🐋', name: 'Blue Whale' }, { emoji: '🌋', name: 'Volcano' },
 ];
 const RARE_CHANCE = 0.2;
 
 function App() {
-  const [target] = useState(100);
   const [number, setNumber] = useState(0);
   const [tens, setTens] = useState('');
   const [units, setUnits] = useState('');
   const [score, setScore] = useState(0);
   const [streak, setStreak] = useState(0);
-  const [status, setStatus] = useState('playing'); // playing, correct, incorrect, reward
-  const [collection, setCollection] = useState(() => {
-    try { return JSON.parse(sessionStorage.getItem('stickers_up-to-100') || '[]'); } catch { return []; }
-  });
-  const [nextSticker, setNextSticker] = useState('');
   const [progress, setProgress] = useState(0);
   const [level, setLevel] = useState(0);
-  const [currentCongrats, setCurrentCongrats] = useState('');
-  const [showRare, setShowRare] = useState(false);
-  const [rareInfo, setRareInfo] = useState(null);
+  const [status, setStatus] = useState('playing'); // playing, correct, incorrect, reward
+  const [collection, setCollection] = useState(() => JSON.parse(sessionStorage.getItem('stickers_up-to-100') || '[]'));
+  const [nextSticker, setNextSticker] = useState('');
+  const [congratsMsg, setCongratsMsg] = useState('');
   const [isRarePending, setIsRarePending] = useState(false);
+  const [rareInfo, setRareInfo] = useState(null);
+  const [showRare, setShowRare] = useState(false);
   const [flashEmoji, setFlashEmoji] = useState(null);
 
   const tensRef = useRef(null);
   const unitsRef = useRef(null);
 
-  // Initialize game
   useEffect(() => {
-    generateNewNumber();
-    // Inject styles
-    const styleSheet = document.createElement("style");
-    styleSheet.innerText = fontStyles;
-    document.head.appendChild(styleSheet);
-    return () => { styleSheet.remove(); }
+    newQuestion();
   }, []);
 
-  // Save stickers to sessionStorage whenever collection changes
   useEffect(() => {
     sessionStorage.setItem('stickers_up-to-100', JSON.stringify(collection));
   }, [collection]);
 
-  const generateNewNumber = () => {
-    // Generate a number between 1 and 99. 
-    // Favor numbers that don't end in 0 to practice the units strategy more often.
-    let newNum;
-    do {
-      newNum = Math.floor(Math.random() * 99) + 1;
-    } while (newNum % 10 === 0 && Math.random() > 0.2);
+  const newQuestion = () => {
+    let n;
+    do { n = Math.floor(Math.random() * 95) + 5; } while (n % 10 === 0 && Math.random() > 0.2);
+    setNumber(n);
+    setTens(''); setUnits(''); setStatus('playing');
 
-    setNumber(newNum);
-    setTens('');
-    setUnits('');
-    setStatus('playing');
-
-    // Pick the next sticker (Rare or Normal)
+    const theme = THEMES[level % THEMES.length];
     if (Math.random() < RARE_CHANCE) {
       const rareOwned = JSON.parse(sessionStorage.getItem('stickers_rare') || '[]');
       const available = RARE_STICKERS.filter(s => !rareOwned.includes(s.emoji));
       const pool = available.length > 0 ? available : RARE_STICKERS;
       const r = pool[Math.floor(Math.random() * pool.length)];
-      setNextSticker(r.emoji);
-      setRareInfo(r);
-      setIsRarePending(true);
+      setNextSticker(r.emoji); setRareInfo(r); setIsRarePending(true);
     } else {
-      const currentTheme = THEMES[level % THEMES.length];
-      const randomSticker = currentTheme.stickers[Math.floor(Math.random() * currentTheme.stickers.length)];
-      setNextSticker(randomSticker);
-      setRareInfo(null);
+      setNextSticker(theme.stickers[Math.floor(Math.random() * theme.stickers.length)]);
       setIsRarePending(false);
     }
-
-    // Auto focus the units box first as that's the first step of the strategy
-    setTimeout(() => {
-      if (unitsRef.current) unitsRef.current.focus();
-    }, 100);
+    setTimeout(() => unitsRef.current?.focus(), 100);
   };
 
-  const playRareFanfare = () => {
-    try {
-      const ctx = new (window.AudioContext || window.webkitAudioContext)();
-      const now = ctx.currentTime;
-      const notes = [523.25, 659.25, 783.99, 1046.50]; // C5, E5, G5, C6
-      notes.forEach((freq, i) => {
-        const osc = ctx.createOscillator();
-        const gain = ctx.createGain();
-        osc.type = 'sine';
-        osc.frequency.setValueAtTime(freq, now + i * 0.1);
-        gain.gain.setValueAtTime(0.2, now + i * 0.1);
-        gain.gain.exponentialRampToValueAtTime(0.01, now + (i * 0.1) + 0.3);
-        osc.connect(gain);
-        gain.connect(ctx.destination);
-        osc.start(now + i * 0.1);
-        osc.stop(now + i * 0.1 + 0.3);
-      });
-    } catch (e) { console.log('Audio failed:', e); }
+  const checkAnswer = () => {
+    const val = parseInt(tens || 0) * 10 + parseInt(units || 0);
+    if (number + val === 100) {
+      const theme = THEMES[level % THEMES.length];
+      setCongratsMsg(theme.congrats[Math.floor(Math.random() * theme.congrats.length)]);
+      setScore(s => s + 100); setStreak(s => s + 1);
+      showStickerFlash(nextSticker);
+      setCollection(p => [...p, nextSticker]);
+
+      if (isRarePending && rareInfo) {
+        const rareOwned = JSON.parse(sessionStorage.getItem('stickers_rare') || '[]');
+        if (!rareOwned.includes(rareInfo.emoji)) {
+          rareOwned.push(rareInfo.emoji); sessionStorage.setItem('stickers_rare', JSON.stringify(rareOwned));
+        }
+        setTimeout(() => { setShowRare(true); playRareFanfare(); }, 500);
+      }
+
+      const nextProgress = progress + 1;
+      if (nextProgress >= 5) {
+        setTimeout(() => setStatus('reward'), 1000);
+      } else {
+        setProgress(nextProgress); setStatus('correct');
+      }
+    } else {
+      setStatus('incorrect'); setStreak(0);
+    }
   };
 
   const showStickerFlash = (emoji) => {
@@ -184,383 +99,173 @@ function App() {
     setTimeout(() => setFlashEmoji(null), 1500);
   };
 
-  const checkAnswer = () => {
-    const t = parseInt(tens || 0);
-    const u = parseInt(units || 0);
-    const total = (t * 10) + u;
-
-    if (number + total === target) {
-      const newProgress = progress + 1;
-      const currentTheme = THEMES[level % THEMES.length];
-
-      setScore(s => s + 100);
-      setStreak(s => s + 1);
-      setCollection(prev => [...prev, nextSticker]);
-      showStickerFlash(nextSticker);
-
-      if (isRarePending && rareInfo) {
-        const rareOwned = JSON.parse(sessionStorage.getItem('stickers_rare') || '[]');
-        if (!rareOwned.includes(rareInfo.emoji)) {
-          rareOwned.push(rareInfo.emoji);
-          sessionStorage.setItem('stickers_rare', JSON.stringify(rareOwned));
-        }
-        setTimeout(() => {
-          setShowRare(true);
-          playRareFanfare();
-        }, 500);
-      }
-
-      // Grab a random funny congratulations message for this theme
-      const randomCongrats = currentTheme.congrats[Math.floor(Math.random() * currentTheme.congrats.length)];
-      setCurrentCongrats(randomCongrats);
-
-      // Scroll to the top to ensure Archie sees his full equation and message
-      window.scrollTo({ top: 0, behavior: 'smooth' });
-
-      if (newProgress >= 5) {
-        setStatus('reward');
-        setLevel(l => l + 1);
-        setProgress(0);
-      } else {
-        setProgress(newProgress);
-        setStatus('correct');
-      }
-    } else {
-      setStatus('incorrect');
-      setStreak(0);
-    }
+  const playRareFanfare = () => {
+    try {
+      const ctx = new (window.AudioContext || window.webkitAudioContext)();
+      const now = ctx.currentTime;
+      const notes = [523.25, 659.25, 783.99, 1046.50];
+      notes.forEach((freq, i) => {
+        const osc = ctx.createOscillator(); const gain = ctx.createGain();
+        osc.type = 'sine'; osc.frequency.setValueAtTime(freq, now + i * 0.1);
+        gain.gain.setValueAtTime(0.2, now + i * 0.1);
+        gain.gain.exponentialRampToValueAtTime(0.01, now + (i * 0.1) + 0.3);
+        osc.connect(gain); gain.connect(ctx.destination);
+        osc.start(now + i * 0.1); osc.stop(now + i * 0.1 + 0.3);
+      });
+    } catch (e) { }
   };
 
-  const handleMetacognitionClick = () => {
-    generateNewNumber();
+  const nextLevel = () => {
+    setLevel(l => l + 1); setProgress(0); setStatus('playing'); newQuestion();
   };
 
-  const handleInput = (e, type) => {
-    const val = e.target.value.replace(/[^0-9]/g, '').slice(-1); // Only allow 1 digit
-    if (type === 'tens') {
-      setTens(val);
-      if (val !== '' && units === '') unitsRef.current.focus();
-    } else {
-      setUnits(val);
-      if (val !== '' && tens === '') tensRef.current.focus();
-    }
-    setStatus('playing'); // reset error state if typing
-  };
-
-  const handleKeyDown = (e) => {
-    if (e.key === 'Enter') {
-      checkAnswer();
-    }
-  };
-
-  const currentTotal = number + (parseInt(tens || 0) * 10) + parseInt(units || 0);
   const currentTheme = THEMES[level % THEMES.length];
-  const nextTheme = THEMES[(level + 1) % THEMES.length];
+  const rareOwned = JSON.parse(sessionStorage.getItem('stickers_rare') || '[]');
 
   return (
-    <div className="min-h-screen flex flex-col items-center py-8 px-4 text-slate-800">
+    <div style={{ width: '100%', maxWidth: '800px' }}>
+      <header>
+        <h1>Up to 100 👑</h1>
+        <div className="stats">
+          <div className="header-stickers">
+            {[...collection.slice(-3), ...rareOwned.slice(-2)].slice(-5).map((s, i) => <span key={i}>{s}</span>)}
+          </div>
+          <div className="stat-pill">⭐ {score}</div>
+          <div className="stat-pill">🔥 {streak}</div>
+        </div>
+      </header>
+
+      <div className="progress-wrap">
+        <div className="progress-label">
+          <span>Collecting: {currentTheme.name} {currentTheme.emoji}</span>
+          <span>{progress} / 5</span>
+        </div>
+        <div className="progress-bar">
+          <div className="progress-fill" style={{ width: `${(progress / 5) * 100}%` }}></div>
+        </div>
+      </div>
+
+      {collection.length > 0 && (
+        <div className="stickers visible">
+          <div className="stickers-label">Knowledge Collection:</div>
+          <div className="sticker-row">
+            {collection.map((s, i) => <span key={i}>{s}</span>)}
+            {rareOwned.map((s, i) => <span key={'r' + i}>{s}</span>)}
+          </div>
+        </div>
+      )}
+
+      <div className="card">
+        {status === 'reward' ? (
+          <div className="celebration show" style={{ position: 'static', background: 'none', color: 'inherit', backdropFilter: 'none', padding: 0 }}>
+            <div className="celebration-emoji">{currentTheme.emoji}</div>
+            <h2 style={{ fontSize: '2.5rem', fontWeight: 900, color: '#059669' }}>Level Up! 🎉</h2>
+            <p style={{ fontSize: '1.2rem', fontWeight: 700 }}>You collected all stickers!</p>
+            <div className="sticker-reward">{currentTheme.stickers[0]}</div>
+            <button className="check-btn" onClick={nextLevel}>Keep Going! 🚀</button>
+          </div>
+        ) : status === 'correct' ? (
+          <div>
+            <div className="equation-wrap">
+              <span className="num-big">{number}</span>
+              <span className="op-big">+</span>
+              <span className="target-big">{tens}{units}</span>
+              <span className="op-big">=</span>
+              <span className="target-big">100</span>
+            </div>
+            <div className="feedback-area">
+              <div className="feedback show correct">
+                <div className="feedback-emoji">{nextSticker}</div>
+                <div className="feedback-msg">{congratsMsg}</div>
+              </div>
+            </div>
+            <div className="strategy-wrap">
+              <div className="strategy-title">How did you figure it out, Archie? 🤔</div>
+              <div className="strategy-btns">
+                <button className="strat-btn" onClick={newQuestion}>Jumped to the next 10! 🦘</button>
+                <button className="strat-btn" onClick={newQuestion}>Counted backwards! ⏪</button>
+                <button className="strat-btn" onClick={newQuestion}>I just knew it! 🧠</button>
+              </div>
+            </div>
+          </div>
+        ) : (
+          <div>
+            <div className="badge">Question {progress + 1}</div>
+            <p style={{ fontSize: '1.3rem', fontWeight: 800, marginBottom: '1.5rem' }}>
+              Complete the equation to make 100!
+            </p>
+
+            <div className={`badge`} style={{ background: isRarePending ? '#fbbf24' : '#059669', marginBottom: '2rem' }}>
+              {isRarePending ? '⭐ RARE CHALLENGE' : `Next Sticker: ${nextSticker}`}
+            </div>
+
+            <div className="equation-wrap">
+              <span className="num-big">{number}</span>
+              <span className="op-big">+</span>
+              <div className="inputs-row">
+                <div className="input-box">
+                  <div className="input-label">Tens</div>
+                  <input
+                    ref={tensRef}
+                    type="number"
+                    className="massive-input"
+                    value={tens}
+                    onChange={e => {
+                      const v = e.target.value.slice(-1); setTens(v);
+                      if (v && !units) unitsRef.current.focus();
+                    }}
+                    onKeyDown={e => e.key === 'Enter' && checkAnswer()}
+                  />
+                </div>
+                <div className="input-box">
+                  <div className="input-label">Units</div>
+                  <input
+                    ref={unitsRef}
+                    type="number"
+                    className="massive-input"
+                    value={units}
+                    onChange={e => {
+                      const v = e.target.value.slice(-1); setUnits(v);
+                      if (v && !tens) tensRef.current.focus();
+                    }}
+                    onKeyDown={e => e.key === 'Enter' && checkAnswer()}
+                  />
+                </div>
+              </div>
+              <span className="op-big">=</span>
+              <span className="target-big">100</span>
+            </div>
+
+            <div className="feedback-area">
+              {status === 'incorrect' && (
+                <div className="feedback show wrong">
+                  <div className="feedback-emoji">🤔</div>
+                  <div className="feedback-msg">Not quite! Try again, Archie!</div>
+                </div>
+              )}
+            </div>
+
+            <button className="check-btn" onClick={checkAnswer}>Check! ✨</button>
+          </div>
+        )}
+      </div>
+
+      {showRare && rareInfo && (
+        <div className="rare-banner show">
+          <div className="rare-inner">
+            <span style={{ fontSize: '7rem', display: 'block' }}>{rareInfo.emoji}</span>
+            <h2 style={{ fontSize: '2rem', fontWeight: 900, margin: '1rem 0' }}>RARE STICKER!</h2>
+            <p style={{ fontSize: '1.5rem', fontWeight: 800, opacity: 0.9 }}>{rareInfo.name}</p>
+            <button className="check-btn" onClick={() => setShowRare(false)} style={{ background: '#92400e', boxShadow: '0 6px 0 #451a03' }}>Amazing! 🎉</button>
+          </div>
+        </div>
+      )}
+
       {flashEmoji && (
         <div id="sticker-flash-overlay" className="animate-sticker-pop">
           {flashEmoji}
         </div>
       )}
-
-      {/* Game Sticker Header (Persistent) */}
-      <div className="fixed top-4 right-4 z-[50] flex items-center gap-2 bg-white/90 backdrop-blur-md px-4 py-2 rounded-full border-2 border-emerald-200 shadow-lg">
-        <span className="text-[10px] font-black text-emerald-600 uppercase tracking-widest">Stickers:</span>
-        <div className="flex gap-1 text-2xl">
-          {[...collection, ...JSON.parse(sessionStorage.getItem('stickers_rare') || '[]')].map((s, i) => (
-            <span key={i} className="animate-bounce-in">{s}</span>
-          ))}
-        </div>
-      </div>
-
-      {/* Header Info */}
-      <div className="w-full max-w-4xl flex justify-between items-center bg-white/80 backdrop-blur-md p-4 rounded-3xl shadow-xl mb-8 border-4 border-emerald-400">
-        <h1 className="text-3xl md:text-4xl font-black text-emerald-600 tracking-tight uppercase">
-          Archie's Quest 👑
-        </h1>
-        <div className="flex gap-6 text-2xl md:text-3xl font-bold">
-          <div className="flex items-center gap-2 bg-yellow-100 px-4 py-2 rounded-2xl text-yellow-600">
-            <span>⭐️</span> {score}
-          </div>
-          <div className="flex items-center gap-2 bg-orange-100 px-4 py-2 rounded-2xl text-orange-600">
-            <span>🔥</span> {streak}
-          </div>
-        </div>
-      </div>
-
-      {/* Sticker Collection */}
-      {collection.length > 0 && (
-        <div className="w-full max-w-4xl bg-white/80 backdrop-blur-md p-6 rounded-3xl shadow-xl mb-8 border-4 border-indigo-200">
-          <div className="text-sm font-bold text-indigo-400 uppercase tracking-widest mb-3">Archie's Mega Sticker Book</div>
-          <div className="flex flex-wrap gap-4 text-4xl md:text-5xl">
-            {collection.map((emoji, idx) => (
-              <span key={idx} className="bounce-animation">{emoji}</span>
-            ))}
-          </div>
-        </div>
-      )}
-
-      {/* Progress Bar */}
-      <div className="w-full max-w-4xl mb-8">
-        <div className="flex flex-col md:flex-row justify-between mb-3 gap-2 text-center md:text-left">
-          <span className="text-lg md:text-xl font-bold text-emerald-700 uppercase tracking-widest">
-            Collecting: <span className="text-emerald-900 bg-emerald-100 px-3 py-1 rounded-xl ml-2">{currentTheme.title} {currentTheme.emoji}</span>
-          </span>
-          <span className="text-lg md:text-xl font-black text-indigo-600 bg-indigo-50 px-3 py-1 rounded-xl">
-            {5 - progress} more to unlock {nextTheme.title}!
-          </span>
-        </div>
-        <div className="w-full bg-white border-4 border-emerald-200 rounded-full h-10 md:h-12 relative overflow-hidden shadow-sm">
-          <div
-            className="bg-gradient-to-r from-emerald-400 to-teal-400 h-full transition-all duration-700 ease-out"
-            style={{ width: `${(progress / 5) * 100}%` }}
-          />
-        </div>
-      </div>
-
-      {/* Main Game Card */}
-      <div className="w-full max-w-4xl bg-white rounded-[3rem] shadow-2xl p-8 md:p-12 relative overflow-hidden border-8 border-white">
-
-        {status === 'reward' ? (
-          /* Level Up Milestone View */
-          (() => {
-            const rewardTheme = THEMES[(level - 1 + THEMES.length) % THEMES.length];
-            return (
-              <div className={`flex flex-col items-center text-center bounce-animation w-full p-8 md:p-12 rounded-[2rem] bg-gradient-to-br ${rewardTheme.color} border-8 ${rewardTheme.border}`}>
-                <h2 className={`text-5xl md:text-7xl font-black mb-4 ${rewardTheme.text}`}>
-                  NEW THEME UNLOCKED! 🎉
-                </h2>
-                <div className="text-[120px] md:text-[180px] my-4 drop-shadow-2xl">
-                  {rewardTheme.emoji}
-                </div>
-                <h3 className={`text-4xl md:text-6xl font-extrabold mb-12 ${rewardTheme.text}`}>
-                  {rewardTheme.title}
-                </h3>
-                <button
-                  onClick={handleMetacognitionClick}
-                  className="bg-white text-slate-800 text-3xl md:text-4xl font-black py-6 px-12 rounded-full shadow-xl transform transition active:scale-95 border-b-8 border-slate-300"
-                >
-                  Keep Going! / Continue! 🚀
-                </button>
-              </div>
-            );
-          })()
-        ) : status === 'correct' ? (
-          /* Metacognition View */
-          <div className="flex flex-col items-center text-center bounce-animation w-full">
-
-            {/* The Completed Sum Banner */}
-            <div className="flex flex-wrap justify-center items-center gap-4 md:gap-6 mb-8 bg-emerald-50 py-4 px-8 md:px-12 rounded-[2rem] border-4 border-emerald-200 shadow-inner w-full max-w-2xl">
-              <span className="text-4xl md:text-6xl font-black text-slate-700">{number}</span>
-              <span className="text-4xl md:text-6xl font-black text-slate-400">+</span>
-              <span className="text-4xl md:text-6xl font-black text-emerald-600">{tens}{units}</span>
-              <span className="text-4xl md:text-6xl font-black text-slate-400">=</span>
-              <span className="text-4xl md:text-6xl font-black text-emerald-500">100</span>
-            </div>
-
-            <h2 className={`text-3xl md:text-5xl font-black mb-6 px-4 leading-tight ${currentTheme.text}`}>
-              {currentCongrats}
-            </h2>
-            <div className="flex flex-col items-center justify-center mb-8 p-6 bg-slate-100 rounded-3xl w-full max-w-lg border-4 border-slate-200">
-              <span className="text-xl font-bold text-slate-500 uppercase tracking-widest mb-3">Sticker! / Autocollant!</span>
-              <span className="text-7xl bounce-animation">{nextSticker}</span>
-            </div>
-
-            <div className="w-full bg-blue-50 p-8 rounded-[2rem] border-4 border-blue-200">
-              <h3 className="text-3xl md:text-4xl font-extrabold text-blue-800 mb-6">
-                How did you figure that out, Archie? 🤔
-              </h3>
-
-              <div className="flex flex-col gap-4">
-                <button
-                  onClick={handleMetacognitionClick}
-                  className="w-full bg-indigo-500 hover:bg-indigo-600 text-white text-2xl md:text-4xl font-bold py-6 px-8 rounded-3xl transform transition active:scale-95 shadow-lg border-b-8 border-indigo-700"
-                >
-                  Jumped to the next 10! 🦘
-                </button>
-                <button
-                  onClick={handleMetacognitionClick}
-                  className="w-full bg-emerald-500 hover:bg-emerald-600 text-white text-2xl md:text-4xl font-bold py-6 px-8 rounded-3xl transform transition active:scale-95 shadow-lg border-b-8 border-emerald-700"
-                >
-                  Counted backwards! ⏪
-                </button>
-                <button
-                  onClick={handleMetacognitionClick}
-                  className="w-full bg-purple-500 hover:bg-purple-600 text-white text-2xl md:text-4xl font-bold py-6 px-8 rounded-3xl transform transition active:scale-95 shadow-lg border-b-8 border-purple-700"
-                >
-                  I just knew it! 🧠
-                </button>
-              </div>
-            </div>
-          </div>
-        ) : (
-          /* Equation View */
-          <div className="flex flex-col items-center w-full">
-
-            {/* Next Sticker Hint */}
-            <div className={`font-bold text-xl md:text-2xl py-3 px-6 rounded-full mb-8 animate-pulse border-4 shadow-lg ${isRarePending ? 'bg-gradient-to-r from-yellow-400 via-amber-200 to-yellow-400 border-yellow-500 text-amber-900 scale-105' : `bg-gradient-to-r ${currentTheme.color} ${currentTheme.border} ${currentTheme.text}`}`}>
-              {isRarePending ? '⭐ RARE STICKER CHALLENGE! ⭐' : `✨ Get this right for a ${currentTheme.label} sticker: ✨`}
-              <span className="text-4xl ml-3 drop-shadow-sm">{nextSticker}</span>
-            </div>
-
-            {/* The Math Equation */}
-            <div className="flex flex-wrap justify-center items-center gap-4 md:gap-8 mb-4">
-              <span className="huge-text font-black text-slate-700">
-                {number}
-              </span>
-              <span className="huge-text font-black text-slate-400">
-                +
-              </span>
-
-              {/* Input Boxes */}
-              <div className="flex gap-2 md:gap-4 p-4 bg-slate-100 rounded-[2rem]">
-                {/* Tens Input */}
-                <div className="flex flex-col items-center">
-                  <span className="text-2xl font-bold text-blue-500 mb-2 uppercase tracking-widest">Tens</span>
-                  <input
-                    ref={tensRef}
-                    type="number"
-                    value={tens}
-                    onChange={(e) => handleInput(e, 'tens')}
-                    onKeyDown={handleKeyDown}
-                    className="massive-input w-24 h-32 md:w-36 md:h-48 bg-white border-8 border-blue-400 rounded-3xl text-blue-600 focus:outline-none focus:border-blue-600 focus:ring-8 focus:ring-blue-200 transition-all"
-                  />
-                </div>
-                {/* Units Input */}
-                <div className="flex flex-col items-center">
-                  <span className="text-2xl font-bold text-orange-500 mb-2 uppercase tracking-widest">Units</span>
-                  <input
-                    ref={unitsRef}
-                    type="number"
-                    value={units}
-                    onChange={(e) => handleInput(e, 'units')}
-                    onKeyDown={handleKeyDown}
-                    className="massive-input w-24 h-32 md:w-36 md:h-48 bg-white border-8 border-orange-400 rounded-3xl text-orange-600 focus:outline-none focus:border-orange-600 focus:ring-8 focus:ring-orange-200 transition-all"
-                  />
-                </div>
-              </div>
-
-              <span className="huge-text font-black text-slate-400">
-                =
-              </span>
-              <span className="huge-text font-black text-emerald-500">
-                100
-              </span>
-            </div>
-
-            {/* Live Total */}
-            <div className="text-3xl md:text-5xl font-black text-slate-400 mt-2 mb-12 flex flex-wrap justify-center items-center gap-4 bg-slate-50 px-8 py-4 rounded-[2rem] border-4 border-slate-100">
-              <span className="uppercase tracking-widest text-2xl md:text-3xl">Live Total:</span>
-              <span className={`transition-colors duration-300 ${currentTotal === 100 ? 'text-emerald-500 text-5xl md:text-7xl scale-110' : currentTotal > 100 ? 'text-red-500' : 'text-blue-500'}`}>
-                {currentTotal}
-              </span>
-            </div>
-
-            {/* Error Message */}
-            {status === 'incorrect' && (
-              <div className="text-3xl md:text-4xl font-bold text-red-500 mb-8 bounce-animation text-center">
-                Bruno believes in you, try again! 🐶🐾
-              </div>
-            )}
-
-            {/* Submit Button */}
-            <button
-              onClick={checkAnswer}
-              className="bg-gradient-to-b from-emerald-400 to-emerald-600 hover:from-emerald-500 hover:to-emerald-700 text-white text-4xl md:text-6xl font-black py-6 md:py-8 px-12 md:px-24 rounded-full shadow-2xl transform transition active:scale-95 border-b-[12px] border-emerald-800 flex items-center gap-6"
-            >
-              CHECK! ✨
-            </button>
-          </div>
-        )}
-      </div>
-
-      {/* Rare Sticker Banner */}
-      {showRare && rareInfo && (
-        <RareBanner
-          emoji={rareInfo.emoji}
-          name={rareInfo.name}
-          onClose={() => setShowRare(false)}
-        />
-      )}
-    </div>
-  );
-}
-
-function RareBanner({ emoji, name, onClose }) {
-  const canvasRef = useRef(null);
-
-  useEffect(() => {
-    const canvas = canvasRef.current;
-    if (!canvas) return;
-    canvas.width = window.innerWidth;
-    canvas.height = window.innerHeight;
-    const ctx = canvas.getContext('2d');
-
-    let particles = [];
-    const colors = ['#fbbf24', '#ec4899', '#3b82f6', '#10b981', '#f97316', '#8b5cf6', '#ef4444', '#fff', '#a3e635', '#f0abfc'];
-
-    function burst() {
-      for (let i = 0; i < 8; i++) {
-        const cx = Math.random() * canvas.width, cy = Math.random() * canvas.height * 0.7;
-        for (let j = 0; j < 55; j++) {
-          const angle = (j / 55) * Math.PI * 2, spd = 2 + Math.random() * 7;
-          particles.push({ x: cx, y: cy, vx: Math.cos(angle) * spd, vy: Math.sin(angle) * spd, alpha: 1, color: colors[Math.floor(Math.random() * colors.length)], r: 2 + Math.random() * 4 });
-        }
-      }
-    }
-
-    burst();
-    const interval = setInterval(burst, 800);
-
-    let anim;
-    function tick() {
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-      particles.forEach(p => {
-        p.x += p.vx; p.y += p.vy; p.vy += 0.1; p.alpha -= 0.005;
-        ctx.globalAlpha = Math.max(0, p.alpha); ctx.fillStyle = p.color;
-        ctx.beginPath(); ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2); ctx.fill();
-      });
-      ctx.globalAlpha = 1;
-      particles = particles.filter(p => p.alpha > 0);
-      anim = requestAnimationFrame(tick);
-    }
-    anim = requestAnimationFrame(tick);
-
-    return () => {
-      clearInterval(interval);
-      cancelAnimationFrame(anim);
-    };
-  }, []);
-
-  return (
-    <div className="fixed inset-0 z-[9999] bg-black/80 flex items-center justify-center flex-col">
-      <canvas ref={canvasRef} className="fixed inset-0 pointer-events-none" />
-      <div className="relative z-10 bg-gradient-to-br from-yellow-400 via-amber-500 to-yellow-400 p-12 rounded-[3rem] text-center shadow-[0_0_80px_rgba(251,191,36,0.8)] border-8 border-white animate-bounce-in max-w-sm">
-        <span className="text-9xl mb-4 block drop-shadow-2xl animate-spin-once">{emoji}</span>
-        <h2 className="text-4xl font-black text-white drop-shadow-md uppercase tracking-tighter">⭐ RARE STICKER! ⭐</h2>
-        <p className="text-2xl font-bold text-amber-100 mt-2 mb-8">{name}</p>
-        <button
-          onClick={onClose}
-          className="bg-amber-900 text-white font-black py-4 px-10 rounded-full text-xl shadow-lg hover:scale-105 active:scale-95 transition-transform"
-        >
-          AMAZING! 🎉
-        </button>
-      </div>
-      <style>{`
-        @keyframes bounce-in {
-          0% { transform: scale(0.5); opacity: 0; }
-          70% { transform: scale(1.05); }
-          100% { transform: scale(1); opacity: 1; }
-        }
-        @keyframes spin-once {
-          0% { transform: rotate(-15deg) scale(0.8); }
-          100% { transform: rotate(0) scale(1); }
-        }
-        .animate-bounce-in { animation: bounce-in 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
-        .animate-spin-once { animation: spin-once 0.8s ease-out; }
-      `}</style>
     </div>
   );
 }

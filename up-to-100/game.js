@@ -83,7 +83,7 @@ const RARE_STICKERS = [
   { emoji: '⚡', name: 'Lightning Bolt' }, { emoji: '🌙', name: 'Golden Moon' }, { emoji: '🎭', name: 'Magic Mask' },
   { emoji: '🦋', name: 'Butterfly' }, { emoji: '🐋', name: 'Blue Whale' }, { emoji: '🌋', name: 'Volcano' },
 ];
-const RARE_CHANCE = 0.07;
+const RARE_CHANCE = 0.2;
 
 function App() {
   const [target] = useState(100);
@@ -264,6 +264,16 @@ function App() {
           {flashEmoji}
         </div>
       )}
+
+      {/* Game Sticker Header (Persistent) */}
+      <div className="fixed top-4 right-4 z-[50] flex items-center gap-2 bg-white/90 backdrop-blur-md px-4 py-2 rounded-full border-2 border-emerald-200 shadow-lg">
+        <span className="text-[10px] font-black text-emerald-600 uppercase tracking-widest">Stickers:</span>
+        <div className="flex gap-1 text-2xl">
+          {[...collection, ...JSON.parse(sessionStorage.getItem('stickers_rare') || '[]')].map((s, i) => (
+            <span key={i} className="animate-bounce-in">{s}</span>
+          ))}
+        </div>
+      </div>
 
       {/* Header Info */}
       <div className="w-full max-w-4xl flex justify-between items-center bg-white/80 backdrop-blur-md p-4 rounded-3xl shadow-xl mb-8 border-4 border-emerald-400">

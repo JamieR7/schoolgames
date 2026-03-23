@@ -217,6 +217,13 @@
 </head>
 
 <body>
+    <div id="game-stickers"
+        style="position:fixed;top:15px;right:20px;display:flex;align-items:center;gap:10px;background:rgba(255,255,255,0.9);padding:8px 15px;border-radius:99px;backdrop-filter:blur(10px);border:2px solid #c7d2fe;z-index:1000;box-shadow: 0 4px 15px rgba(99, 102, 241, 0.1);">
+        <span
+            style="font-size:0.7rem;font-weight:900;color:#4338ca;text-transform:uppercase;letter-spacing:1px;">Stickers:</span>
+        <div id="header-sticker-list" style="display:flex;gap:5px;font-size:1.4rem;"></div>
+    </div>
+
     <a href="../index.html" class="back-btn">← Back</a>
     <h1>🧊 Grid Copycat</h1>
 
@@ -270,6 +277,24 @@
                 ]
             }
         ];
+
+        const RARE_STICKERS = [
+            '💎', '👑', '🦄', '🐉', '🌈', '🔮', '🍀', '🦅', '🎆', '⚡', '🌙', '🎭', '🦋', '🐋', '🌋'
+        ];
+        const RARE_CHANCE = 0.2;
+
+        function updateStickerHeader() {
+            const list = document.getElementById('header-sticker-list');
+            if (!list) return;
+            list.innerHTML = "";
+            const rare = JSON.parse(sessionStorage.getItem('stickers_rare') || '[]');
+            const normal = JSON.parse(sessionStorage.getItem('stickers_grid-copy') || '[]');
+            [...normal, ...rare].forEach(s => {
+                const span = document.createElement('span');
+                span.textContent = s;
+                list.appendChild(span);
+            });
+        }
 
         let currentLevel = 0;
         let userLines = [];
@@ -390,7 +415,33 @@
                 stickers.push(emoji);
                 sessionStorage.setItem('stickers_grid-copy', JSON.stringify(stickers));
             }
+
+            if (Math.random() < RARE_CHANCE) {
+                const rareOwned = JSON.parse(sessionStorage.getItem('stickers_rare') || '[]');
+                const available = RARE_STICKERS.filter(s => !rareOwned.includes(s));
+                const rareEmoji = available.length > 0 ? available[Math.floor(Math.random() * available.length)] : RARE_STICKERS[Math.floor(Math.random() * RARE_STICKERS.length)];
+
+                if (!rareOwned.includes(rareEmoji)) {
+                    rareOwned.push(rareEmoji);
+                    sessionStorage.setItem('stickers_rare', JSON.stringify(rareOwned));
+                }
+                showStickerFlash(rareEmoji);
+            } else {
+                showStickerFlash(emoji);
+            }
+            updateStickerHeader();
         }
+
+        function showStickerFlash(emoji) {
+            const flash = document.getElementById('sticker-flash');
+            if (!flash) return;
+            flash.textContent = emoji;
+            flash.classList.remove('animate-sticker-pop');
+            void flash.offsetWidth;
+            flash.classList.add('animate-sticker-pop');
+        }
+
+        updateStickerHeader();
 
         init();
         // Update GRID_SIZE dynamically if screen is small

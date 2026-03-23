@@ -185,7 +185,33 @@
             { name: 'Agent P', emoji: '🦆', stickers: ['🦆', '🎩', '🎸', '🛠️', '🧪', '🎢', '📻', '🗺️', '⚙️', '🔩', '🔬', '🧲', '📡', '🎬', '🛩️'] },
             { name: 'Space', emoji: '🚀', stickers: ['🚀', '🌍', '🌙', '⭐', '🛸', '☄️', '🪐', '👨‍🚀', '🌠', '🔭', '🛰️', '💫', '🌌', '🌟', '🌛'] },
         ];
-        const RARE_CHANCE = 0.07;
+        const RARE_CHANCE = 0.2;
+
+        const StickerHeader = ({ collection, color, borderColor }) => {
+            const rare = JSON.parse(sessionStorage.getItem('stickers_rare') || '[]');
+            return (
+                <div style={{
+                    position: 'fixed',
+                    top: '15px',
+                    right: '20px',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '10px',
+                    background: 'rgba(255,255,255,0.9)',
+                    padding: '8px 15px',
+                    borderRadius: '99px',
+                    backdropFilter: 'blur(10px)',
+                    border: `2px solid ${borderColor}`,
+                    zIndex: 1000,
+                    boxShadow: '0 4px 15px rgba(0,0,0,0.05)'
+                }}>
+                    <span style={{ fontSize: '0.7rem', fontWeight: 900, color: color, textTransform: 'uppercase', letterSpacing: '1px' }}>Stickers:</span>
+                    <div style={{ display: 'flex', gap: '5px', fontSize: '1.4rem' }}>
+                        {[...collection, ...rare].map((s, i) => <span key={i}>{s}</span>)}
+                    </div>
+                </div>
+            );
+        };
 
         function App() {
             const [mode, setMode] = useState('select'); // select, play, reward
@@ -359,6 +385,7 @@
 
             return (
                 <div className="flex flex-col items-center py-4 px-4 max-w-4xl mx-auto">
+                    <StickerHeader collection={collection} color="#854d0e" borderColor="#fef08a" />
                     {flashEmoji && (
                         <div id="sticker-flash-overlay" className="animate-sticker-pop">
                             {flashEmoji}

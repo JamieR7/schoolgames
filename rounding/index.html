@@ -231,6 +231,13 @@
 </head>
 
 <body>
+    <div id="game-stickers"
+        style="position:fixed;top:15px;right:20px;display:flex;align-items:center;gap:10px;background:rgba(255,255,255,0.9);padding:8px 15px;border-radius:99px;backdrop-filter:blur(10px);border:2px solid #f0e68c;z-index:1000;box-shadow: 0 4px 15px rgba(139, 69, 19, 0.1);">
+        <span
+            style="font-size:0.7rem;font-weight:900;color:#8b4513;text-transform:uppercase;letter-spacing:1px;">Stickers:</span>
+        <div id="header-sticker-list" style="display:flex;gap:5px;font-size:1.4rem;"></div>
+    </div>
+
     <a href="../index.html" class="back-btn">← Home</a>
 
     <div class="game-container">
@@ -276,6 +283,28 @@
             "Crocodiles 🐊", "Lions 🦁", "Tarantulas 🕷️", "Box Jellyfish 🎐",
             "Komodo Dragons 🦎", "Honey Badgers 🦡", "Killer Whales 🐋"
         ];
+
+        const RARE_STICKERS = [
+            { emoji: '💎', name: 'Diamond' }, { emoji: '👑', name: 'Crown' }, { emoji: '🦄', name: 'Unicorn' },
+            { emoji: '🐉', name: 'Dragon' }, { emoji: '🌈', name: 'Rainbow' }, { emoji: '🔮', name: 'Crystal Ball' },
+            { emoji: '🍀', name: 'Lucky Clover' }, { emoji: '🦅', name: 'Eagle' }, { emoji: '🎆', name: 'Fireworks' },
+            { emoji: '⚡', name: 'Lightning Bolt' }, { emoji: '🌙', name: 'Golden Moon' }, { emoji: '🎭', name: 'Magic Mask' },
+            { emoji: '🦋', name: 'Butterfly' }, { emoji: '🐋', name: 'Blue Whale' }, { emoji: '🌋', name: 'Volcano' },
+        ];
+        const RARE_CHANCE = 0.2;
+
+        function updateStickerHeader() {
+            const list = document.getElementById('header-sticker-list');
+            if (!list) return;
+            list.innerHTML = "";
+            const rare = JSON.parse(sessionStorage.getItem('stickers_rare') || '[]');
+            const normal = JSON.parse(sessionStorage.getItem('stickers_wild-rounding') || '[]');
+            [...normal, ...rare].forEach(s => {
+                const span = document.createElement('span');
+                span.textContent = s;
+                list.appendChild(span);
+            });
+        }
 
         const STEVE_SUCCESS = [
             "Deadly! That's a triple-A round, Archie!",
@@ -332,11 +361,15 @@
                 saveSticker('🐾');
 
                 // Extra chance for rare wildlife sticker
-                if (Math.random() < 0.15) {
-                    const rareEmoji = ['🦁', '🦈', '🦂', '🐍', '🐉'][Math.floor(Math.random() * 5)];
+                if (Math.random() < RARE_CHANCE) {
+                    const rareOwned = JSON.parse(sessionStorage.getItem('stickers_rare') || '[]');
+                    const available = RARE_STICKERS.filter(s => !rareOwned.includes(s.emoji));
+                    const pool = available.length > 0 ? available : RARE_STICKERS;
+                    const r = pool[Math.floor(Math.random() * pool.length)];
+
                     setTimeout(() => {
-                        showStickerFlash(rareEmoji);
-                        saveRareSticker(rareEmoji);
+                        showStickerFlash(r.emoji);
+                        saveRareSticker(r.emoji);
                     }, 1000);
                 }
 
@@ -387,6 +420,7 @@
                 stickers.push(emoji);
                 sessionStorage.setItem('stickers_wild-rounding', JSON.stringify(stickers));
             }
+            updateStickerHeader();
         }
 
         function saveRareSticker(emoji) {
@@ -395,6 +429,7 @@
                 rare.push(emoji);
                 sessionStorage.setItem('stickers_rare', JSON.stringify(rare));
             }
+            updateStickerHeader();
         }
 
         // Listen for Enter key
@@ -402,6 +437,7 @@
             if (e.key === 'Enter') checkAnswer();
         });
 
+        updateStickerHeader();
         nextQuestion();
     </script>
 </body>

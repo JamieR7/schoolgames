@@ -267,6 +267,13 @@
     <div class="circuit-bg"></div>
     <a href="../index.html" class="back-btn">← Home</a>
 
+    <div id="game-stickers"
+        style="position:fixed;top:15px;right:20px;display:flex;align-items:center;gap:10px;background:rgba(15,23,42,0.8);padding:8px 15px;border-radius:99px;backdrop-filter:blur(10px);border:1px solid var(--neon-cyan);z-index:1000;box-shadow: 0 0 15px rgba(34, 211, 238, 0.2);">
+        <span
+            style="font-size:0.7rem;font-weight:900;color:var(--neon-cyan);text-transform:uppercase;letter-spacing:1px;">Stickers:</span>
+        <div id="sticker-list" style="display:flex;gap:5px;font-size:1.4rem;"></div>
+    </div>
+
     <h1>⚡ Circuit Sequences</h1>
     <div class="subtitle">Complete the logic pattern to fix the robot!</div>
 
@@ -363,12 +370,13 @@
                 document.querySelector('.node.missing').classList.add('correct');
                 input.readOnly = true;
 
-                showStickerFlash('⚡');
-                saveSticker('⚡');
+                showStickerFlash('🧩');
+                saveSticker('🧩');
                 updateStats();
 
-                if (Math.random() < 0.15) {
-                    const rare = ['🤖', '🛰️', '🛸', '🛰️', '👾'][Math.floor(Math.random() * 5)];
+                // 20% chance for rare
+                if (Math.random() < 0.2) {
+                    const rare = ['⚡', '🤖', '🛰️', '🛸', '👾'][Math.floor(Math.random() * 5)];
                     setTimeout(() => {
                         showStickerFlash(rare);
                         saveRareSticker(rare);
@@ -421,12 +429,30 @@
             } catch (e) { }
         }
 
+        function updateStickerHeader() {
+            const list = document.getElementById('sticker-list');
+            if (!list) return;
+            list.innerHTML = "";
+            const gameId = 'circuit-sequences';
+            const stickers = JSON.parse(sessionStorage.getItem('stickers_' + gameId) || '[]');
+            const rare = JSON.parse(sessionStorage.getItem('stickers_rare') || '[]');
+
+            // Logic: Show any normal stickers plus ANY rare stickers owned
+            // (even if rare were earned in other games, Archie loves seeing them!)
+            [...stickers, ...rare].forEach(s => {
+                const span = document.createElement('span');
+                span.textContent = s;
+                list.appendChild(span);
+            });
+        }
+
         function saveSticker(emoji) {
             const stickers = JSON.parse(sessionStorage.getItem('stickers_circuit-sequences') || '[]');
             if (!stickers.includes(emoji)) {
                 stickers.push(emoji);
                 sessionStorage.setItem('stickers_circuit-sequences', JSON.stringify(stickers));
             }
+            updateStickerHeader();
         }
 
         function saveRareSticker(emoji) {
@@ -435,12 +461,14 @@
                 rare.push(emoji);
                 sessionStorage.setItem('stickers_rare', JSON.stringify(rare));
             }
+            updateStickerHeader();
         }
 
         document.addEventListener('keypress', (e) => {
             if (e.key === 'Enter') checkRepair();
         });
 
+        updateStickerHeader();
         generateSequence();
     </script>
 </body>

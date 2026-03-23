@@ -187,7 +187,6 @@
 
         /* Column Addition/Subtraction Style */
         .column-math {
-            font-family: monospace;
             font-size: 3.5rem;
             font-weight: 900;
             color: #1f2937;
@@ -199,26 +198,38 @@
             position: relative;
         }
 
+        .math-row {
+            display: flex;
+            gap: 1rem;
+            position: relative;
+        }
+
         .math-row span {
-            width: 4rem;
-            display: inline-block;
+            width: 4.5rem;
+            height: 5.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
             text-align: center;
         }
 
         .op-sign {
             position: absolute;
-            left: -4.5rem;
+            left: -5.5rem;
             color: #9ca3af;
-            width: 4rem;
-            text-align: center;
+            width: 4.5rem;
+            height: 5.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
 
         .math-line {
             height: 6px;
             background: #1f2937;
-            width: calc(100% + 1rem);
-            /* Extend slightly for better look */
+            width: 100%;
             border-radius: 3px;
+            margin-bottom: 0.5rem;
         }
 
         .carry-row {
@@ -228,8 +239,8 @@
         }
 
         .carry-box {
-            width: 4rem;
-            height: 4rem;
+            width: 4.5rem;
+            height: 4.5rem;
             border: 3px dashed #f59e0b;
             border-radius: 0.8rem;
             font-size: 1.5rem;
@@ -255,17 +266,18 @@
         }
 
         .column-input {
-            width: 4rem;
+            width: 4.5rem;
             height: 5.5rem;
             font-size: 3.5rem;
             font-weight: 900;
             text-align: center;
             border: 4px solid #fef08a;
-            border-radius: 1rem;
+            border-radius: 1.2rem;
             color: #854d0e;
             outline: none;
             transition: all 0.2s;
             background: #fffbeb;
+            padding: 0;
         }
 
         .column-input:focus {
@@ -506,7 +518,7 @@
             const [streak, setStreak] = useState(0);
             const [progress, setProgress] = useState(0);
             const [level, setLevel] = useState(0);
-            const [status, setStatus] = useState('playing'); 
+            const [status, setStatus] = useState('playing');
             const [collection, setCollection] = useState(() => JSON.parse(sessionStorage.getItem('stickers_dinosaurs') || '[]'));
             const [nextSticker, setNextSticker] = useState('');
             const [problemText, setProblemText] = useState('');
@@ -533,7 +545,7 @@
                     setProblemText(`Angus saw ${n1} ${d1}s, but ${n2} of them ran away! How many left?`);
                 }
                 setNum1(n1); setNum2(n2); setAnswer({ h: '', t: '', u: '' }); setCarries({ h: '', t: '' }); setStatus('playing');
-                
+
                 const theme = THEMES[level % THEMES.length];
                 if (Math.random() < RARE_CHANCE) {
                     const rareOwned = JSON.parse(sessionStorage.getItem('stickers_rare') || '[]');
@@ -592,7 +604,7 @@
                         osc.connect(gain); gain.connect(ctx.destination);
                         osc.start(now + i * 0.1); osc.stop(now + i * 0.1 + 0.3);
                     });
-                } catch (e) {}
+                } catch (e) { }
             };
 
             const nextLevel = () => { setLevel(l => l + 1); setProgress(0); setStatus('playing'); generateProblem(); };
@@ -604,11 +616,11 @@
 
             if (mode === 'select') {
                 return (
-                    <div className="card" style={{marginTop:'5rem'}}>
-                        <div style={{fontSize:'8rem', marginBottom:'2rem'}}>🦕🧭</div>
-                        <h2 style={{fontSize:'2.5rem', fontWeight:900, color:'#854d0e', marginBottom:'1.5rem'}}>DINO ADVENTURE</h2>
-                        <p style={{fontSize:'1.2rem', fontWeight:700, color:'#a16207', marginBottom:'3rem'}}>Help Angus track down the rarest dinosaurs!</p>
-                        <div style={{display:'flex', gap:'2rem', justifyContent:'center'}}>
+                    <div className="card" style={{ marginTop: '5rem' }}>
+                        <div style={{ fontSize: '8rem', marginBottom: '2rem' }}>🦕🧭</div>
+                        <h2 style={{ fontSize: '2.5rem', fontWeight: 900, color: '#854d0e', marginBottom: '1.5rem' }}>DINO ADVENTURE</h2>
+                        <p style={{ fontSize: '1.2rem', fontWeight: 700, color: '#a16207', marginBottom: '3rem' }}>Help Angus track down the rarest dinosaurs!</p>
+                        <div style={{ display: 'flex', gap: '2rem', justifyContent: 'center' }}>
                             <button className="select-btn" onClick={() => startPlaying('add')}>🦴 ADD</button>
                             <button className="select-btn" onClick={() => startPlaying('subtract')}>🦖 SUB</button>
                         </div>
@@ -617,12 +629,12 @@
             }
 
             return (
-                <div style={{width:'100%', maxWidth:'800px', display:'flex', flexDirection:'column', alignItems:'center'}}>
+                <div style={{ width: '100%', maxWidth: '800px', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
                     <header>
                         <h1>Dino Adventure 🦕</h1>
                         <div className="stats">
                             <div className="header-stickers">
-                                {[...collection.slice(-3), ...rareOwned.slice(-2)].slice(-5).map((s,i) => <span key={i}>{s}</span>)}
+                                {[...collection.slice(-3), ...rareOwned.slice(-2)].slice(-5).map((s, i) => <span key={i}>{s}</span>)}
                             </div>
                             <div className="stat-pill">⭐ {score}</div>
                             <div className="stat-pill">🔥 {streak}</div>
@@ -635,7 +647,7 @@
                             <span>{progress} / 5</span>
                         </div>
                         <div className="progress-bar">
-                            <div className="progress-fill" style={{width: `${(progress/5)*100}%`}}></div>
+                            <div className="progress-fill" style={{ width: `${(progress / 5) * 100}%` }}></div>
                         </div>
                     </div>
 
@@ -643,18 +655,18 @@
                         <div className="stickers visible">
                             <div className="stickers-label">Knowledge Collection:</div>
                             <div className="sticker-row">
-                                {collection.map((s,i) => <span key={i}>{s}</span>)}
-                                {rareOwned.map((s,i) => <span key={'r'+i}>{s}</span>)}
+                                {collection.map((s, i) => <span key={i}>{s}</span>)}
+                                {rareOwned.map((s, i) => <span key={'r' + i}>{s}</span>)}
                             </div>
                         </div>
                     )}
 
                     <div className="card">
                         {status === 'reward' ? (
-                            <div className="celebration show" style={{position:'static', background:'none', color:'inherit', backdropFilter:'none', padding:0}}>
+                            <div className="celebration show" style={{ position: 'static', background: 'none', color: 'inherit', backdropFilter: 'none', padding: 0 }}>
                                 <div className="celebration-emoji">{currentTheme.emoji}</div>
-                                <h2 style={{fontSize:'2.5rem', fontWeight:900, color:'#854d0e'}}>Amazing Explorer! 🎉</h2>
-                                <p style={{fontSize:'1.2rem', fontWeight:700}}>You found all the {currentTheme.name} stickers!</p>
+                                <h2 style={{ fontSize: '2.5rem', fontWeight: 900, color: '#854d0e' }}>Amazing Explorer! 🎉</h2>
+                                <p style={{ fontSize: '1.2rem', fontWeight: 700 }}>You found all the {currentTheme.name} stickers!</p>
                                 <div className="sticker-reward">{currentTheme.stickers[0]}</div>
                                 <button className="check-btn" onClick={nextLevel}>Next Mission! 🚀</button>
                             </div>
@@ -662,17 +674,17 @@
                             <div>
                                 <div className="badge">{operation.toUpperCase()} Challenge</div>
                                 <div className="problem-bubble">{problemText}</div>
-                                
-                                <div className="badge" style={{background: isRarePending ? '#fbbf24' : '#854d0e', marginBottom:'2rem'}}>
+
+                                <div className="badge" style={{ background: isRarePending ? '#fbbf24' : '#854d0e', marginBottom: '2rem' }}>
                                     {isRarePending ? '⭐ RARE FIND AHEAD!' : `Sticker: ${nextSticker}`}
                                 </div>
 
-                                <div style={{display:'flex', justifyContent:'center', width:'100%'}}>
+                                <div style={{ display: 'flex', justifyContent: 'center', width: '100%' }}>
                                     <div className="column-math">
                                         <div className="carry-row">
-                                            <div className={`carry-box ${carries.h?'active':''}`} onClick={() => setCarries(p=>({...p,h:p.h?'':'1'}))}>{carries.h || '\u00A0'}</div>
-                                            <div className={`carry-box ${carries.t?'active':''}`} onClick={() => setCarries(p=>({...p,t:p.t?'':'1'}))}>{carries.t || '\u00A0'}</div>
-                                            <div className="carry-box" style={{visibility:'hidden'}}></div>
+                                            <div className={`carry-box ${carries.h ? 'active' : ''}`} onClick={() => setCarries(p => ({ ...p, h: p.h ? '' : '1' }))}>{carries.h || '\u00A0'}</div>
+                                            <div className={`carry-box ${carries.t ? 'active' : ''}`} onClick={() => setCarries(p => ({ ...p, t: p.t ? '' : '1' }))}>{carries.t || '\u00A0'}</div>
+                                            <div className="carry-box" style={{ visibility: 'hidden' }}></div>
                                         </div>
                                         <div className="math-row">
                                             <span>{n1s[0] === '0' ? '\u00A0' : n1s[0]}</span>
@@ -680,16 +692,16 @@
                                             <span>{n1s[2]}</span>
                                         </div>
                                         <div className="math-row">
-                                            <span className="op-sign">{operation==='add'?'+':'-'}</span>
+                                            <span className="op-sign">{operation === 'add' ? '+' : '-'}</span>
                                             <span>{n2s[0] === '0' ? '\u00A0' : n2s[0]}</span>
                                             <span>{(n2s[0] === '0' && n2s[1] === '0') ? '\u00A0' : n2s[1]}</span>
                                             <span>{n2s[2]}</span>
                                         </div>
                                         <div className="math-line"></div>
                                         <div className="answer-row">
-                                            <input ref={hRef} type="number" className="column-input" value={answer.h} onChange={e=>{const v=e.target.value.slice(-1);setAnswer(p=>({...p,h:v}));}} onKeyDown={e=>e.key==='Enter'&&checkAnswer()} />
-                                            <input ref={tRef} type="number" className="column-input" value={answer.t} onChange={e=>{const v=e.target.value.slice(-1);setAnswer(p=>({...p,t:v})); if(v && !answer.h) hRef.current?.focus();}} onKeyDown={e=>e.key==='Enter'&&checkAnswer()} />
-                                            <input ref={uRef} type="number" className="column-input" value={answer.u} onChange={e=>{const v=e.target.value.slice(-1);setAnswer(p=>({...p,u:v})); if(v && !answer.t) tRef.current?.focus();}} onKeyDown={e=>e.key==='Enter'&&checkAnswer()} />
+                                            <input ref={hRef} type="number" className="column-input" value={answer.h} onChange={e => { const v = e.target.value.slice(-1); setAnswer(p => ({ ...p, h: v })); }} onKeyDown={e => e.key === 'Enter' && checkAnswer()} />
+                                            <input ref={tRef} type="number" className="column-input" value={answer.t} onChange={e => { const v = e.target.value.slice(-1); setAnswer(p => ({ ...p, t: v })); if (v && !answer.h) hRef.current?.focus(); }} onKeyDown={e => e.key === 'Enter' && checkAnswer()} />
+                                            <input ref={uRef} type="number" className="column-input" value={answer.u} onChange={e => { const v = e.target.value.slice(-1); setAnswer(p => ({ ...p, u: v })); if (v && !answer.t) tRef.current?.focus(); }} onKeyDown={e => e.key === 'Enter' && checkAnswer()} />
                                         </div>
                                     </div>
                                 </div>
@@ -718,10 +730,10 @@
                     {showRare && rareInfo && (
                         <div className="rare-banner show">
                             <div className="rare-inner">
-                                <span style={{fontSize:'7rem', display:'block'}}>{rareInfo.emoji}</span>
-                                <h2 style={{fontSize:'2rem', fontWeight:900, margin:'1rem 0'}}>RARE FIND!</h2>
-                                <p style={{fontSize:'1.5rem', fontWeight:800, opacity:0.9}}>{rareInfo.name}</p>
-                                <button className="check-btn" onClick={() => setShowRare(false)} style={{background:'#92400e'}}>Amazing! 🎉</button>
+                                <span style={{ fontSize: '7rem', display: 'block' }}>{rareInfo.emoji}</span>
+                                <h2 style={{ fontSize: '2rem', fontWeight: 900, margin: '1rem 0' }}>RARE FIND!</h2>
+                                <p style={{ fontSize: '1.5rem', fontWeight: 800, opacity: 0.9 }}>{rareInfo.name}</p>
+                                <button className="check-btn" onClick={() => setShowRare(false)} style={{ background: '#92400e' }}>Amazing! 🎉</button>
                             </div>
                         </div>
                     )}

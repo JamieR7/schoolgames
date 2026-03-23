@@ -1,0 +1,448 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Circuit Sequences ⚡ Logic</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@700;800;900&display=swap');
+
+        :root {
+            --bg: #0f172a;
+            --logic-plate: #1e293b;
+            --neon-cyan: #22d3ee;
+            --neon-lime: #a3e635;
+            --neon-pink: #f472b6;
+        }
+
+        body {
+            font-family: 'Montserrat', sans-serif;
+            background-color: var(--bg);
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+            color: white;
+            overflow-x: hidden;
+        }
+
+        .circuit-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image:
+                linear-gradient(rgba(34, 211, 238, 0.05) 1px, transparent 1px),
+                linear-gradient(90(34, 211, 238, 0.05) 1px, transparent 1px);
+            background-size: 50px 50px;
+            z-index: -1;
+        }
+
+        .back-btn {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            padding: 10px 20px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 99px;
+            text-decoration: none;
+            color: var(--neon-cyan);
+            font-weight: 800;
+            backdrop-filter: blur(5px);
+            transition: all 0.2s;
+            border: 1px solid var(--neon-cyan);
+        }
+
+        .back-btn:hover {
+            background: var(--neon-cyan);
+            color: var(--bg);
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            font-weight: 900;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            color: var(--neon-cyan);
+            text-shadow: 0 0 10px rgba(34, 211, 238, 0.5);
+            margin-bottom: 5px;
+        }
+
+        .subtitle {
+            font-size: 1rem;
+            color: #94a3b8;
+            margin-bottom: 40px;
+            font-weight: 600;
+        }
+
+        .logic-plate {
+            background: var(--logic-plate);
+            padding: 40px;
+            border-radius: 30px;
+            border: 4px solid #334155;
+            box-shadow: 0 0 40px rgba(0, 0, 0, 0.5), inset 0 0 20px rgba(255, 255, 255, 0.05);
+            display: flex;
+            gap: 15px;
+            align-items: center;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin-bottom: 40px;
+            position: relative;
+        }
+
+        .logic-plate::before {
+            content: "";
+            position: absolute;
+            top: -10px;
+            left: -10px;
+            right: -10px;
+            bottom: -10px;
+            border: 2px solid rgba(34, 211, 238, 0.2);
+            border-radius: 38px;
+            pointer-events: none;
+        }
+
+        .node {
+            width: 90px;
+            height: 90px;
+            background: #0f172a;
+            border: 3px solid #334155;
+            border-radius: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.8rem;
+            font-weight: 900;
+            color: var(--neon-lime);
+            text-shadow: 0 0 5px rgba(163, 230, 53, 0.3);
+            transition: all 0.3s;
+        }
+
+        .node.missing {
+            background: rgba(34, 211, 238, 0.05);
+            border: 3px dashed var(--neon-cyan);
+        }
+
+        .node.correct {
+            border-color: var(--neon-lime);
+            box-shadow: 0 0 20px rgba(163, 230, 53, 0.4);
+            transform: scale(1.05);
+        }
+
+        input {
+            width: 80px;
+            height: 80px;
+            background: transparent;
+            border: none;
+            color: var(--neon-cyan);
+            font-family: inherit;
+            font-size: 1.8rem;
+            font-weight: 900;
+            text-align: center;
+            outline: none;
+        }
+
+        .controls {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .btn-repair {
+            padding: 15px 40px;
+            font-size: 1.5rem;
+            font-weight: 900;
+            background: var(--neon-cyan);
+            color: var(--bg);
+            border: none;
+            border-radius: 20px;
+            cursor: pointer;
+            text-transform: uppercase;
+            box-shadow: 0 0 20px rgba(34, 211, 238, 0.3);
+            transition: all 0.2s;
+        }
+
+        .btn-repair:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 30px rgba(34, 211, 238, 0.5);
+        }
+
+        .btn-repair:active {
+            transform: scale(0.95);
+        }
+
+        #feedback {
+            font-size: 1.4rem;
+            font-weight: 800;
+            height: 1.5em;
+            text-align: center;
+        }
+
+        .stats {
+            display: flex;
+            gap: 40px;
+            margin-top: 40px;
+        }
+
+        .stat-item {
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 2.5rem;
+            color: var(--neon-pink);
+            display: block;
+            font-weight: 900;
+        }
+
+        .stat-label {
+            font-size: 0.8rem;
+            color: #64748b;
+            text-transform: uppercase;
+            font-weight: 800;
+        }
+
+        /* Sticker Flash */
+        #sticker-flash {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 15rem;
+            pointer-events: none;
+            z-index: 1000;
+            opacity: 0;
+            display: none;
+        }
+
+        @keyframes sticker-pop {
+            0% {
+                transform: translate(-50%, -50%) scale(0.5);
+                opacity: 0;
+            }
+
+            50% {
+                transform: translate(-50%, -50%) scale(1.2);
+                opacity: 1;
+            }
+
+            100% {
+                transform: translate(-50%, -50%) scale(1);
+                opacity: 0;
+            }
+        }
+
+        .animate-sticker-pop {
+            display: block !important;
+            animation: sticker-pop 1.5s ease-out forwards;
+        }
+
+        @media (max-width: 600px) {
+            .node {
+                width: 60px;
+                height: 60px;
+                font-size: 1.2rem;
+            }
+
+            input {
+                width: 50px;
+                height: 50px;
+                font-size: 1.2rem;
+            }
+
+            .logic-plate {
+                gap: 10px;
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="circuit-bg"></div>
+    <a href="../index.html" class="back-btn">← Home</a>
+
+    <h1>⚡ Circuit Sequences</h1>
+    <div class="subtitle">Complete the logic pattern to fix the robot!</div>
+
+    <div class="logic-plate" id="logic-plate">
+        <!-- Nodes will be injected here -->
+    </div>
+
+    <div class="controls">
+        <div id="feedback"></div>
+        <button class="btn-repair" onclick="checkRepair()">REPAIR CIRCUIT</button>
+    </div>
+
+    <div class="stats">
+        <div class="stat-item">
+            <span class="stat-label">Logic Streak</span>
+            <span class="stat-value" id="streak">0</span>
+        </div>
+        <div class="stat-item">
+            <span class="stat-label">Cores Fixed</span>
+            <span class="stat-value" id="score">0</span>
+        </div>
+    </div>
+
+    <div id="sticker-flash"></div>
+
+    <script>
+        let sequence = [];
+        let missingIndex = -1;
+        let score = 0;
+        let streak = 0;
+
+        const STEPS = [1, 2, 3, 4, 5, 10, 50, 100];
+        const CONGRATS = [
+            "Logic Core Restored! 🤖",
+            "Circuit Connected! ⚡",
+            "Archie and Angus did it! 🛠️",
+            "Optimal Performance Reached! 🚀",
+            "Data Stream Stabilized! 💎",
+            "Precision Engineering! 🎩"
+        ];
+
+        function generateSequence() {
+            const step = STEPS[Math.floor(Math.random() * STEPS.length)];
+            const direction = Math.random() > 0.3 ? 1 : -1;
+            const start = Math.floor(Math.random() * (direction === 1 ? (1000 - (5 * step)) : 1000)) + (direction === -1 ? (5 * step) : 1);
+
+            sequence = [];
+            for (let i = 0; i < 5; i++) {
+                sequence.push(start + (i * step * direction));
+            }
+
+            missingIndex = Math.floor(Math.random() * 4) + 1; // Don't hide the first one
+            renderCircuit();
+        }
+
+        function renderCircuit() {
+            const plate = document.getElementById('logic-plate');
+            plate.innerHTML = "";
+            document.getElementById('feedback').textContent = "";
+
+            sequence.forEach((num, i) => {
+                const node = document.createElement('div');
+                node.className = 'node';
+                if (i === missingIndex) {
+                    node.classList.add('missing');
+                    const input = document.createElement('input');
+                    input.type = 'number';
+                    input.id = 'answer-input';
+                    input.placeholder = "?";
+                    input.autocomplete = "off";
+                    node.appendChild(input);
+                } else {
+                    node.textContent = num;
+                }
+                plate.appendChild(node);
+            });
+
+            document.getElementById('answer-input').focus();
+        }
+
+        function checkRepair() {
+            const input = document.getElementById('answer-input');
+            const userAnswer = parseInt(input.value);
+            const correctAnswer = sequence[missingIndex];
+
+            const fb = document.getElementById('feedback');
+
+            if (userAnswer === correctAnswer) {
+                score++;
+                streak++;
+                fb.style.color = "var(--neon-lime)";
+                fb.textContent = CONGRATS[Math.floor(Math.random() * CONGRATS.length)];
+
+                document.querySelector('.node.missing').classList.add('correct');
+                input.readOnly = true;
+
+                showStickerFlash('⚡');
+                saveSticker('⚡');
+                updateStats();
+
+                if (Math.random() < 0.15) {
+                    const rare = ['🤖', '🛰️', '🛸', '🛰️', '👾'][Math.floor(Math.random() * 5)];
+                    setTimeout(() => {
+                        showStickerFlash(rare);
+                        saveRareSticker(rare);
+                    }, 1000);
+                }
+
+                setTimeout(generateSequence, 2500);
+            } else {
+                streak = 0;
+                fb.style.color = "var(--neon-pink)";
+                fb.textContent = "Logic Error! Recalculating...";
+                input.style.color = "var(--neon-pink)";
+                setTimeout(() => {
+                    input.style.color = "var(--neon-cyan)";
+                    input.value = "";
+                }, 800);
+                updateStats();
+            }
+        }
+
+        function updateStats() {
+            document.getElementById('score').textContent = score;
+            document.getElementById('streak').textContent = streak;
+        }
+
+        function showStickerFlash(emoji) {
+            const flash = document.getElementById('sticker-flash');
+            flash.textContent = emoji;
+            flash.classList.remove('animate-sticker-pop');
+            void flash.offsetWidth;
+            flash.classList.add('animate-sticker-pop');
+            playCircuitSound();
+        }
+
+        function playCircuitSound() {
+            try {
+                const ctx = new (window.AudioContext || window.webkitAudioContext)();
+                if (!ctx) return;
+                const now = ctx.currentTime;
+                // High tech "boop"
+                const osc = ctx.createOscillator();
+                const gain = ctx.createGain();
+                osc.type = 'square';
+                osc.frequency.setValueAtTime(880, now);
+                osc.frequency.exponentialRampToValueAtTime(1760, now + 0.1);
+                gain.gain.setValueAtTime(0.05, now);
+                gain.gain.exponentialRampToValueAtTime(0.01, now + 0.1);
+                osc.connect(gain); gain.connect(ctx.destination);
+                osc.start(now); osc.stop(now + 0.1);
+            } catch (e) { }
+        }
+
+        function saveSticker(emoji) {
+            const stickers = JSON.parse(sessionStorage.getItem('stickers_circuit-sequences') || '[]');
+            if (!stickers.includes(emoji)) {
+                stickers.push(emoji);
+                sessionStorage.setItem('stickers_circuit-sequences', JSON.stringify(stickers));
+            }
+        }
+
+        function saveRareSticker(emoji) {
+            const rare = JSON.parse(sessionStorage.getItem('stickers_rare') || '[]');
+            if (!rare.includes(emoji)) {
+                rare.push(emoji);
+                sessionStorage.setItem('stickers_rare', JSON.stringify(rare));
+            }
+        }
+
+        document.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') checkRepair();
+        });
+
+        generateSequence();
+    </script>
+</body>
+
+</html>

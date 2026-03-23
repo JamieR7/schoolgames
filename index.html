@@ -145,6 +145,16 @@
             border: 2px solid #fbbf24;
         }
 
+        .label-yellow {
+            background: #fef9c3;
+            color: #a16207;
+        }
+
+        .label-indigo {
+            background: #e0e7ff;
+            color: #3730a3;
+        }
+
         .sticker-row {
             display: flex;
             flex-wrap: wrap;
@@ -270,6 +280,22 @@
             color: #0d9488;
         }
 
+        .card-yellow {
+            border-color: #fef08a;
+        }
+
+        .card-yellow h2 {
+            color: #a16207;
+        }
+
+        .card-indigo {
+            border-color: #c7d2fe;
+        }
+
+        .card-indigo h2 {
+            color: #4338ca;
+        }
+
         .badge {
             color: white;
             padding: 0.35rem 1rem;
@@ -305,6 +331,14 @@
             background: #14b8a6;
         }
 
+        .badge-yellow {
+            background: #eab308;
+        }
+
+        .badge-indigo {
+            background: #6366f1;
+        }
+
         .game-card .emoji {
             font-size: 5rem;
             margin-bottom: 1rem;
@@ -333,6 +367,37 @@
             padding: 2rem;
             color: #9ca3af;
             font-size: 0.875rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 1.5rem;
+        }
+
+        .textbook-link {
+            animation: fadeInUp 0.8s ease-out 0.4s backwards;
+        }
+
+        .textbook-link a {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.8rem 1.5rem;
+            background: white;
+            color: var(--primary-color);
+            text-decoration: none;
+            font-weight: 800;
+            border-radius: 9999px;
+            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+            border: 2px solid var(--primary-color);
+            transition: all 0.3s ease;
+            font-size: 1rem;
+        }
+
+        .textbook-link a:hover {
+            background: var(--primary-color);
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 10px 15px -3px rgba(16, 185, 129, 0.4);
         }
 
         @keyframes bounceIn {
@@ -434,6 +499,22 @@
                     <span class="sticker-section-label label-teal">🕰️ Time Records</span>
                     <div class="sticker-row" id="stickers-clock"></div>
                 </div>
+                <div class="sticker-section" id="sec-math-color">
+                    <span class="sticker-section-label label-yellow">🎨 Math Color</span>
+                    <div class="sticker-row" id="stickers-math-color"></div>
+                </div>
+                <div class="sticker-section" id="sec-grid-copy">
+                    <span class="sticker-section-label label-indigo">🧊 Grid Copycat</span>
+                    <div class="sticker-row" id="stickers-grid-copy"></div>
+                </div>
+                <div class="sticker-section" id="sec-wild-rounding">
+                    <span class="sticker-section-label label-teal">🐾 Wild Rounding</span>
+                    <div class="sticker-row" id="stickers-wild-rounding"></div>
+                </div>
+                <div class="sticker-section" id="sec-circuit-sequences">
+                    <span class="sticker-section-label label-blue">⚡ Circuit Sequences</span>
+                    <div class="sticker-row" id="stickers-circuit-sequences"></div>
+                </div>
                 <div class="sticker-section" id="sec-rare"
                     style="border-top:2px solid #fef08a;margin-top:0.5rem;padding-top:0.8rem">
                     <span class="sticker-section-label label-gold">✨ Rare Collection</span>
@@ -496,9 +577,40 @@
             <h2>Time Travel Adventure</h2>
             <p>Help Archie read the analogue clock as he travels through 30+ historical events!</p>
         </a>
+        <a href="math-color/index.html" class="game-card card-yellow">
+            <span class="badge badge-yellow">COLOR BY MATH</span>
+            <div class="emoji">🎨🔢</div>
+            <h2>Math Color Challenge</h2>
+            <p>Solve additions to reveal hidden patterns on the grid!</p>
+        </a>
+        <a href="grid-copy/index.html" class="game-card card-indigo">
+            <span class="badge badge-indigo">GEOMETRY</span>
+            <div class="emoji">🧊✏️</div>
+            <h2>Grid Copycat</h2>
+            <p>Replicate complex shapes on the dot-grid. Try the 3D Cube!</p>
+        </a>
+        <a href="rounding/index.html" class="game-card card-teal">
+            <span class="badge badge-teal">ROUNDING</span>
+            <div class="emoji">🐾🦁</div>
+            <h2>Wild Rounding</h2>
+            <p>Join Archie, Angus and Steve Backshall to round wildlife counts to the nearest 10 or 100!</p>
+        </a>
+        <a href="sequences/index.html" class="game-card card-blue">
+            <span class="badge badge-blue">PATTERNS</span>
+            <div class="emoji">⚡🤖</div>
+            <h2>Circuit Sequences</h2>
+            <p>Complete the logic patterns to fix the robot's circuits!</p>
+        </a>
     </div>
 
-    <footer>Designed for Archie with ❤️</footer>
+    <footer>
+        <div class="textbook-link">
+            <a href="https://www.iparcours.fr/ouvrages/ouvrages.php?ouvrage=CahierCE12024" target="_blank">
+                📖 Click here to see the textbook.
+            </a>
+        </div>
+        Designed for Archie with ❤️
+    </footer>
 
     <script>
         const GAMES = [
@@ -510,6 +622,10 @@
             { key: 'quiz', secId: 'sec-quiz', rowId: 'stickers-quiz' },
             { key: 'dinosaurs', secId: 'sec-dinosaurs', rowId: 'stickers-dinosaurs' },
             { key: 'clock', secId: 'sec-clock', rowId: 'stickers-clock' },
+            { key: 'math-color', secId: 'sec-math-color', rowId: 'stickers-math-color' },
+            { key: 'grid-copy', secId: 'sec-grid-copy', rowId: 'stickers-grid-copy' },
+            { key: 'wild-rounding', secId: 'sec-wild-rounding', rowId: 'stickers-wild-rounding' },
+            { key: 'circuit-sequences', secId: 'sec-circuit-sequences', rowId: 'stickers-circuit-sequences' },
         ];
 
         let anyStickers = false;

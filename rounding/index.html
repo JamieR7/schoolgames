@@ -1,0 +1,409 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Wild Rounding 🐾 Expedition</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@700;800;900&display=swap');
+
+        :root {
+            --khaki: #f0e68c;
+            --jungle: #2d5a27;
+            --accent: #ff6b6b;
+            --earth: #8b4513;
+        }
+
+        body {
+            font-family: 'Montserrat', sans-serif;
+            background-color: #f7fee7;
+            /* very light lime */
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+            color: #1a2e05;
+            background-image:
+                radial-gradient(circle at 10% 10%, rgba(45, 90, 39, 0.05) 0%, transparent 20%),
+                radial-gradient(circle at 90% 90%, rgba(45, 90, 39, 0.05) 0%, transparent 20%);
+        }
+
+        .back-btn {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            padding: 10px 20px;
+            background: white;
+            border-radius: 99px;
+            text-decoration: none;
+            color: var(--jungle);
+            font-weight: 800;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            transition: all 0.2s;
+            border: 2px solid var(--jungle);
+        }
+
+        .back-btn:hover {
+            transform: scale(1.05);
+            background: var(--jungle);
+            color: white;
+        }
+
+        .game-container {
+            max-width: 600px;
+            width: 100%;
+            background: white;
+            padding: 40px;
+            border-radius: 30px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            border: 8px solid var(--khaki);
+            margin-top: 60px;
+            text-align: center;
+            position: relative;
+        }
+
+        .steve-box {
+            background: #fefce8;
+            border-left: 10px solid var(--earth);
+            padding: 20px;
+            margin-bottom: 30px;
+            border-radius: 0 20px 20px 0;
+            font-style: italic;
+            position: relative;
+        }
+
+        .steve-name {
+            font-weight: 900;
+            color: var(--earth);
+            text-transform: uppercase;
+            font-size: 0.8rem;
+            margin-bottom: 5px;
+            display: block;
+        }
+
+        h1 {
+            color: var(--jungle);
+            font-size: 2.2rem;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+            letter-spacing: -1px;
+        }
+
+        .number-display {
+            font-size: 5rem;
+            font-weight: 900;
+            color: var(--accent);
+            margin: 20px 0;
+            text-shadow: 4px 4px 0 rgba(0, 0, 0, 0.05);
+        }
+
+        .instruction {
+            font-size: 1.5rem;
+            font-weight: 800;
+            color: var(--earth);
+            margin-bottom: 30px;
+        }
+
+        .input-group {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 15px;
+        }
+
+        input {
+            font-family: inherit;
+            font-size: 2.5rem;
+            width: 200px;
+            text-align: center;
+            padding: 15px;
+            border: 4px solid var(--khaki);
+            border-radius: 20px;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+
+        input:focus {
+            border-color: var(--jungle);
+        }
+
+        .btn-check {
+            background: var(--jungle);
+            color: white;
+            border: none;
+            padding: 15px 40px;
+            font-size: 1.5rem;
+            font-weight: 900;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all 0.2s;
+            box-shadow: 0 6px 0 #1a3a16;
+        }
+
+        .btn-check:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 0 #1a3a16;
+        }
+
+        .btn-check:active {
+            transform: translateY(4px);
+            box-shadow: 0 2px 0 #1a3a16;
+        }
+
+        #feedback {
+            margin-top: 30px;
+            font-size: 1.5rem;
+            font-weight: 800;
+            min-height: 2em;
+        }
+
+        .success {
+            color: #059669;
+        }
+
+        .error {
+            color: #dc2626;
+        }
+
+        /* Sticker Flash */
+        #sticker-flash {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 15rem;
+            pointer-events: none;
+            z-index: 1000;
+            opacity: 0;
+            display: none;
+        }
+
+        @keyframes sticker-pop {
+            0% {
+                transform: translate(-50%, -50%) scale(0.5);
+                opacity: 0;
+            }
+
+            50% {
+                transform: translate(-50%, -50%) scale(1.2);
+                opacity: 1;
+            }
+
+            100% {
+                transform: translate(-50%, -50%) scale(1);
+                opacity: 0;
+            }
+        }
+
+        .animate-sticker-pop {
+            display: block !important;
+            animation: sticker-pop 1.5s ease-out forwards;
+        }
+
+        .stats {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            margin-top: 40px;
+        }
+
+        .stat-card {
+            background: #f1f5f9;
+            padding: 10px 20px;
+            border-radius: 15px;
+            font-weight: 800;
+        }
+
+        .stat-label {
+            font-size: 0.8rem;
+            color: #64748b;
+            display: block;
+        }
+
+        #steve-commentary {
+            font-size: 1.1rem;
+            line-height: 1.4;
+        }
+    </style>
+</head>
+
+<body>
+    <a href="../index.html" class="back-btn">← Home</a>
+
+    <div class="game-container">
+        <h1>🐾 Wild Rounding</h1>
+
+        <div class="steve-box">
+            <span class="steve-name">Steve Backshall says:</span>
+            <div id="steve-commentary">"Ready for a deadly expedition, boys? Let's track some wildlife!"</div>
+        </div>
+
+        <div class="number-display" id="number">0</div>
+        <div class="instruction" id="instruction">Round to the nearest 10</div>
+
+        <div class="input-group">
+            <input type="number" id="answer-input" placeholder="???" autocomplete="off">
+            <button class="btn-check" onclick="checkAnswer()">CHECK!</button>
+        </div>
+
+        <div id="feedback"></div>
+
+        <div class="stats">
+            <div class="stat-card">
+                <span class="stat-label">STREAK</span>
+                <span id="streak">0</span>
+            </div>
+            <div class="stat-card">
+                <span class="stat-label">SCORE</span>
+                <span id="score">0</span>
+            </div>
+        </div>
+    </div>
+
+    <div id="sticker-flash"></div>
+
+    <script>
+        let currentNumber = 0;
+        let currentTargetType = 10; // 10 or 100
+        let score = 0;
+        let streak = 0;
+
+        const ANIMALS = [
+            "Scorpions 🦂", "Sharks 🦈", "King Cobras 🐍", "Desert Locusts 🦟",
+            "Crocodiles 🐊", "Lions 🦁", "Tarantulas 🕷️", "Box Jellyfish 🎐",
+            "Komodo Dragons 🦎", "Honey Badgers 🦡", "Killer Whales 🐋"
+        ];
+
+        const STEVE_SUCCESS = [
+            "Deadly! That's a triple-A round, Archie!",
+            "Crikey! Spot on, Angus! You've got the survival skills!",
+            "Unbelievable! You rounded those beasts perfectly!",
+            "Look at the size of that! Oh, and the rounding is perfect too!",
+            "Absolute apex rounding! Steve is impressed!",
+            "You two are natural explorers! Keep it up!",
+            "Massive! That's how we do it on Deadly 60!"
+        ];
+
+        const SCENARIOS = [
+            "Archie and Steve found {n} {a} under a rock!",
+            "Angus spotted {n} {a} swimming near the boat!",
+            "Archie and Angus are tracking {n} {a} in the tall grass!",
+            "A giant pack of {n} {a} is heading our way!",
+            "Steve just found the world's largest group of {n} {a}!"
+        ];
+
+        function nextQuestion() {
+            currentNumber = Math.floor(Math.random() * 950) + 15;
+            currentTargetType = Math.random() > 0.5 ? 10 : 100;
+
+            // If rounding to 100, make sure number is large enough to be interesting
+            if (currentTargetType === 100 && currentNumber < 100) {
+                currentNumber += 100;
+            }
+
+            const animal = ANIMALS[Math.floor(Math.random() * ANIMALS.length)];
+            const scenarioBase = SCENARIOS[Math.floor(Math.random() * SCENARIOS.length)];
+            const scenario = scenarioBase.replace('{n}', currentNumber).replace('{a}', animal);
+
+            document.getElementById('steve-commentary').textContent = `"${scenario}"`;
+            document.getElementById('number').textContent = currentNumber;
+            document.getElementById('instruction').textContent = `Round to the nearest ${currentTargetType}`;
+            document.getElementById('answer-input').value = "";
+            document.getElementById('answer-input').focus();
+            document.getElementById('feedback').textContent = "";
+        }
+
+        function checkAnswer() {
+            const userAnswer = parseInt(document.getElementById('answer-input').value);
+            const correctAnswer = Math.round(currentNumber / currentTargetType) * currentTargetType;
+
+            const feedback = document.getElementById('feedback');
+
+            if (userAnswer === correctAnswer) {
+                score += 10;
+                streak++;
+                feedback.innerHTML = `<span class="success">DEADLY! Correct! ✨</span><br>${STEVE_SUCCESS[Math.floor(Math.random() * STEVE_SUCCESS.length)]}`;
+
+                showStickerFlash('🐾');
+                updateStats();
+                saveSticker('🐾');
+
+                // Extra chance for rare wildlife sticker
+                if (Math.random() < 0.15) {
+                    const rareEmoji = ['🦁', '🦈', '🦂', '🐍', '🐉'][Math.floor(Math.random() * 5)];
+                    setTimeout(() => {
+                        showStickerFlash(rareEmoji);
+                        saveRareSticker(rareEmoji);
+                    }, 1000);
+                }
+
+                setTimeout(nextQuestion, 3000);
+            } else {
+                streak = 0;
+                feedback.innerHTML = `<span class="error">Not quite! Steve says: 'Watch out! The correct answer was ${correctAnswer}!'</span>`;
+                updateStats();
+            }
+        }
+
+        function updateStats() {
+            document.getElementById('score').textContent = score;
+            document.getElementById('streak').textContent = streak;
+        }
+
+        function showStickerFlash(emoji) {
+            const flash = document.getElementById('sticker-flash');
+            flash.textContent = emoji;
+            flash.classList.remove('animate-sticker-pop');
+            void flash.offsetWidth;
+            flash.classList.add('animate-sticker-pop');
+            playFanfare();
+        }
+
+        function playFanfare() {
+            try {
+                const ctx = new (window.AudioContext || window.webkitAudioContext)();
+                if (!ctx) return;
+                const now = ctx.currentTime;
+                const notes = [440, 554.37, 659.25, 880]; // A4, C#5, E5, A5
+                notes.forEach((freq, i) => {
+                    const osc = ctx.createOscillator();
+                    const gain = ctx.createGain();
+                    osc.type = 'triangle';
+                    osc.frequency.setValueAtTime(freq, now + i * 0.1);
+                    gain.gain.setValueAtTime(0.1, now + i * 0.1);
+                    gain.gain.exponentialRampToValueAtTime(0.01, now + i * 0.1 + 0.4);
+                    osc.connect(gain); gain.connect(ctx.destination);
+                    osc.start(now + i * 0.1); osc.stop(now + i * 0.1 + 0.4);
+                });
+            } catch (e) { }
+        }
+
+        function saveSticker(emoji) {
+            const stickers = JSON.parse(sessionStorage.getItem('stickers_wild-rounding') || '[]');
+            if (!stickers.includes(emoji)) {
+                stickers.push(emoji);
+                sessionStorage.setItem('stickers_wild-rounding', JSON.stringify(stickers));
+            }
+        }
+
+        function saveRareSticker(emoji) {
+            const rare = JSON.parse(sessionStorage.getItem('stickers_rare') || '[]');
+            if (!rare.includes(emoji)) {
+                rare.push(emoji);
+                sessionStorage.setItem('stickers_rare', JSON.stringify(rare));
+            }
+        }
+
+        // Listen for Enter key
+        document.getElementById('answer-input').addEventListener('keypress', function (e) {
+            if (e.key === 'Enter') checkAnswer();
+        });
+
+        nextQuestion();
+    </script>
+</body>
+
+</html>

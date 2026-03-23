@@ -1,0 +1,407 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Grid Copycat 🧊</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@700;800;900&display=swap');
+
+        :root {
+            --bg-color: #eef2ff;
+            --primary-color: #6366f1;
+        }
+
+        body {
+            font-family: 'Montserrat', sans-serif;
+            background-color: var(--bg-color);
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+            color: #1f2937;
+        }
+
+        .back-btn {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            padding: 10px 20px;
+            background: white;
+            border-radius: 99px;
+            text-decoration: none;
+            color: #1f2937;
+            font-weight: 800;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            transition: all 0.2s;
+        }
+
+        h1 {
+            color: var(--primary-color);
+            font-size: 2.5rem;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .game-controls {
+            margin-bottom: 20px;
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .lvl-indicator {
+            font-weight: 900;
+            background: white;
+            padding: 10px 20px;
+            border-radius: 12px;
+        }
+
+        .grids-wrapper {
+            display: flex;
+            gap: 40px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .grid-container {
+            background: white;
+            padding: 20px;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+            text-align: center;
+        }
+
+        .grid-container h3 {
+            margin-top: 0;
+            color: #64748b;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+        }
+
+        .dot-grid {
+            position: relative;
+            width: 320px;
+            height: 320px;
+            background-size: 40px 40px;
+            background-image: radial-gradient(circle, #cbd5e1 2px, transparent 2px);
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            cursor: crosshair;
+            touch-action: none;
+        }
+
+        svg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+        }
+
+        .btn-check {
+            margin-top: 30px;
+            padding: 15px 40px;
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 15px;
+            font-weight: 800;
+            font-size: 1.2rem;
+            cursor: pointer;
+            box-shadow: 0 10px 20px rgba(99, 102, 241, 0.3);
+            transition: all 0.2s;
+        }
+
+        .btn-check:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 15px 25px rgba(99, 102, 241, 0.4);
+        }
+
+        .btn-check:active {
+            transform: translateY(0);
+        }
+
+        .btn-clear {
+            background: #f1f5f9;
+            color: #475569;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 10px;
+            font-weight: 700;
+            cursor: pointer;
+        }
+
+        #feedback {
+            margin-top: 20px;
+            font-weight: 800;
+            font-size: 1.2rem;
+            min-height: 1.5em;
+        }
+
+        @media (max-width: 750px) {
+            .dot-grid {
+                width: 240px;
+                height: 240px;
+                background-size: 30px 30px;
+            }
+
+            .grids-wrapper {
+                gap: 20px;
+            }
+        }
+
+        /* Sticker Flash */
+        #sticker-flash {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 12rem;
+            pointer-events: none;
+            z-index: 1000;
+            opacity: 0;
+            display: none;
+        }
+
+        @keyframes sticker-pop {
+            0% {
+                transform: translate(-50%, -50%) scale(0.5);
+                opacity: 0;
+            }
+
+            50% {
+                transform: translate(-50%, -50%) scale(1.2);
+                opacity: 1;
+            }
+
+            100% {
+                transform: translate(-50%, -50%) scale(1);
+                opacity: 0;
+            }
+        }
+
+        .animate-sticker-pop {
+            display: block !important;
+            animation: sticker-pop 1.5s ease-out forwards;
+        }
+
+        .dot-highlight {
+            position: absolute;
+            width: 12px;
+            height: 12px;
+            background: rgba(99, 102, 241, 0.4);
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            pointer-events: none;
+            border: 2px solid var(--primary-color);
+        }
+
+        @media (max-width: 750px) {
+            .dot-grid {
+                width: 240px;
+                height: 240px;
+                background-size: 30px 30px;
+            }
+
+            .grids-wrapper {
+                gap: 20px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <a href="../index.html" class="back-btn">← Back</a>
+    <h1>🧊 Grid Copycat</h1>
+
+    <div class="game-controls">
+        <div class="lvl-indicator" id="lvl-text">Level 1: Cross</div>
+        <button class="btn-clear" onclick="clearLines()">Clear</button>
+    </div>
+
+    <div class="grids-wrapper">
+        <div class="grid-container">
+            <h3>Target</h3>
+            <div id="target-grid" class="dot-grid">
+                <svg id="target-svg"></svg>
+            </div>
+        </div>
+        <div class="grid-container">
+            <h3>Draw Here</h3>
+            <div id="user-grid" class="dot-grid">
+                <svg id="user-svg"></svg>
+                <div id="dot-highlight" class="dot-highlight" style="display:none"></div>
+            </div>
+        </div>
+    </div>
+
+    <div id="feedback"></div>
+    <div id="sticker-flash"></div>
+    <button class="btn-check" onclick="checkWork()">Check Drawing!</button>
+
+    <script>
+        const levels = [
+            {
+                name: "Cross",
+                lines: [
+                    [2, 1, 4, 1], [4, 1, 4, 3], [4, 3, 6, 3], [6, 3, 6, 5], [6, 5, 4, 5], [4, 5, 4, 7],
+                    [4, 7, 2, 7], [2, 7, 2, 5], [2, 5, 0, 5], [0, 5, 0, 3], [0, 3, 2, 3], [2, 3, 2, 1]
+                ]
+            },
+            {
+                name: "House",
+                lines: [
+                    [1, 3, 4, 0], [4, 0, 7, 3], [7, 3, 7, 7], [7, 7, 1, 7], [1, 7, 1, 3],
+                    [3, 7, 3, 5], [3, 5, 5, 5], [5, 5, 5, 7] // Door
+                ]
+            },
+            {
+                name: "3D Cube",
+                lines: [
+                    [1, 1, 4, 1], [4, 1, 4, 4], [4, 4, 1, 4], [1, 4, 1, 1], // Front square
+                    [2, 0, 5, 0], [5, 0, 5, 3], [5, 3, 2, 3], [2, 3, 2, 0], // Back square
+                    [1, 1, 2, 0], [4, 1, 5, 0], [4, 4, 5, 3], [1, 4, 2, 3]  // Connections
+                ]
+            }
+        ];
+
+        let currentLevel = 0;
+        let userLines = [];
+        let selectedDot = null;
+        let GRID_SIZE = 40; // match CSS
+
+        const userGrid = document.getElementById('user-grid');
+        const userSvg = document.getElementById('user-svg');
+        const targetSvg = document.getElementById('target-svg');
+        const dotHighlight = document.getElementById('dot-highlight');
+
+        function init() {
+            updateGridSize();
+            loadLevel(0);
+            userGrid.onclick = handleGridClick;
+        }
+
+        function updateGridSize() {
+            GRID_SIZE = window.innerWidth < 750 ? 30 : 40;
+        }
+
+        function loadLevel(idx) {
+            currentLevel = idx;
+            userLines = [];
+            selectedDot = null;
+            dotHighlight.style.display = 'none';
+            document.getElementById('lvl-text').textContent = `Level ${idx + 1}: ${levels[idx].name}`;
+            renderSvg(targetSvg, levels[idx].lines, '#94a3b8');
+            renderSvg(userSvg, [], '#6366f1');
+            document.getElementById('feedback').textContent = "";
+            document.getElementById('feedback').style.color = "inherit";
+        }
+
+        function renderSvg(svg, lines, color) {
+            svg.innerHTML = "";
+            lines.forEach(l => {
+                const line = document.createElementNS("http://www.w3.org/2000/svg", "line");
+                line.setAttribute("x1", l[0] * GRID_SIZE);
+                line.setAttribute("y1", l[1] * GRID_SIZE);
+                line.setAttribute("x2", l[2] * GRID_SIZE);
+                line.setAttribute("y2", l[3] * GRID_SIZE);
+                line.setAttribute("stroke", color);
+                line.setAttribute("stroke-width", "4");
+                line.setAttribute("stroke-linecap", "round");
+                svg.appendChild(line);
+            });
+        }
+
+        function snapToGrid(coord) {
+            return Math.round(coord / GRID_SIZE);
+        }
+
+        function handleGridClick(e) {
+            const rect = userGrid.getBoundingClientRect();
+            const x = snapToGrid(e.clientX - rect.left);
+            const y = snapToGrid(e.clientY - rect.top);
+
+            if (!selectedDot) {
+                selectedDot = { x, y };
+                dotHighlight.style.left = (x * GRID_SIZE) + 'px';
+                dotHighlight.style.top = (y * GRID_SIZE) + 'px';
+                dotHighlight.style.display = 'block';
+            } else {
+                if (selectedDot.x !== x || selectedDot.y !== y) {
+                    const newLine = normalizeLine([selectedDot.x, selectedDot.y, x, y]);
+                    if (!userLines.some(l => linesMatch(l, newLine))) {
+                        userLines.push(newLine);
+                        renderSvg(userSvg, userLines, '#6366f1');
+                    }
+                }
+                selectedDot = null;
+                dotHighlight.style.display = 'none';
+            }
+        }
+
+        function normalizeLine(l) {
+            // Sort points to make comparison easier
+            if (l[0] < l[2] || (l[0] === l[2] && l[1] < l[3])) return l;
+            return [l[2], l[3], l[0], l[1]];
+        }
+
+        function linesMatch(l1, l2) {
+            return l1[0] === l2[0] && l1[1] === l2[1] && l1[2] === l2[2] && l1[3] === l2[3];
+        }
+
+        function clearLines() {
+            userLines = [];
+            renderSvg(userSvg, [], '#6366f1');
+        }
+
+        function checkWork() {
+            const targetLines = levels[currentLevel].lines.map(normalizeLine);
+            const normalizedUserLines = userLines.map(normalizeLine);
+
+            const missing = targetLines.filter(tl => !normalizedUserLines.some(ul => linesMatch(tl, ul)));
+            const extra = normalizedUserLines.filter(ul => !targetLines.some(tl => linesMatch(tl, ul)));
+
+            const fb = document.getElementById('feedback');
+            if (missing.length === 0 && extra.length === 0) {
+                fb.textContent = "Perfect! 🌟";
+                fb.style.color = "#10b981";
+                if (currentLevel < levels.length - 1) {
+                    setTimeout(() => loadLevel(currentLevel + 1), 1500);
+                } else {
+                    fb.textContent = "Amazing! You finished all levels! 🏆";
+                    addSticker();
+                }
+            } else {
+                fb.textContent = "Almost! Check the lines again. 👀";
+                fb.style.color = "#ef4444";
+            }
+        }
+
+        function addSticker() {
+            const stickers = JSON.parse(sessionStorage.getItem('stickers_grid-copy') || '[]');
+            const emoji = '🧊';
+            if (!stickers.includes(emoji)) {
+                stickers.push(emoji);
+                sessionStorage.setItem('stickers_grid-copy', JSON.stringify(stickers));
+            }
+        }
+
+        init();
+        // Update GRID_SIZE dynamically if screen is small
+        window.onresize = () => {
+            const width = window.innerWidth;
+            const newSize = width < 750 ? 30 : 40;
+            if (newSize !== GRID_SIZE) {
+                location.reload(); // Simplest way to re-scale
+            }
+        };
+    </script>
+</body>
+
+</html>

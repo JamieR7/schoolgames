@@ -816,13 +816,15 @@
         function guess(type) {
             if (answered) return; answered = true;
             document.querySelectorAll('.choice-btn').forEach(b => b.disabled = true);
-            if (progress < 5) {
-                document.getElementById('angle-degree').textContent = `This angle is ${currentDeg}°`;
-            } else {
-                document.getElementById('angle-degree').textContent = '';
-            }
             const fb = document.getElementById('feedback');
             if (type === currentType) {
+                // Correct identification
+                if (progress < 4) {
+                    document.getElementById('angle-degree').textContent = `This angle is ${currentDeg}°`;
+                } else {
+                    document.getElementById('angle-degree').textContent = '';
+                }
+
                 score += 100; streak++; document.getElementById('score').textContent = score; document.getElementById('streak').textContent = streak;
                 progress++; updateProgressUI();
 
@@ -846,6 +848,7 @@
             } else {
                 streak = 0; document.getElementById('streak').textContent = streak;
                 document.getElementById('btn-' + type).classList.add('selected-wrong');
+                document.getElementById('angle-degree').textContent = `This angle is ${currentDeg}°`;
                 fb.className = 'feedback wrong-fb';
                 document.getElementById('feedback-emoji').textContent = '🤔';
                 document.getElementById('feedback-msg').textContent = WRONG_MSGS[Math.floor(Math.random() * WRONG_MSGS.length)];

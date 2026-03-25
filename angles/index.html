@@ -816,7 +816,11 @@
         function guess(type) {
             if (answered) return; answered = true;
             document.querySelectorAll('.choice-btn').forEach(b => b.disabled = true);
-            document.getElementById('angle-degree').textContent = `This angle is ${currentDeg}°`;
+            if (progress < 5) {
+                document.getElementById('angle-degree').textContent = `This angle is ${currentDeg}°`;
+            } else {
+                document.getElementById('angle-degree').textContent = '';
+            }
             const fb = document.getElementById('feedback');
             if (type === currentType) {
                 score += 100; streak++; document.getElementById('score').textContent = score; document.getElementById('streak').textContent = streak;

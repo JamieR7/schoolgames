@@ -372,7 +372,49 @@
             top: 0;
             left: 0;
             pointer-events: none;
-            z-index: 2500;
+            z-index: 4000;
+        }
+
+        .check-btn {
+            font-family: inherit;
+            font-size: 1.4rem;
+            font-weight: 900;
+            background: linear-gradient(180deg, #0ea5e9, #0369a1);
+            color: white;
+            border: none;
+            cursor: pointer;
+            border-radius: 9999px;
+            padding: 0.9rem 2.5rem;
+            box-shadow: 0 6px 0 #075985;
+            text-transform: uppercase;
+        }
+
+        .check-btn:active {
+            transform: translateY(3px);
+            box-shadow: 0 3px 0 #075985;
+        }
+
+        #degree-guess-wrap {
+            display: none;
+            margin: 1rem 0;
+            padding: 1rem;
+            background: #f0f9ff;
+            border-radius: 1.5rem;
+            border: 3px dashed #bae6fd;
+        }
+
+        .degree-input {
+            font-family: inherit;
+            font-size: 2rem;
+            font-weight: 900;
+            width: 6rem;
+            text-align: center;
+            border: 4px solid #7dd3fc;
+            border-radius: 1rem;
+            padding: 0.5rem;
+            color: #0369a1;
+            outline: none;
+            margin-bottom: 1rem;
         }
 
         .celebration {
@@ -564,7 +606,15 @@
             <span class="feedback-emoji" id="feedback-emoji">🎉</span>
             <p class="feedback-msg" id="feedback-msg">Amazing!</p>
             <p class="feedback-explain" id="feedback-explain"></p>
-            <button class="next-btn" onclick="nextQuestion()">Next Angle →</button>
+            <div id="degree-guess-wrap">
+                <p style="font-weight:800; color:#0369a1; margin-bottom:0.5rem;">🕵️ Inspector Challenge: Guess the
+                    degrees!</p>
+                <input type="number" id="degree-input" class="degree-input" placeholder="?" min="0" max="180">
+                <br>
+                <button class="check-btn" onclick="checkDegreeGuess()"
+                    style="font-size:1.1rem; padding:0.6rem 1.5rem;">Submit Guess 🎯</button>
+            </div>
+            <button class="next-btn" id="next-btn" onclick="nextQuestion()">Next Angle →</button>
         </div>
     </div>
     <div class="celebration" id="celebration">
@@ -771,24 +821,22 @@
             if (type === currentType) {
                 score += 100; streak++; document.getElementById('score').textContent = score; document.getElementById('streak').textContent = streak;
                 progress++; updateProgressUI();
-                const s = pickSticker(); stickers.push(s); saveStickers(); showStickerFlash(s);
-                const sp = document.createElement('span'); sp.textContent = s; document.getElementById('sticker-row').appendChild(sp);
-                document.getElementById('sticker-book').classList.add('visible');
+
                 if (progress >= 5) {
-                    setTimeout(() => {
-                        progress = 0; const oldLevel = level; level++;
-                        const celTheme = THEMES[oldLevel % THEMES.length];
-                        document.getElementById('cel-emoji').textContent = celTheme.emoji;
-                        document.getElementById('cel-sub').textContent = `You collected all ${celTheme.name} stickers!`;
-                        document.getElementById('cel-sticker').textContent = celTheme.stickers[Math.floor(Math.random() * celTheme.stickers.length)];
-                        updateProgressUI(); document.getElementById('game-area').style.display = 'none';
-                        document.getElementById('celebration').classList.add('show');
-                    }, 1000);
+                    fb.className = 'feedback correct-fb';
+                    document.getElementById('feedback-emoji').textContent = '🔎';
+                    document.getElementById('feedback-msg').textContent = 'Inspector Challenge Unlocked!';
+                    document.getElementById('feedback-explain').textContent = 'You identified 5 angles! Now guess the degrees (±10°) to earn your sticker!';
+                    document.getElementById('degree-guess-wrap').style.display = 'block';
+                    document.getElementById('next-btn').style.display = 'none';
+                    fb.style.display = 'block';
                 } else {
                     fb.className = 'feedback correct-fb';
-                    document.getElementById('feedback-emoji').textContent = s;
+                    document.getElementById('feedback-emoji').textContent = '✨';
                     document.getElementById('feedback-msg').textContent = CORRECT_MSGS[type][Math.floor(Math.random() * CORRECT_MSGS[type].length)];
                     document.getElementById('feedback-explain').textContent = EXPLAINS[type];
+                    document.getElementById('degree-guess-wrap').style.display = 'none';
+                    document.getElementById('next-btn').style.display = 'inline-block';
                     fb.style.display = 'block';
                 }
             } else {
@@ -798,8 +846,53 @@
                 document.getElementById('feedback-emoji').textContent = '🤔';
                 document.getElementById('feedback-msg').textContent = WRONG_MSGS[Math.floor(Math.random() * WRONG_MSGS.length)];
                 document.getElementById('feedback-explain').textContent = `The answer was ${currentType}. ${EXPLAINS[currentType]}`;
+                document.getElementById('degree-guess-wrap').style.display = 'none';
+                document.getElementById('next-btn').style.display = 'inline-block';
                 fb.style.display = 'block';
             }
+        }
+
+        function checkDegreeGuess() {
+            const val = parseInt(document.getElementById('degree-input').value);
+            if (isNaN(val)) return;
+
+            const diff = Math.abs(val - currentDeg);
+            const fb = document.getElementById('feedback');
+            document.getElementById('degree-guess-wrap').style.display = 'none';
+
+            if (diff <= 10) {
+                const s = pickSticker(); stickers.push(s); saveStickers(); showStickerFlash(s);
+                const sp = document.createElement('span'); sp.textContent = s; document.getElementById('sticker-row').appendChild(sp);
+                document.getElementById('sticker-book').classList.add('visible');
+
+                fb.className = 'feedback correct-fb';
+                document.getElementById('feedback-emoji').textContent = s;
+                document.getElementById('feedback-msg').textContent = `Perfect! It was ${currentDeg}°`;
+                document.getElementById('feedback-explain').textContent = `Your guess of ${val}° was spot on (±10)! You earned a sticker!`;
+
+                if (progress >= 5) {
+                    setTimeout(() => {
+                        progress = 0; const oldLevel = level; level++;
+                        const celTheme = THEMES[oldLevel % THEMES.length];
+                        document.getElementById('cel-emoji').textContent = celTheme.emoji;
+                        document.getElementById('cel-sub').textContent = `You collected all ${celTheme.name} stickers!`;
+                        document.getElementById('cel-sticker').textContent = celTheme.stickers[Math.floor(Math.random() * celTheme.stickers.length)];
+                        updateProgressUI(); document.getElementById('game-area').style.display = 'none';
+                        document.getElementById('celebration').classList.add('show');
+                    }, 1500);
+                } else {
+                    document.getElementById('next-btn').style.display = 'inline-block';
+                }
+            } else {
+                fb.className = 'feedback wrong-fb';
+                document.getElementById('feedback-emoji').textContent = '📏';
+                document.getElementById('feedback-msg').textContent = `Nearly! It was ${currentDeg}°`;
+                document.getElementById('feedback-explain').textContent = `Your guess was ${val}°. You need to be within 10° for a sticker. Try again on the next set!`;
+                progress = 0;
+                updateProgressUI();
+                document.getElementById('next-btn').style.display = 'inline-block';
+            }
+            document.getElementById('degree-input').value = '';
         }
 
         function nextQuestion() { newQuestion(); }

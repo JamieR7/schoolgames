@@ -233,6 +233,27 @@
             height: auto;
         }
 
+        .check-btn {
+            font-family: inherit;
+            font-size: 1.4rem;
+            font-weight: 900;
+            background: #be185d;
+            color: white;
+            border: none;
+            cursor: pointer;
+            border-radius: 9999px;
+            padding: 1rem 3rem;
+            box-shadow: 0 6px 0 #831843;
+            text-transform: uppercase;
+            margin-top: 1.5rem;
+            transition: all 0.1s;
+        }
+
+        .check-btn:active {
+            transform: translateY(4px);
+            box-shadow: 0 2px 0 #831843;
+        }
+
         .choices {
             display: flex;
             gap: 1rem;
@@ -385,7 +406,7 @@
             top: 0;
             left: 0;
             pointer-events: none;
-            z-index: 2500;
+            z-index: 4000;
         }
 
         .celebration {

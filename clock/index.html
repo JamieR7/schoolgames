@@ -367,7 +367,7 @@
             top: 0;
             left: 0;
             pointer-events: none;
-            z-index: 2500;
+            z-index: 4000;
         }
 
         .celebration {
@@ -519,7 +519,7 @@
             const [streak, setStreak] = useState(0);
             const [progress, setProgress] = useState(0);
             const [themeLevel, setThemeLevel] = useState(0);
-            const [status, setStatus] = useState('playing'); 
+            const [status, setStatus] = useState('playing');
             const [collection, setCollection] = useState(() => JSON.parse(sessionStorage.getItem('stickers_clock') || '[]'));
             const [currentEvent, setCurrentEvent] = useState(null);
             const [nextSticker, setNextSticker] = useState('');
@@ -542,9 +542,9 @@
                 if (lv === 1) m = Math.random() > 0.5 ? 0 : 30;
                 else if (lv === 2) { const o = [0, 15, 30, 45]; m = o[Math.floor(Math.random() * o.length)]; }
                 else m = Math.floor(Math.random() * 12) * 5;
-                
+
                 setTargetTime({ h, m }); setUserInput({ h: '', m: '' }); setStatus('playing');
-                
+
                 const theme = THEMES[themeLevel % THEMES.length];
                 if (Math.random() < RARE_CHANCE) {
                     const rareOwned = JSON.parse(sessionStorage.getItem('stickers_rare') || '[]');
@@ -597,7 +597,7 @@
                         osc.connect(gain); gain.connect(ctx.destination);
                         osc.start(now + i * 0.1); osc.stop(now + i * 0.1 + 0.3);
                     });
-                } catch (e) {}
+                } catch (e) { }
             };
 
             const nextTheme = () => { setThemeLevel(l => l + 1); setProgress(0); setStatus('playing'); generateProblem(); };
@@ -608,10 +608,10 @@
 
             if (mode === 'select') {
                 return (
-                    <div className="card" style={{marginTop:'5rem'}}>
-                        <div style={{fontSize:'8rem', marginBottom:'2rem'}}>🕰️🚀</div>
-                        <h2 style={{fontSize:'2.5rem', fontWeight:900, color:'#0d9488', marginBottom:'1.5rem'}}>TIME TRAVELER</h2>
-                        <p style={{fontSize:'1.2rem', fontWeight:700, color:'#0f766e', marginBottom:'3rem'}}>Help Archie log his arrival times!</p>
+                    <div className="card" style={{ marginTop: '5rem' }}>
+                        <div style={{ fontSize: '8rem', marginBottom: '2rem' }}>🕰️🚀</div>
+                        <h2 style={{ fontSize: '2.5rem', fontWeight: 900, color: '#0d9488', marginBottom: '1.5rem' }}>TIME TRAVELER</h2>
+                        <p style={{ fontSize: '1.2rem', fontWeight: 700, color: '#0f766e', marginBottom: '3rem' }}>Help Archie log his arrival times!</p>
                         <div className="level-grid">
                             <button className="level-btn" onClick={() => startPlaying(1)}>Lvl 1: Half Hours</button>
                             <button className="level-btn" onClick={() => startPlaying(2)}>Lvl 2: Quarters</button>
@@ -622,12 +622,12 @@
             }
 
             return (
-                <div style={{width:'100%', maxWidth:'800px', display:'flex', flexDirection:'column', alignItems:'center'}}>
+                <div style={{ width: '100%', maxWidth: '800px', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
                     <header>
                         <h1>Time Travel 🕰️</h1>
                         <div className="stats">
                             <div className="header-stickers">
-                                {[...collection.slice(-3), ...rareOwned.slice(-2)].slice(-5).map((s,i) => <span key={i}>{s}</span>)}
+                                {[...collection.slice(-3), ...rareOwned.slice(-2)].slice(-5).map((s, i) => <span key={i}>{s}</span>)}
                             </div>
                             <div className="stat-pill">⭐ {score}</div>
                             <div className="stat-pill">🔥 {streak}</div>
@@ -640,7 +640,7 @@
                             <span>{progress} / 5</span>
                         </div>
                         <div className="progress-bar">
-                            <div className="progress-fill" style={{width: `${(progress/5)*100}%`}}></div>
+                            <div className="progress-fill" style={{ width: `${(progress / 5) * 100}%` }}></div>
                         </div>
                     </div>
 
@@ -648,18 +648,18 @@
                         <div className="stickers visible">
                             <div className="stickers-label">Knowledge Collection:</div>
                             <div className="sticker-row">
-                                {collection.map((s,i) => <span key={i}>{s}</span>)}
-                                {rareOwned.map((s,i) => <span key={'r'+i}>{s}</span>)}
+                                {collection.map((s, i) => <span key={i}>{s}</span>)}
+                                {rareOwned.map((s, i) => <span key={'r' + i}>{s}</span>)}
                             </div>
                         </div>
                     )}
 
                     <div className="card">
                         {status === 'reward' ? (
-                            <div className="celebration show" style={{position:'static', background:'none', color:'inherit', backdropFilter:'none', padding:0}}>
+                            <div className="celebration show" style={{ position: 'static', background: 'none', color: 'inherit', backdropFilter: 'none', padding: 0 }}>
                                 <div className="celebration-emoji">{currentTheme.emoji}</div>
-                                <h2 style={{fontSize:'2.5rem', fontWeight:900, color:'#0d9488'}}>Time Master! 🎉</h2>
-                                <p style={{fontSize:'1.2rem', fontWeight:700}}>All {currentTheme.name} stickers collected!</p>
+                                <h2 style={{ fontSize: '2.5rem', fontWeight: 900, color: '#0d9488' }}>Time Master! 🎉</h2>
+                                <p style={{ fontSize: '1.2rem', fontWeight: 700 }}>All {currentTheme.name} stickers collected!</p>
                                 <div className="sticker-reward">{currentTheme.stickers[0]}</div>
                                 <button className="check-btn" onClick={nextTheme}>Continue Mission! 🚀</button>
                             </div>
@@ -670,8 +670,8 @@
                                     <h3>Arrival Year: {currentEvent?.year}</h3>
                                     <p>"{currentEvent?.text}"</p>
                                 </div>
-                                
-                                <div className="badge" style={{background: isRarePending ? '#fbbf24' : '#0d9488', marginBottom:'1.5rem'}}>
+
+                                <div className="badge" style={{ background: isRarePending ? '#fbbf24' : '#0d9488', marginBottom: '1.5rem' }}>
                                     {isRarePending ? '⭐ RARE SCANNING...' : `Next Sticker: ${nextSticker}`}
                                 </div>
 
@@ -682,12 +682,12 @@
                                 <div className="time-entry">
                                     <div className="time-box">
                                         <div className="time-label">Hour</div>
-                                        <input ref={hRef} type="number" className="massive-input" value={userInput.h} onChange={e=>{const v=e.target.value.slice(-2);setUserInput(p=>({...p,h:v})); if(v.length>=1) mRef.current?.focus();}} onKeyDown={e=>e.key==='Enter'&&checkAnswer()} />
+                                        <input ref={hRef} type="number" className="massive-input" value={userInput.h} onChange={e => { const v = e.target.value.slice(-2); setUserInput(p => ({ ...p, h: v })); if (v.length >= 1) mRef.current?.focus(); }} onKeyDown={e => e.key === 'Enter' && checkAnswer()} />
                                     </div>
                                     <span className="colon">:</span>
                                     <div className="time-box">
                                         <div className="time-label">Mins</div>
-                                        <input ref={mRef} type="number" className="massive-input" value={userInput.m} onChange={e=>setUserInput(p=>({...p,m:e.target.value.slice(-2)}))} onKeyDown={e=>e.key==='Enter'&&checkAnswer()} />
+                                        <input ref={mRef} type="number" className="massive-input" value={userInput.m} onChange={e => setUserInput(p => ({ ...p, m: e.target.value.slice(-2) }))} onKeyDown={e => e.key === 'Enter' && checkAnswer()} />
                                     </div>
                                 </div>
 
@@ -715,10 +715,10 @@
                     {showRare && rareInfo && (
                         <div className="rare-banner show">
                             <div className="rare-inner">
-                                <span style={{fontSize:'7rem', display:'block'}}>{rareInfo.emoji}</span>
-                                <h2 style={{fontSize:'2rem', fontWeight:900, margin:'1rem 0'}}>RARE FIND!</h2>
-                                <p style={{fontSize:'1.5rem', fontWeight:800, opacity:0.9}}>{rareInfo.name}</p>
-                                <button className="check-btn" onClick={() => setShowRare(false)} style={{background:'#064e3b'}}>Amazing! 🎉</button>
+                                <span style={{ fontSize: '7rem', display: 'block' }}>{rareInfo.emoji}</span>
+                                <h2 style={{ fontSize: '2rem', fontWeight: 900, margin: '1rem 0' }}>RARE FIND!</h2>
+                                <p style={{ fontSize: '1.5rem', fontWeight: 800, opacity: 0.9 }}>{rareInfo.name}</p>
+                                <button className="check-btn" onClick={() => setShowRare(false)} style={{ background: '#064e3b' }}>Amazing! 🎉</button>
                             </div>
                         </div>
                     )}

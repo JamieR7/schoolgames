@@ -1,0 +1,397 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Archie's Space Cargo 🚀</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700;800;900&display=swap"
+        rel="stylesheet" />
+    <script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Montserrat', sans-serif;
+            background: #0a0e1a;
+            color: white;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* Star field */
+        body::before {
+            content: '';
+            position: fixed;
+            inset: 0;
+            background-image:
+                radial-gradient(1px 1px at 10% 15%, rgba(255, 255, 255, 0.8) 0%, transparent 100%),
+                radial-gradient(1px 1px at 25% 40%, rgba(255, 255, 255, 0.6) 0%, transparent 100%),
+                radial-gradient(1px 1px at 50% 10%, rgba(255, 255, 255, 0.9) 0%, transparent 100%),
+                radial-gradient(1px 1px at 70% 60%, rgba(255, 255, 255, 0.7) 0%, transparent 100%),
+                radial-gradient(1px 1px at 85% 20%, rgba(255, 255, 255, 0.8) 0%, transparent 100%),
+                radial-gradient(1px 1px at 30% 75%, rgba(255, 255, 255, 0.5) 0%, transparent 100%),
+                radial-gradient(1px 1px at 60% 85%, rgba(255, 255, 255, 0.6) 0%, transparent 100%),
+                radial-gradient(1px 1px at 90% 45%, rgba(255, 255, 255, 0.4) 0%, transparent 100%),
+                radial-gradient(1px 1px at 15% 55%, rgba(255, 255, 255, 0.7) 0%, transparent 100%),
+                radial-gradient(1px 1px at 45% 30%, rgba(255, 255, 255, 0.5) 0%, transparent 100%),
+                radial-gradient(1px 1px at 75% 75%, rgba(255, 255, 255, 0.8) 0%, transparent 100%),
+                radial-gradient(2px 2px at 5% 90%, rgba(255, 255, 255, 0.3) 0%, transparent 100%),
+                radial-gradient(2px 2px at 55% 50%, rgba(255, 255, 255, 0.3) 0%, transparent 100%),
+                radial-gradient(2px 2px at 95% 80%, rgba(255, 255, 255, 0.4) 0%, transparent 100%);
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        #root {
+            position: relative;
+            z-index: 1;
+        }
+
+        /* Card styles */
+        .space-card {
+            background: rgba(255, 255, 255, 0.06);
+            border: 2px solid rgba(255, 255, 255, 0.12);
+            backdrop-filter: blur(10px);
+            border-radius: 1.5rem;
+        }
+
+        /* Crate grid */
+        .crate-grid {
+            display: inline-grid;
+            gap: 3px;
+        }
+
+        .crate {
+            width: 34px;
+            height: 34px;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.1rem;
+            cursor: pointer;
+            transition: transform 0.15s, box-shadow 0.15s;
+            user-select: none;
+            position: relative;
+        }
+
+        .crate:hover {
+            transform: scale(1.08);
+        }
+
+        .crate-left {
+            background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+            box-shadow: 0 2px 4px rgba(30, 64, 175, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.2);
+        }
+
+        .crate-right {
+            background: linear-gradient(135deg, #f97316, #c2410c);
+            box-shadow: 0 2px 4px rgba(194, 65, 12, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.2);
+        }
+
+        .crate-hover-left {
+            background: linear-gradient(135deg, #5b9bd5, #2563eb) !important;
+        }
+
+        .crate-hover-right {
+            background: linear-gradient(135deg, #fb923c, #ea580c) !important;
+        }
+
+        /* Laser line */
+        .laser-col {
+            position: relative;
+        }
+
+        .laser-line {
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            width: 4px;
+            background: linear-gradient(to bottom, #ff4444, #ff8800, #ff4444);
+            box-shadow: 0 0 12px 4px rgba(255, 100, 0, 0.8), 0 0 30px 8px rgba(255, 50, 0, 0.4);
+            z-index: 10;
+            animation: laserPulse 0.4s ease-out;
+            border-radius: 2px;
+        }
+
+        @keyframes laserPulse {
+            0% {
+                opacity: 0;
+                transform: scaleX(3);
+            }
+
+            40% {
+                opacity: 1;
+            }
+
+            100% {
+                opacity: 1;
+                transform: scaleX(1);
+            }
+        }
+
+        /* Column hover indicator */
+        .col-hover-line {
+            position: absolute;
+            top: -8px;
+            bottom: -8px;
+            width: 2px;
+            background: rgba(255, 200, 0, 0.5);
+            pointer-events: none;
+            border-radius: 1px;
+        }
+
+        /* Addition form */
+        .addition-form {
+            font-family: 'Montserrat', monospace;
+        }
+
+        .form-col-input {
+            width: 54px;
+            height: 54px;
+            font-size: 1.8rem;
+            font-weight: 900;
+            text-align: center;
+            background: rgba(255, 255, 255, 0.1);
+            border: 2px solid rgba(255, 255, 255, 0.25);
+            border-radius: 0.75rem;
+            color: white;
+            outline: none;
+            transition: border-color 0.2s, background 0.2s;
+        }
+
+        .form-col-input:focus {
+            border-color: #facc15;
+            background: rgba(250, 204, 21, 0.1);
+        }
+
+        .form-col-input.correct {
+            border-color: #22c55e;
+            background: rgba(34, 197, 94, 0.15);
+        }
+
+        .form-col-input.wrong {
+            border-color: #ef4444;
+            background: rgba(239, 68, 68, 0.15);
+            animation: shake 0.3s;
+        }
+
+        .carry-input {
+            width: 36px;
+            height: 36px;
+            font-size: 1.1rem;
+            font-weight: 900;
+            text-align: center;
+            background: rgba(250, 204, 21, 0.15);
+            border: 2px dashed rgba(250, 204, 21, 0.5);
+            border-radius: 0.5rem;
+            color: #facc15;
+            outline: none;
+        }
+
+        @keyframes shake {
+
+            0%,
+            100% {
+                transform: translateX(0);
+            }
+
+            25% {
+                transform: translateX(-5px);
+            }
+
+            75% {
+                transform: translateX(5px);
+            }
+        }
+
+        /* Buttons */
+        .space-btn {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 900;
+            font-size: 1.1rem;
+            border: none;
+            border-radius: 9999px;
+            cursor: pointer;
+            transition: transform 0.1s;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .space-btn:active {
+            transform: scale(0.96);
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #6366f1, #4f46e5);
+            color: white;
+            padding: 0.9rem 2.5rem;
+            box-shadow: 0 6px 0 #312e81;
+        }
+
+        .btn-primary:active {
+            box-shadow: 0 2px 0 #312e81;
+            transform: translateY(4px);
+        }
+
+        .btn-success {
+            background: linear-gradient(135deg, #22c55e, #16a34a);
+            color: white;
+            padding: 0.9rem 2.5rem;
+            box-shadow: 0 6px 0 #14532d;
+        }
+
+        .btn-success:active {
+            box-shadow: 0 2px 0 #14532d;
+            transform: translateY(4px);
+        }
+
+        /* Sticker flash */
+        #sticker-flash-overlay {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 15rem;
+            pointer-events: none;
+            z-index: 10000;
+            opacity: 0;
+            display: none;
+        }
+
+        @keyframes sticker-pop {
+            0% {
+                transform: translate(-50%, -50%) scale(0.5);
+                opacity: 0;
+            }
+
+            50% {
+                transform: translate(-50%, -50%) scale(1.2);
+                opacity: 1;
+            }
+
+            100% {
+                transform: translate(-50%, -50%) scale(1);
+                opacity: 0;
+            }
+        }
+
+        .animate-sticker-pop {
+            display: block !important;
+            animation: sticker-pop 1.5s ease-out forwards;
+        }
+
+        /* Rare banner */
+        .rare-banner {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.88);
+            z-index: 3000;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            backdrop-filter: blur(12px);
+        }
+
+        .rare-banner.show {
+            display: flex;
+        }
+
+        .rare-inner {
+            background: linear-gradient(135deg, #fbbf24, #f59e0b);
+            border: 8px solid white;
+            border-radius: 3rem;
+            padding: 3rem;
+            max-width: 500px;
+            width: 90%;
+            text-align: center;
+            color: white;
+            box-shadow: 0 0 60px rgba(251, 191, 36, 0.6);
+        }
+
+        /* Success overlay */
+        .success-screen {
+            position: fixed;
+            inset: 0;
+            background: rgba(10, 14, 26, 0.96);
+            z-index: 2000;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            backdrop-filter: blur(20px);
+        }
+
+        /* Back button */
+        .back-btn {
+            position: fixed;
+            top: 1.2rem;
+            left: 1.2rem;
+            background: rgba(255, 255, 255, 0.08);
+            border: 1.5px solid rgba(255, 255, 255, 0.18);
+            color: white;
+            padding: 0.5rem 1.2rem;
+            border-radius: 9999px;
+            text-decoration: none;
+            font-size: 0.85rem;
+            font-weight: 700;
+            z-index: 100;
+            backdrop-filter: blur(8px);
+            transition: background 0.2s;
+        }
+
+        .back-btn:hover {
+            background: rgba(255, 255, 255, 0.15);
+        }
+
+        /* Progress bar */
+        .progress-bar-outer {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 9999px;
+            height: 10px;
+            overflow: hidden;
+        }
+
+        .progress-bar-inner {
+            height: 100%;
+            background: linear-gradient(90deg, #6366f1, #a78bfa);
+            border-radius: 9999px;
+            transition: width 0.5s ease;
+        }
+
+        @media (max-width: 640px) {
+            .crate {
+                width: 26px;
+                height: 26px;
+                font-size: 0.85rem;
+            }
+
+            .form-col-input {
+                width: 44px;
+                height: 44px;
+                font-size: 1.4rem;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <a href="../index.html" class="back-btn">← Back</a>
+    <div id="root"></div>
+
+    <script type="text/babel" src="game.js"></script>
+    <script type="text/babel">
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<App />);
+    </script>
+</body>
+
+</html>

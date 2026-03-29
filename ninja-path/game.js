@@ -5,7 +5,7 @@ const ITEMS = [
     { id: 'star', emoji: '🔯', name: 'Ninja Star' },
     { id: 'sword', emoji: '⚔️', name: 'Sword' },
     { id: 'suit', emoji: '🥋', name: 'Ninja Suit' },
-    { id: 'mask', emoji: '🎭', name: 'Mask' },
+    { id: 'belt', emoji: '🎗️', name: 'Ninja Belt' },
     { id: 'water', emoji: '🚰', name: 'Drink of Water' },
     { id: 'snack', emoji: '🍓', name: 'Fruit Snack' }
 ];

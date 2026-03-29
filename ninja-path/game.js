@@ -252,9 +252,12 @@ function App() {
                             return (
                                 <div key={i} className={`grid-cell rounded-lg transition-all duration-300 ${isEntry ? 'entry' : ''} ${isExit ? 'exit' : ''}`}>
                                     {isArchie ? (
-                                        <div className="relative transform transition-transform duration-300 flex items-center justify-center" style={{ transform: `rotate(${(archie.dir - 1) * 90}deg)` }}>
-                                            <div className="absolute -top-4 text-sm animate-bounce text-dojo-accent">▲</div>
-                                            <span className="text-3xl">🥷</span>
+                                        <div className="relative transform transition-transform duration-300 flex items-center justify-center w-full h-full" style={{ transform: `rotate(${archie.dir * 90}deg)` }}>
+                                            <div className="absolute -bottom-5 flex flex-col items-center">
+                                                <div className="text-dojo-accent text-lg leading-none animate-pulse">▲</div>
+                                                <div className="w-1 h-3 bg-dojo-accent rounded-full opacity-50"></div>
+                                            </div>
+                                            <span className="text-4xl">🥷</span>
                                         </div>
                                     ) : item ? (
                                         <div className="animate-pulse">{item.emoji}</div>

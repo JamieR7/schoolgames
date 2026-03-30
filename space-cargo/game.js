@@ -31,6 +31,7 @@ const App = () => {
     const [sumTens, setSumTens] = useState('');
     const [sumOnes, setSumOnes] = useState('');
     const [carry, setCarry] = useState('');
+    const [easyMode, setEasyMode] = useState(false);
 
     // Reward State
     const [badges, setBadges] = useState(() => JSON.parse(sessionStorage.getItem('stickers_space-cargo') || '[]'));
@@ -53,13 +54,31 @@ const App = () => {
     const total = valA + valB;
 
     const handleSplitChange = (e) => {
-        setSplitIndex(parseInt(e.target.value));
-        setPartA('');
-        setPartB('');
+        const val = parseInt(e.target.value);
+        setSplitIndex(val);
+        if (easyMode) {
+            setPartA((val * pallet.depth).toString());
+            setPartB(((pallet.width - val) * pallet.depth).toString());
+        } else {
+            setPartA('');
+            setPartB('');
+        }
         setSumHundreds('');
         setSumTens('');
         setSumOnes('');
         setCarry('');
+    };
+
+    const toggleEasyMode = () => {
+        const newMode = !easyMode;
+        setEasyMode(newMode);
+        if (newMode) {
+            setPartA(valA.toString());
+            setPartB(valB.toString());
+        } else {
+            setPartA('');
+            setPartB('');
+        }
     };
 
     // Correctness checks
@@ -93,10 +112,16 @@ const App = () => {
     }, [isFullyCorrect]);
 
     const nextMission = () => {
-        setPallet(generatePallet());
+        const newPallet = generatePallet();
+        setPallet(newPallet);
         setSplitIndex(10);
-        setPartA('');
-        setPartB('');
+        if (easyMode) {
+            setPartA((10 * newPallet.depth).toString());
+            setPartB(((newPallet.width - 10) * newPallet.depth).toString());
+        } else {
+            setPartA('');
+            setPartB('');
+        }
         setSumHundreds('');
         setSumTens('');
         setSumOnes('');
@@ -123,7 +148,19 @@ const App = () => {
                     </div>
                 </div>
 
-                <div className="flex items-center gap-4">
+                <div className="flex items-center gap-6">
+                    {/* EASY MODE TOGGLE */}
+                    <button
+                        onClick={toggleEasyMode}
+                        className={`flex items-center gap-3 px-4 py-2 rounded-xl border-2 transition-all duration-300 ${easyMode ? 'bg-neon-blue/10 border-neon-blue text-neon-blue shadow-neon-blue/20' : 'bg-space-800 border-gray-700 text-gray-500 opacity-60 hover:opacity-100'}`}
+                    >
+                        <i className={`ph-fill ${easyMode ? 'ph-eye' : 'ph-eye-closed'} text-xl`}></i>
+                        <span className="text-[10px] font-black uppercase tracking-widest whitespace-nowrap">Auto-Scanner</span>
+                        <div className={`w-8 h-4 bg-space-900 rounded-full relative transition-colors ${easyMode ? 'bg-neon-blue/40' : 'bg-gray-800'}`}>
+                            <div className={`absolute top-0.5 w-3 h-3 rounded-full transition-all ${easyMode ? 'left-4.5 bg-neon-blue shadow-neon-blue' : 'left-0.5 bg-gray-600'}`}></div>
+                        </div>
+                    </button>
+
                     <div className="hidden sm:flex items-center gap-2 bg-space-800 px-4 py-2 rounded-xl border border-gray-700">
                         <span className="text-xs font-bold text-gray-400 uppercase tracking-widest">Badges</span>
                         <div className="flex gap-1">
@@ -248,11 +285,12 @@ const App = () => {
                                         type="number"
                                         value={partA}
                                         onChange={(e) => setPartA(e.target.value)}
-                                        className={`w-28 text-center text-3xl font-black bg-space-900 border-2 rounded-2xl py-4 pt-8 outline-none transition-all ${isPartACorrect ? 'border-neon-green text-neon-green shadow-neon-green' : 'border-gray-700 text-white focus:border-neon-pink'}`}
+                                        className={`w-28 text-center text-3xl font-black bg-space-900 border-2 rounded-2xl py-4 pt-8 outline-none transition-all ${isPartACorrect ? 'border-neon-green text-neon-green shadow-neon-green' : 'border-gray-700 text-white focus:border-neon-pink'} ${easyMode && !isPartACorrect ? 'border-dashed border-neon-blue shadow-[0_0_10px_rgba(6,182,212,0.2)] scale-105' : ''}`}
                                         placeholder="?"
-                                        disabled={isPartACorrect}
+                                        disabled={isPartACorrect || easyMode}
                                     />
-                                    <span className="absolute top-2 left-1/2 -translate-x-1/2 text-[10px] font-black text-gray-500 uppercase">Answer A</span>
+                                    {easyMode && !isPartACorrect && <div className="absolute inset-0 bg-neon-blue/10 animate-pulse rounded-2xl pointer-events-none"></div>}
+                                    <span className="absolute top-2 left-1/2 -translate-x-1/2 text-[10px] font-black text-gray-500 uppercase">{easyMode ? 'AUTO-SCAN' : 'Answer A'}</span>
                                     {isPartACorrect && <i className="ph-fill ph-check-circle text-neon-green absolute -right-3 -top-3 text-2xl bg-space-900 rounded-full"></i>}
                                 </div>
                             </div>
@@ -260,11 +298,11 @@ const App = () => {
 
                         {/* LASER LINE */}
                         <div className="hidden lg:flex flex-col items-center justify-center self-stretch py-4">
-                            <div className={`w-0.5 flex-1 rounded-full transition-all duration-500 ${isTenSplit ? 'bg-yellow-400 shadow-[0_0_15px_#fbbf24]' : 'bg-white/20'}`}></div>
-                            <div className={`my-4 transition-all duration-500 ${isTenSplit ? 'text-yellow-400 scale-150' : 'text-white/40'}`}>
-                                <i className="ph-fill ph-scissors text-2xl"></i>
+                            <div className={`w-0.5 flex-1 rounded-full transition-all duration-500 ${isTenSplit || easyMode ? 'bg-neon-blue shadow-[0_0_15px_#06b6d4]' : 'bg-white/20'}`}></div>
+                            <div className={`my-4 transition-all duration-500 ${isTenSplit ? 'text-yellow-400 scale-150' : (easyMode ? 'text-neon-blue scale-125' : 'text-white/40')}`}>
+                                <i className={`ph-fill ${easyMode ? 'ph-scan' : 'ph-scissors'} text-2xl`}></i>
                             </div>
-                            <div className={`w-0.5 flex-1 rounded-full transition-all duration-500 ${isTenSplit ? 'bg-yellow-400 shadow-[0_0_15px_#fbbf24]' : 'bg-white/20'}`}></div>
+                            <div className={`w-0.5 flex-1 rounded-full transition-all duration-500 ${isTenSplit || easyMode ? 'bg-neon-blue shadow-[0_0_15px_#06b6d4]' : 'bg-white/20'}`}></div>
                         </div>
 
                         {/* PART B (BLUE) */}
@@ -285,11 +323,12 @@ const App = () => {
                                         type="number"
                                         value={partB}
                                         onChange={(e) => setPartB(e.target.value)}
-                                        className={`w-28 text-center text-3xl font-black bg-space-900 border-2 rounded-2xl py-4 pt-8 outline-none transition-all ${isPartBCorrect ? 'border-neon-green text-neon-green shadow-neon-green' : 'border-gray-700 text-white focus:border-neon-blue'}`}
+                                        className={`w-28 text-center text-3xl font-black bg-space-900 border-2 rounded-2xl py-4 pt-8 outline-none transition-all ${isPartBCorrect ? 'border-neon-green text-neon-green shadow-neon-green' : 'border-gray-700 text-white focus:border-neon-blue'} ${easyMode && !isPartBCorrect ? 'border-dashed border-neon-blue shadow-[0_0_10px_rgba(6,182,212,0.2)] scale-105' : ''}`}
                                         placeholder="?"
-                                        disabled={isPartBCorrect}
+                                        disabled={isPartBCorrect || easyMode}
                                     />
-                                    <span className="absolute top-2 left-1/2 -translate-x-1/2 text-[10px] font-black text-gray-500 uppercase">Answer B</span>
+                                    {easyMode && !isPartBCorrect && <div className="absolute inset-0 bg-neon-blue/10 animate-pulse rounded-2xl pointer-events-none"></div>}
+                                    <span className="absolute top-2 left-1/2 -translate-x-1/2 text-[10px] font-black text-gray-500 uppercase">{easyMode ? 'AUTO-SCAN' : 'Answer B'}</span>
                                     {isPartBCorrect && <i className="ph-fill ph-check-circle text-neon-green absolute -right-3 -top-3 text-2xl bg-space-900 rounded-full"></i>}
                                 </div>
                             </div>
@@ -396,7 +435,9 @@ const App = () => {
                                             ? "\"Now add them together. You're almost there, Ninja!\""
                                             : (isTenSplit
                                                 ? "\"Excellent choice! Splitting at 10 is the ultimate math tactic.\""
-                                                : "\"That works! But have you tried splitting at 10? It's even faster!\""))}
+                                                : (easyMode
+                                                    ? "\"The Auto-Scanner is locked on! See how the numbers change?\""
+                                                    : "\"That works! But have you tried splitting at 10? It's even faster!\"")))}
                                 </p>
                             </div>
                         </div>

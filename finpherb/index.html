@@ -151,80 +151,111 @@
         }
 
         .beam {
-            width: 600px;
-            height: 20px;
+            width: 700px;
+            height: 15px;
             background: var(--beam-color);
             position: absolute;
-            bottom: 60px;
+            bottom: 120px;
             left: 50%;
-            margin-left: -300px;
+            transform: translateX(-50%) rotate(0deg);
             transform-origin: center center;
-            transition: transform 1s cubic-bezier(0.45, 0, 0.55, 1);
-            display: flex;
-            justify-content: space-between;
-            align-items: flex-end;
+            transition: transform 1.2s cubic-bezier(0.4, 0, 0.2, 1);
             border-radius: 10px;
+            z-index: 8;
         }
 
         .platform {
-            width: 250px;
-            height: 10px;
+            width: 280px;
+            height: 8px;
             background: var(--platform-color);
             position: absolute;
-            bottom: 20px;
-            border-radius: 5px;
+            top: -5px;
+            /* Sit on top of beam */
+            border-radius: 4px;
             display: flex;
-            justify-content: space-around;
+            justify-content: center;
             align-items: flex-end;
-            padding-bottom: 5px;
+            transition: transform 1.2s cubic-bezier(0.4, 0, 0.2, 1);
+            transform-origin: center top;
         }
 
         .platform.left {
-            left: 0;
+            left: 20px;
         }
 
         .platform.right {
-            right: 0;
+            right: 20px;
         }
 
         .character-container {
             display: flex;
-            gap: 10px;
+            gap: 20px;
             position: absolute;
-            bottom: 10px;
+            bottom: 8px;
             width: 100%;
             justify-content: center;
+            align-items: flex-end;
+        }
+
+        .char-wrapper {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            position: relative;
         }
 
         .character-img {
-            height: 120px;
+            height: 140px;
             object-fit: contain;
-            filter: drop-shadow(2px 2px 4px rgba(0, 0, 0, 0.2));
-            transition: transform 0.3s ease;
+            filter: drop-shadow(2px 4px 6px rgba(0, 0, 0, 0.2));
+        }
+
+        .char-weight {
+            background: white;
+            padding: 4px 12px;
+            border-radius: 15px;
+            font-weight: 800;
+            font-size: 1.1rem;
+            color: var(--primary-color);
+            margin-bottom: 5px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            border: 2px solid var(--primary-color);
+            white-space: nowrap;
+        }
+
+        .total-weight-box {
+            position: absolute;
+            bottom: -60px;
+            width: 100%;
+            text-align: center;
+            font-family: 'Bangers', cursive;
+            font-size: 1.5rem;
+            color: var(--secondary-color);
+            opacity: 0;
+            transition: opacity 0.5s ease;
+        }
+
+        .total-weight-box.visible {
+            opacity: 1;
         }
 
         .post {
-            width: 40px;
-            height: 150px;
-            background: repeating-linear-gradient(45deg,
-                    #cbd5e0,
-                    #cbd5e0 10px,
-                    #a0aec0 10px,
-                    #a0aec0 20px);
+            width: 50px;
+            height: 110px;
+            background: linear-gradient(to bottom, #718096, #2d3748);
             position: absolute;
             bottom: 0;
             z-index: 5;
-            transition: transform 0.5s ease-in, opacity 0.5s ease;
-            border: 2px solid #718096;
-            border-radius: 4px;
+            transition: transform 0.8s cubic-bezier(0.6, -0.28, 0.735, 0.045), opacity 0.5s ease;
+            border-radius: 5px;
         }
 
         .post.left {
-            left: 140px;
+            left: 135px;
         }
 
         .post.right {
-            right: 140px;
+            right: 135px;
         }
 
         .post.removed {
@@ -392,20 +423,21 @@
     </div>
 
     <div class="game-container">
-        <div class="pivot-base"></div>
-        <div class="pivot"></div>
+        <!-- The stand for the pivot -->
+        <div class="pivot-base" style="height: 140px;"></div>
+        <div class="pivot" style="bottom: 110px;"></div>
 
         <div id="leftPost" class="post left"></div>
         <div id="rightPost" class="post right"></div>
 
         <div id="balanceBeam" class="beam">
-            <div class="platform left">
+            <div id="leftPlatform" class="platform left">
                 <div id="leftChars" class="character-container"></div>
-                <div id="leftWeightText" class="weight-tag">?</div>
+                <div id="leftTotalWeight" class="total-weight-box">?</div>
             </div>
-            <div class="platform right">
+            <div id="rightPlatform" class="platform right">
                 <div id="rightChars" class="character-container"></div>
-                <div id="rightWeightText" class="weight-tag">?</div>
+                <div id="rightTotalWeight" class="total-weight-box">?</div>
             </div>
         </div>
     </div>
@@ -460,7 +492,8 @@
         }
 
         function getRandomCharacters() {
-            const count = Math.random() > 0.5 ? 2 : 1;
+            // Guarantee 1 or 2 characters
+            const count = Math.floor(Math.random() * 2) + 1;
             const selected = [];
             for (let i = 0; i < count; i++) {
                 selected.push(characters[Math.floor(Math.random() * characters.length)]);
@@ -480,42 +513,45 @@
 
             // Reset balance
             document.getElementById('balanceBeam').style.transform = 'translateX(-50%) rotate(0deg)';
+            document.getElementById('leftPlatform').style.transform = 'rotate(0deg)';
+            document.getElementById('rightPlatform').style.transform = 'rotate(0deg)';
             document.getElementById('leftPost').classList.remove('removed');
             document.getElementById('rightPost').classList.remove('removed');
 
+            // Hide totals
+            document.getElementById('leftTotalWeight').classList.remove('visible');
+            document.getElementById('rightTotalWeight').classList.remove('visible');
+
             // Generate characters
             const leftChars = getRandomCharacters();
-            let rightChars = getRandomCharacters();
+            const rightChars = getRandomCharacters();
 
-            // Ensure not always the same
             leftWeight = leftChars.reduce((sum, c) => sum + (currentMode === 'easy' ? c.stones : c.kg), 0);
             rightWeight = rightChars.reduce((sum, c) => sum + (currentMode === 'easy' ? c.stones : c.kg), 0);
 
             renderCharacters('leftChars', leftChars);
             renderCharacters('rightChars', rightChars);
-
-            document.getElementById('leftWeightText').innerText = '? ' + (currentMode === 'easy' ? 'stones' : 'kg');
-            document.getElementById('rightWeightText').innerText = '? ' + (currentMode === 'easy' ? 'stones' : 'kg');
         }
 
         function renderCharacters(containerId, list) {
             const container = document.getElementById(containerId);
             container.innerHTML = '';
             list.forEach(char => {
+                const wrapper = document.createElement('div');
+                wrapper.className = 'char-wrapper';
+
+                const weightLabel = document.createElement('div');
+                weightLabel.className = 'char-weight';
+                weightLabel.innerText = (currentMode === 'easy' ? char.stones : char.kg) + (currentMode === 'easy' ? ' st' : ' kg');
+
                 const img = document.createElement('img');
                 img.src = char.img;
                 img.className = 'character-img';
                 img.alt = char.name;
-                container.appendChild(img);
 
-                // Add weight label above character
-                const label = document.createElement('div');
-                label.className = 'weight-tag';
-                label.style.bottom = '130px';
-                label.style.top = 'auto';
-                label.innerText = (currentMode === 'easy' ? char.stones : char.kg) + (currentMode === 'easy' ? ' st' : ' kg');
-                // Note: I'll actually just show the weight here since the user needs it to calculate
-                container.appendChild(label);
+                wrapper.appendChild(weightLabel);
+                wrapper.appendChild(img);
+                container.appendChild(wrapper);
             });
         }
 
@@ -539,13 +575,18 @@
                 rotation = 15; // Tip right
             }
 
-            // Animate beam
+            // Animate beam AND platforms (to keep them level)
             setTimeout(() => {
                 document.getElementById('balanceBeam').style.transform = `translateX(-50%) rotate(${rotation}deg)`;
+                document.getElementById('leftPlatform').style.transform = `rotate(${-rotation}deg)`;
+                document.getElementById('rightPlatform').style.transform = `rotate(${-rotation}deg)`;
 
-                // Show final weights
-                document.getElementById('leftWeightText').innerText = leftWeight + (currentMode === 'easy' ? ' stones' : ' kg');
-                document.getElementById('rightWeightText').innerText = rightWeight + (currentMode === 'easy' ? ' stones' : ' kg');
+                // Show final total weights
+                const unit = currentMode === 'easy' ? ' stones' : ' kg';
+                document.getElementById('leftTotalWeight').innerText = "Total: " + leftWeight + unit;
+                document.getElementById('rightTotalWeight').innerText = "Total: " + rightWeight + unit;
+                document.getElementById('leftTotalWeight').classList.add('visible');
+                document.getElementById('rightTotalWeight').classList.add('visible');
 
                 // Show feedback
                 const feedback = document.getElementById('feedback');
@@ -561,7 +602,7 @@
 
                 document.getElementById('actionBtn').style.display = 'none';
                 document.getElementById('nextBtn').style.display = 'block';
-            }, 500);
+            }, 600);
         }
 
         // Initialize first round

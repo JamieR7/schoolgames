@@ -165,7 +165,7 @@
         }
 
         .platform {
-            width: 280px;
+            width: 320px;
             height: 8px;
             background: var(--platform-color);
             position: absolute;
@@ -180,16 +180,16 @@
         }
 
         .platform.left {
-            left: 20px;
+            left: 10px;
         }
 
         .platform.right {
-            right: 20px;
+            right: 10px;
         }
 
         .character-container {
             display: flex;
-            gap: 20px;
+            gap: 5px;
             position: absolute;
             bottom: 8px;
             width: 100%;
@@ -464,18 +464,18 @@
             { name: "Doofenshmirtz", kg: 75, stones: 11, img: "phin_ferb_images/drd.png" }
         ];
 
-        let currentMode = 'easy';
+        let targetCharCount = 2;
         let score = 0;
         let selectedPrediction = null;
         let leftWeight = 0;
         let rightWeight = 0;
         let isAnimating = false;
 
-        function setMode(mode) {
+        function setCharCount(count) {
             if (isAnimating) return;
-            currentMode = mode;
-            document.getElementById('easyBtn').classList.toggle('active', mode === 'easy');
-            document.getElementById('hardBtn').classList.toggle('active', mode === 'hard');
+            targetCharCount = count;
+            document.getElementById('easyBtn').classList.toggle('active', count === 2);
+            document.getElementById('hardBtn').classList.toggle('active', count === 4);
             startNewRound();
         }
 
@@ -491,9 +491,7 @@
             document.getElementById('actionBtn').disabled = false;
         }
 
-        function getRandomCharacters() {
-            // Guarantee 1 or 2 characters
-            const count = Math.floor(Math.random() * 2) + 1;
+        function getRandomCharacters(count) {
             const selected = [];
             for (let i = 0; i < count; i++) {
                 selected.push(characters[Math.floor(Math.random() * characters.length)]);
@@ -523,11 +521,11 @@
             document.getElementById('rightTotalWeight').classList.remove('visible');
 
             // Generate characters
-            const leftChars = getRandomCharacters();
-            const rightChars = getRandomCharacters();
+            const leftChars = getRandomCharacters(targetCharCount);
+            const rightChars = getRandomCharacters(targetCharCount);
 
-            leftWeight = leftChars.reduce((sum, c) => sum + (currentMode === 'easy' ? c.stones : c.kg), 0);
-            rightWeight = rightChars.reduce((sum, c) => sum + (currentMode === 'easy' ? c.stones : c.kg), 0);
+            leftWeight = leftChars.reduce((sum, c) => sum + c.kg, 0);
+            rightWeight = rightChars.reduce((sum, c) => sum + c.kg, 0);
 
             renderCharacters('leftChars', leftChars);
             renderCharacters('rightChars', rightChars);
@@ -542,11 +540,19 @@
 
                 const weightLabel = document.createElement('div');
                 weightLabel.className = 'char-weight';
-                weightLabel.innerText = (currentMode === 'easy' ? char.stones : char.kg) + (currentMode === 'easy' ? ' st' : ' kg');
+                weightLabel.innerText = char.kg + ' kg';
 
                 const img = document.createElement('img');
                 img.src = char.img;
                 img.className = 'character-img';
+                // Shrink if 4 characters
+                if (targetCharCount === 4) {
+                    img.style.height = '100px';
+                    img.style.maxWidth = '70px';
+                } else {
+                    img.style.height = '140px';
+                    img.style.maxWidth = 'none';
+                }
                 img.alt = char.name;
 
                 wrapper.appendChild(weightLabel);
@@ -582,9 +588,8 @@
                 document.getElementById('rightPlatform').style.transform = `rotate(${-rotation}deg)`;
 
                 // Show final total weights
-                const unit = currentMode === 'easy' ? ' stones' : ' kg';
-                document.getElementById('leftTotalWeight').innerText = "Total: " + leftWeight + unit;
-                document.getElementById('rightTotalWeight').innerText = "Total: " + rightWeight + unit;
+                document.getElementById('leftTotalWeight').innerText = "Total: " + leftWeight + " kg";
+                document.getElementById('rightTotalWeight').innerText = "Total: " + rightWeight + " kg";
                 document.getElementById('leftTotalWeight').classList.add('visible');
                 document.getElementById('rightTotalWeight').classList.add('visible');
 

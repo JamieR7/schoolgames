@@ -411,15 +411,19 @@
 
     <header>
         <a href="../index.html" class="home-link">🏠 Home</a>
-        <h1>Phineas & Ferb Balance!</h1>
+        <h1>TIPPING POINT!</h1>
     </header>
 
-    <div class="controls">
-        <div class="mode-toggle">
-            <button id="easyBtn" class="mode-btn active" onclick="setMode('easy')">Easy (Stones)</button>
-            <button id="hardBtn" class="mode-btn" onclick="setMode('hard')">Hard (Kg)</button>
+    <div class="controls" style="flex-direction: column; gap: 10px;">
+        <img src="phin_ferb_images/all.png" alt="Phineas and Ferb"
+            style="max-height: 180px; width: auto; border-radius: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.2); margin-bottom: 5px;">
+        <div style="display: flex; gap: 20px; align-items: center;">
+            <div class="mode-toggle">
+                <button id="easyBtn" class="mode-btn active" onclick="setCharCount(2)">2 Characters</button>
+                <button id="hardBtn" class="mode-btn" onclick="setCharCount(4)">4 Characters</button>
+            </div>
+            <div class="score-board">Score: <span id="scoreValue">0</span></div>
         </div>
-        <div class="score-board">Score: <span id="scoreValue">0</span></div>
     </div>
 
     <div class="game-container">
